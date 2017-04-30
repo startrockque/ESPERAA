@@ -18,13 +18,14 @@ public class Tranche implements Comparable<Tranche> {
     private int                  montantTranche;
     private String               compensation;
     @ManyToOne
-    private Projet               projet;
+    private Cheval               cheval;
 
     @OneToMany( mappedBy = "tranche", cascade = { CascadeType.PERSIST, CascadeType.REMOVE } )
     private List<Investissement> investissementList;
 
-    /* ************* *
-     * Constructeur *************
+    /* ************ *
+     * Constructeur *
+     * ************ *
      */
 
     public Tranche() {
@@ -47,8 +48,9 @@ public class Tranche implements Comparable<Tranche> {
         investissement.setTranche( null );
     }
 
-    /* ***************** *
-     * Getter et Setter * *****************
+    /* **************** *
+     * Getter et Setter * 
+     * **************** *
      */
 
     public int getIdTranche() {
@@ -83,12 +85,12 @@ public class Tranche implements Comparable<Tranche> {
         this.investissementList = investissementList;
     }
 
-    public Projet getProjet() {
-        return projet;
+    public Cheval getCheval() {
+        return cheval;
     }
 
-    public void setProjet( Projet projet ) {
-        this.projet = projet;
+    public void setCheval( Cheval cheval ) {
+        this.cheval = cheval;
     }
 
     @Override

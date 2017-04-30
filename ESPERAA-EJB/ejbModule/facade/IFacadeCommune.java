@@ -7,9 +7,9 @@ import javax.ejb.Local;
 import dto.AUtilisateurDTO;
 import dto.AdminDTO;
 import dto.CategorieDTO;
-import dto.FinanceurPorteurDTO;
-import dto.ProjetDTO;
-import dto.TousLesProjetsDTO;
+import dto.DonateurDTO;
+import dto.ChevalDTO;
+import dto.TousLesChevauxDTO;
 
 @Local
 public interface IFacadeCommune {
@@ -19,98 +19,59 @@ public interface IFacadeCommune {
     /****************/
 
     /**
-     * Rï¿½ï¿½ï¿½cupï¿½ï¿½ï¿½re le projet ï¿½ï¿½ï¿½ partir de son id
+     * Récupère le cheval à partir de son id
      * 
-     * @param idProjet
-     *            l'id du projet
-     * @return le projet ayant un id ï¿½ï¿½ï¿½gal ï¿½ï¿½ï¿½ idprojet
+     * @param idCheval
+     *            l'id du cheval
+     * @return le cheval ayant un id égal à idcheval
      */
-    ProjetDTO findProjetById( int idProjet );
+    ChevalDTO findChevalById( int idCheval );
 
     /**
-     * Mï¿½ï¿½ï¿½thode de recherche d'un projet par son titre
+     * Méthode de recherche d'un cheval par son nom
      * 
-     * @param titreProjet
-     * @return la liste des projets correspondants au titre
-     *         renseignï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+     * @param nomCheval
+     * @return la liste des chevaux correspondants au nom
+     *         renseigné
      */
-    List<TousLesProjetsDTO> rechercherParTitre( String titreProjet );
+    List<TousLesChevauxDTO> rechercherParNom( String nomCheval );
 
     /**
-     * Mï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½thode de recherche de projets par
-     * catï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gorie
+     * Méthode de recherche de chevaux par par
+     * catégorie
      * 
      * @param categorie
-     * @return la liste des projets correspondants ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-     *         la catï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gorie
-     *         renseignï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½e
+     * @return la liste des chevaux correspondants à la catégorie renseignée
      */
-    List<TousLesProjetsDTO> rechercherParCatgeorie( String categorie );
+    List<TousLesChevauxDTO> rechercherParCategorie( String categorie );
 
     /**
-     * Rechercher des projets par un ou plusieurs tag
+     * Rechercher des chevaux par un ou plusieurs tag
      * 
      * @param tagString
      *            les tags
-     * @return liste de projets
+     * @return liste de chevaux
      */
-    List<TousLesProjetsDTO> rechercherParTag( String tagString );
+    List<TousLesChevauxDTO> rechercherParTag( String tagString );
+
 
     /**
-     * Mï¿½ï¿½ï¿½thode de recherche de projets par porteur
+     * Mï¿½ï¿½ï¿½thode de recherche de cheval par nom et catégorie
      * 
-     * @param nomPorteur
-     * @returnla liste des projets correspondants au nom de porteur
-     *           renseignï¿½ï¿½ï¿½
-     */
-    List<TousLesProjetsDTO> rechercherParPorteur( String nomPorteur );
-
-    /**
-     * Mï¿½ï¿½ï¿½thode de recherche de projet par titre et catï¿½ï¿½ï¿½gorie
-     * 
-     * @param titreProjet
+     * @param nomCheval
      * @param categorie
-     * @return liste des projets correspondants aux infos renseignï¿½ï¿½ï¿½es
+     * @return liste des chevaux correspondants aux infos renseignées
      */
-    List<TousLesProjetsDTO> rechercherParTitreCatgeorie( String titreProjet, String categorie );
-
-    /**
-     * Mï¿½ï¿½ï¿½thode de recherche de projet par titre et nom
-     * 
-     * @param titreProjet
-     * @param nomPorteur
-     * @return liste des projets correspondants aux infos renseignï¿½ï¿½ï¿½es
-     */
-    List<TousLesProjetsDTO> rechercherParTitreNom( String titreProjet, String nomPorteur );
-
-    /**
-     * Mï¿½ï¿½ï¿½thode de recherche de projet par categorie et porteur
-     * 
-     * @param categorie
-     * @param nomPorteur
-     * @return liste des projets correspondants aux infos renseignï¿½ï¿½ï¿½es
-     */
-    List<TousLesProjetsDTO> rechercherParCatgeorieNom( String categorie, String nomPorteur );
-
-    /**
-     * Mï¿½ï¿½ï¿½thode de recherche de projet par titre, catï¿½ï¿½ï¿½gorie et
-     * porteur
-     * 
-     * @param titreProjet
-     * @param categorie
-     * @param nomPorteur
-     * @return liste des projets correspondants aux infos renseignï¿½ï¿½ï¿½es
-     */
-    List<TousLesProjetsDTO> rechercherParTitreCatgeorieNom( String titreProjet, String categorie, String nomPorteur );
+    List<TousLesChevauxDTO> rechercherParNomCategorie( String nomCheval, String categorie );
 
     /****************/
     // Categories //
     /****************/
 
     /**
-     * Mï¿½ï¿½ï¿½thode de chargement du nom des catï¿½ï¿½ï¿½gories
+     * Méthode de chargement du nom des catégories
      * 
-     * @return la liste des noms des catï¿½ï¿½ï¿½gories
+     * @return la liste des noms des catégories
      */
     List<String> getAllCategoriesNames();
 
@@ -130,96 +91,61 @@ public interface IFacadeCommune {
     List<String> listeCategoriePopulaire( int nbCat );
 
     /****************/
-    // Projets //
+    // Chevaux //
     /****************/
 
     /**
-     * Recuperer une liste contenant tous les projets de la BDD
+     * Recuperer une liste contenant tous les chevaux de la BDD
      * 
-     * @return ArrayList de tous les projets
+     * @return ArrayList de tous les chevaux
      */
-    List<TousLesProjetsDTO> recupererTousLesProjets();
+    List<TousLesChevauxDTO> recupererTousLesChevaux();
 
     /**
-     * Rï¿½ï¿½ï¿½cupï¿½ï¿½ï¿½rer une liste contenant les titres de tous les
-     * projets
+     * Récupérer une liste contenant les noms de tous les chevaux
      * 
-     * @return ArrayList de tous les projets
+     * @return ArrayList de tous les chevaux
      */
-    List<String> recupererTousLesTitresDesProjets();
+    List<String> recupererTousLesNomsDesChevaux();
 
     /**
-     * Recuperer une liste contenant tous les projets en avant de la BDD
+     * Recuperer une liste contenant tous les chevaux en avant de la BDD
      * 
-     * @return ArrayList de tous les projets en avant
+     * @return ArrayList de tous les chevaux en avant
      */
-    List<TousLesProjetsDTO> recupererProjetsEnAvant();
+    List<TousLesChevauxDTO> recupererChevauxEnAvant();
 
     /**
-     * Trouver un projet par son id
+     * Trouver un cheval par son id
      * 
-     * @param idProjet
+     * @param idCheval
      * @return
      */
-    ProjetDTO findProjetDTOById( int idProjet );
+    ChevalDTO findChevalDTOById( int idCheval );
 
     /**
-     * Fonction d'abandon d'un projet, rembourse tous les financeurs
+     * Trouver les chevaux les plus récents
      * 
-     * @param idProjet
-     *            projet ï¿½ï¿½ï¿½ cloturer
-     * @param admin
-     *            l'utilisateur est il administrateur?
-     */
-    void cloturerProjet( int idProjet, boolean admin );
-
-    /**
-     * Trouver les projets les plus récents
-     * 
-     * @param nbProjet
+     * @param nbCheval
      * @return
      */
-    List<TousLesProjetsDTO> recupererProjetsRecents( int nbProjet );
+    List<TousLesChevauxDTO> recupererChevauxRecents( int nbCheval );
 
     /**
-     * Trouver les projets presque financés
+     * Trouver les chevaux presque financés
      * 
-     * @param nbProjet
+     * @param nbCheval
      * @return
      */
-    List<TousLesProjetsDTO> recupererProjetsPresqueFinances( int nbProjet );
+    List<TousLesChevauxDTO> recupererChevauxPresqueFinances( int nbCheval );
 
     /**
-     * Trouver les projets les plus financés
+     * Trouver les chevaux les plus financés
      * 
-     * @param nbProjet
+     * @param nbCheval
      * @return
      */
-    List<TousLesProjetsDTO> recupererProjetsPlusFinances( int nbProjet );
-
-    /**
-     * Trouver les projets les plus aimés
-     * 
-     * @param nbProjet
-     * @return
-     */
-    List<TousLesProjetsDTO> recupererProjetsPlusAimes( int nbProjet );
-
-    /**
-     * Récupère tous les projets de la BDD dont la date de fin est supérieure à
-     * la date actuelle
-     * 
-     * @return
-     */
-    List<TousLesProjetsDTO> recupererTousLesProjetsEnCours();
-
-    /**
-     * Trouver les nombre de likes
-     * 
-     * @param idProjet
-     * @return
-     */
-    int nombreAimeProjet( int idProjet );
+    List<TousLesChevauxDTO> recupererChevauxPlusFinances( int nbCheval );
 
     /****************/
     // Membres //
@@ -227,35 +153,26 @@ public interface IFacadeCommune {
 
     /**
      * Connexion, renvoie null si l'utilisateur n'existe pas Renvoie un
-     * Administrateur ou un FinanceurPorteur selon l'utilisateur
+     * Administrateur ou un Donateur selon l'utilisateur
      * 
-     * @return AUtilisateur Administrateur ou FinanceurPorteur
+     * @return AUtilisateur Administrateur ou Donateur
      */
     AUtilisateurDTO connexion( String login, String mdp );
 
     /**
-     * Recuperer tous les noms des financeurs porteurs dans une liste
+     * Recuperer tous les noms des Donateur dans une liste
      * 
-     * @return une array liste contenant tous les noms de financeurs porteurs
+     * @return une array liste contenant tous les noms des Donateur
      */
-    List<String> recupererTousLesNomsDeFinanceurs();
+    List<String> recupererTousLesNomsDeDonateurs();
 
     /**
-     * Recuperer la liste des projets finances par un porteur
-     * 
-     * @param loginFinanceur
-     *            du porteur
-     * @return la liste des projets du porteur
-     */
-    List<TousLesProjetsDTO> recupererMesProjets( String loginFinanceur );
-
-    /**
-     * Trouver un financeur par son login
+     * Trouver un Donateur par son login
      * 
      * @param login
      * @return
      */
-    FinanceurPorteurDTO findFinanceurDTOByLogin( String login );
+    DonateurDTO findDonateurDTOByLogin( String login );
 
     /**
      * Trouver un admin par son login
@@ -270,16 +187,16 @@ public interface IFacadeCommune {
     /****************/
 
     /**
-     * Un utilisateur envoie un messge (commentaire) sur un projet
+     * Un utilisateur envoie un messge (commentaire) sur un cheval
      * 
      * @param nomEmetteur
      *            Nom de l'utilisateur
-     * @param idProjet
-     *            id du projet
+     * @param idCheval
+     *            id du cheval
      * @param contenuMessage
      *            contenu du message
      */
-    void envoyerMessage( String nomEmetteur, int idProjet, String contenuMessage );
+    void envoyerMessage( String nomEmetteur, int idCheval, String contenuMessage );
 
     /**
      * Un utilisateur repond a un message (commentaire) deja poste par un autre
@@ -298,10 +215,10 @@ public interface IFacadeCommune {
      * 
      * @param idMessage
      * @param idConversation
-     * @param idProjet
+     * @param idCheval
      * @param admin
      */
-    void supprimerMessage( int idMessage, int idConversation, int idProjet, boolean admin );
+    void supprimerMessage( int idMessage, int idConversation, int idCheval, boolean admin );
 
     /****************/
     // Tags //

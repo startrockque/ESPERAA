@@ -1,45 +1,44 @@
 package facade;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import dao.AdminDAO;
-import dao.AimeDAO;
 import dao.CategorieDao;
 import dao.DAOException;
-import dao.FinanceurDAO;
+import dao.DonateurDAO;
 import dao.InvestissementDAO;
 import dao.MessageDAO;
-import dao.ProjetDAO;
+import dao.ChevalDAO;
 import dao.TagDAO;
-import dto.FinanceurPorteurMinDTO;
+import dto.DonateurMinDTO;
+import dto.TrancheDTO;
 import entities.Categorie;
-import entities.FinanceurPorteur;
+import entities.Cheval;
+import entities.Donateur;
 import entities.Investissement;
-import entities.Projet;
+import entities.Tag;
 import entities.Tranche;
 
 @Stateless
 public class AdministrateurFacade implements IAdministrateurFacade {
-
-    private static final String NOTIFICATION_PROJET_CLOTURE         = "Un administrateur a cloturé le projet : ";
-    private static final String NOTIFICATION_PROJET_CLOTURE_PORTEUR = "Un administrateur a cloturé votre projet : ";
 
     @EJB
     private CategorieDao        categorieDao;
     @EJB
     private AdminDAO            adminDao;
     @EJB
-    private ProjetDAO           projetDao;
+    private ChevalDAO           chevalDao;
     @EJB
-    private FinanceurDAO        financeurDao;
+    private DonateurDAO         donateurDao;
     @EJB
     private MessageDAO          messageDao;
-    @EJB
-    private AimeDAO             aimeDao;
     @EJB
     private TagDAO              tagDao;
     @EJB
@@ -53,7 +52,7 @@ public class AdministrateurFacade implements IAdministrateurFacade {
     public void creerCategorie( String titreCategorie ) {
         Categorie categorie = new Categorie();
         categorie.setTitreCategorie( titreCategorie );
-        categorie.setProjetList( new ArrayList<Projet>() );
+        categorie.setChevauxList( new ArrayList<Cheval>() );
         try {
             categorieDao.create( categorie );
         } catch ( DAOException e ) {
@@ -72,50 +71,22 @@ public class AdministrateurFacade implements IAdministrateurFacade {
     }
 
     /****************/
-    // Projet //
+    // Cheval //
     /****************/
 
     @Override
-    public void mettreEnAvant( int idProjet ) {
+    public void mettreEnAvant( int idCheval ) {
         try {
-            projetDao.mettreEnAvant( idProjet );
+            chevalDao.mettreEnAvant( idCheval );
         } catch ( DAOException e ) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void mettreEnArriere( int idProjet ) {
+    public void mettreEnArriere( int idCheval ) {
         try {
-            projetDao.mettreEnArriere( idProjet );
-        } catch ( DAOException e ) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void cloturerProjet( int idProjet ) {
-        try {
-            Projet projet = projetDao.findById( idProjet );
-            int montantARembourser;
-            int montantAInvestir;
-            for ( Tranche tranche : projet.getTrancheList() ) {
-                for ( Investissement investissement : tranche.getInvestissementList() ) {
-                    montantARembourser = investissement.getSommeInvestie();
-                    montantAInvestir = investissement.getFinanceur().getMontantAInvestir();
-                    investissement.getFinanceur().setMontantAInvestir( montantARembourser + montantAInvestir );
-                    String notificationText = null;
-
-                    notificationText = NOTIFICATION_PROJET_CLOTURE
-                            + projet.getTitreProjet();
-                    investissement.getFinanceur().addNotification( notificationText );
-                }
-            }
-            String notificationText = NOTIFICATION_PROJET_CLOTURE_PORTEUR
-                    + projet.getTitreProjet();
-            projet.getPorteur().addNotification( notificationText );
-
-            projetDao.delete( projet );
+        	chevalDao.mettreEnArriere( idCheval );
         } catch ( DAOException e ) {
             e.printStackTrace();
         }
@@ -126,14 +97,14 @@ public class AdministrateurFacade implements IAdministrateurFacade {
     /****************/
 
     @Override
-    public List<FinanceurPorteurMinDTO> recupererTousLesMembres() {
-        List<FinanceurPorteur> listAll;
+    public List<DonateurMinDTO> recupererTousLesMembres() {
+        List<Donateur> listAll;
         try {
-            listAll = financeurDao.findAll();
-            List<FinanceurPorteurMinDTO> listAllDTO = new ArrayList<FinanceurPorteurMinDTO>();
-            for ( FinanceurPorteur financeur : listAll ) {
-                FinanceurPorteurMinDTO financeurDTO = new FinanceurPorteurMinDTO( financeur );
-                listAllDTO.add( financeurDTO );
+            listAll = donateurDao.findAll();
+            List<DonateurMinDTO> listAllDTO = new ArrayList<DonateurMinDTO>();
+            for ( Donateur donateur : listAll ) {
+            	DonateurMinDTO donateurDTO = new DonateurMinDTO( donateur );
+                listAllDTO.add( donateurDTO );
             }
             return listAllDTO;
         } catch ( DAOException e ) {
@@ -147,9 +118,9 @@ public class AdministrateurFacade implements IAdministrateurFacade {
     /****************/
 
     @Override
-    public int recupererNbProjets() {
+    public int recupererNbChevaux() {
         try {
-            return projetDao.getSize();
+            return chevalDao.getSize();
         } catch ( DAOException e ) {
             e.printStackTrace();
         }
@@ -169,17 +140,7 @@ public class AdministrateurFacade implements IAdministrateurFacade {
     @Override
     public int recupererNbMembres() {
         try {
-            return financeurDao.getSize();
-        } catch ( DAOException e ) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    @Override
-    public int recupererNbAimes() {
-        try {
-            return aimeDao.getSize();
+            return donateurDao.getSize();
         } catch ( DAOException e ) {
             e.printStackTrace();
         }
@@ -197,9 +158,9 @@ public class AdministrateurFacade implements IAdministrateurFacade {
     }
 
     @Override
-    public int recupererNbInvestissements() {
+    public int recupererTotalInvestissements() {
         try {
-            return investissementDao.getSize();
+            return investissementDao.getTotal();
         } catch ( DAOException e ) {
             e.printStackTrace();
         }
@@ -214,5 +175,109 @@ public class AdministrateurFacade implements IAdministrateurFacade {
             e.printStackTrace();
         }
         return 0;
+    }
+    
+    /****************/
+    // Chevaux //
+    /****************/
+
+
+    @Override
+    public void ajouterCheval( String nom, String description, String butArgent,
+            int montantDemande, String titreCategorie, String tagString,
+            List<TrancheDTO> trancheDTOList, String image ) {
+        try {
+            Categorie categorie = categorieDao.findByTitre( titreCategorie );
+
+            Cheval cheval = new Cheval();
+            cheval.setNomCheval( nom );
+            cheval.setDescription( description );
+            cheval.setButArgent( butArgent );
+            cheval.setMontantDemande( montantDemande );
+            cheval.setDateCreation( Calendar.getInstance() );
+            cheval.setCategorie( categorie );
+
+            if ( image != null ) {
+                cheval.setImage( image );
+            }
+
+            if ( tagString != null ) {
+                String[] tagTab = tagString.split( " " );
+                for ( String tagName : tagTab ) {
+                    if ( !tagName.equals( "" ) ) {
+                        Tag tag = tagDao.findByName( tagName );
+                        if ( tag == null ) {
+                            cheval.addTag( new Tag( tagName ) );
+                        } else if ( !cheval.getTagList().contains( tag ) ) {
+                            cheval.addTag( tag );
+                        }
+                    }
+                }
+            }
+            cheval.addTranche( new Tranche( "aucune compensation", 0 ) );
+            for ( TrancheDTO trancheDTO : trancheDTOList ) {
+                cheval.addTranche( new Tranche( trancheDTO.getCompensation(), trancheDTO.getMontantTranche() ) );
+            }
+
+            chevalDao.create( cheval );
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void modifierCheval( int idCheval, String nom, String description,
+            String butArgent, int montantDemande, String titreCategorie,
+            String tagString, List<TrancheDTO> trancheDTOList, String image ) {
+        try {
+            Cheval cheval = chevalDao.findById( idCheval );
+            Categorie categorie = categorieDao.findByTitre( titreCategorie );
+            cheval.setNomCheval( nom );
+            cheval.setDescription( description );
+            cheval.setButArgent( butArgent );
+            cheval.setMontantDemande( montantDemande );
+            cheval.setCategorie( categorie );
+            if ( image != null ) {
+                cheval.setImage( image );
+            }
+
+            cheval.removeAllTag();
+            if ( tagString != null ) {
+                String[] tagTab = tagString.split( " " );
+                for ( String tagName : tagTab ) {
+                    if ( !tagName.equals( "" ) ) {
+                        Tag tag = tagDao.findByName( tagName );
+                        if ( tag == null ) {
+                            cheval.addTag( new Tag( tagName ) );
+                        } else if ( !cheval.getTagList().contains( tag ) ) {
+                            cheval.addTag( tag );
+                        }
+                    }
+                }
+            }
+            for ( TrancheDTO trancheDto : trancheDTOList ) {
+                boolean existeDeja = false;
+                for ( Tranche tranche : cheval.getTrancheList() ) {
+                    if ( tranche.getMontantTranche() == trancheDto.getMontantTranche() ) {
+                        existeDeja = true;
+                    }
+                }
+                if ( !existeDeja ) {
+                    cheval.addTranche( new Tranche( trancheDto.getCompensation(), trancheDto.getMontantTranche() ) );
+                }
+            }
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void supprimerCheval( int idCheval ) {
+        try {
+            Cheval cheval = chevalDao.findById( idCheval );
+            chevalDao.delete( cheval );
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+        }
     }
 }

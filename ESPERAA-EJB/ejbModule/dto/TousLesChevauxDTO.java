@@ -1,70 +1,54 @@
 package dto;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
-import entities.Aime;
-import entities.Projet;
+import entities.Cheval;
 import entities.Tag;
 
-public class TousLesProjetsDTO implements Serializable {
+public class TousLesChevauxDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private int               idProjet;
     private String            titreProjet;
     private float             montantDemande;
     private String            butArgent;
-    private Calendar          dateFin;
     private float             montantInvesti;
     private boolean           enAvant;
-    private String            porteur;
     private String            categorie;
     private List<String>      tagList;
-    private List<AimeDTO>     aimeList;
     private String            image;
 
-    public TousLesProjetsDTO( int idProjet, String titreProjet,
-            float montantDemande, String butArgent, Calendar dateFin,
-            float montantInvesti, boolean enAvant, String porteur,
-            String categorie, List<String> tagList, List<AimeDTO> aimeList ) {
+    public TousLesChevauxDTO( int idProjet, String titreProjet,
+            float montantDemande, String butArgent, float montantInvesti, boolean enAvant,
+            String categorie, List<String> tagList ) {
         super();
         this.idProjet = idProjet;
         this.titreProjet = titreProjet;
         this.montantDemande = montantDemande;
         this.butArgent = butArgent;
-        this.dateFin = dateFin;
         this.montantInvesti = montantInvesti;
         this.enAvant = enAvant;
-        this.porteur = porteur;
         this.categorie = categorie;
         this.tagList = tagList;
-        this.aimeList = aimeList;
 
     }
 
-    public TousLesProjetsDTO( Projet projet ) {
-        this.idProjet = projet.getIdProjet();
-        this.titreProjet = projet.getTitreProjet();
-        this.montantDemande = projet.getMontantDemande();
-        this.butArgent = projet.getButArgent();
-        this.dateFin = projet.getDateFin();
-        this.montantInvesti = projet.getMontantInvesti();
-        this.enAvant = projet.isEnAvant();
-        this.porteur = projet.getPorteur().getLogin();
-        this.categorie = projet.getCategorie().getTitreCategorie();
-        this.image = projet.getImage();
+    public TousLesChevauxDTO( Cheval cheval ) {
+        this.idProjet = cheval.getIdCheval();
+        this.titreProjet = cheval.getNomCheval();
+        this.montantDemande = cheval.getMontantDemande();
+        this.butArgent = cheval.getButArgent();
+        this.montantInvesti = cheval.getMontantInvesti();
+        this.enAvant = cheval.isEnAvant();
+        this.categorie = cheval.getCategorie().getTitreCategorie();
+        this.image = cheval.getImage();
         List<String> tagNameList = new ArrayList<>();
-        for ( Tag tag : projet.getTagList() ) {
+        for ( Tag tag : cheval.getTagList() ) {
             tagNameList.add( tag.getTag() );
         }
         this.tagList = tagNameList;
-        this.aimeList = new ArrayList<AimeDTO>();
-        for ( Aime aime : projet.getAimeList() ) {
-            aimeList.add( new AimeDTO( aime ) );
-        }
     }
 
     public int getIdProjet() {
@@ -99,14 +83,6 @@ public class TousLesProjetsDTO implements Serializable {
         this.butArgent = butArgent;
     }
 
-    public Calendar getDateFin() {
-        return dateFin;
-    }
-
-    public void setDateFin( Calendar dateFin ) {
-        this.dateFin = dateFin;
-    }
-
     public float getMontantInvesti() {
         return montantInvesti;
     }
@@ -121,14 +97,6 @@ public class TousLesProjetsDTO implements Serializable {
 
     public void setEnAvant( boolean enAvant ) {
         this.enAvant = enAvant;
-    }
-
-    public String getPorteur() {
-        return porteur;
-    }
-
-    public void setPorteur( String porteur ) {
-        this.porteur = porteur;
     }
 
     public String getCategorie() {
@@ -153,27 +121,5 @@ public class TousLesProjetsDTO implements Serializable {
 
     public void setImage( String image ) {
         this.image = image;
-    }
-
-    public List<AimeDTO> getAimeList() {
-        return aimeList;
-    }
-
-    public void setAimeList( List<AimeDTO> aimeList ) {
-        this.aimeList = aimeList;
-    }
-
-    public boolean isEnCours() {
-        return dateFin.after( Calendar.getInstance() );
-    }
-
-    /**
-     * Formate la date de fin du projet en un format compréhensible
-     * 
-     * @return
-     */
-    public String getFrenchDate() {
-        SimpleDateFormat formater = new SimpleDateFormat( "dd-MM-yyyy" );
-        return formater.format( dateFin.getTime() );
     }
 }

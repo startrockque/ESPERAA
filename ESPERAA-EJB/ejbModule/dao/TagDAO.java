@@ -106,7 +106,7 @@ public class TagDAO {
             String sqlString =
                     "SELECT TAGLIST_TAG  FROM "
                             + "(SELECT TAGLIST_TAG, COUNT(*) as nb "
-                            + "FROM TAG_PROJET  t "
+                            + "FROM TAG_CHEVAL  t "
                             + "GROUP BY t.TAGLIST_TAG "
                             + "ORDER BY nb DESC "
                             + "LIMIT ?1 )";

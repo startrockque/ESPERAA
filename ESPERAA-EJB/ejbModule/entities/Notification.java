@@ -82,7 +82,7 @@ public class Notification {
         return destinataire;
     }
 
-    public void setDestinataire( FinanceurPorteur destinataire ) {
+    public void setDestinataire( Donateur destinataire ) {
         this.destinataire = destinataire;
     }
 }

@@ -16,24 +16,26 @@ public class Categorie {
     private String       titreCategorie;
 
     @OneToMany( mappedBy = "categorie" )
-    private List<Projet> projetList;
+    private List<Cheval> chevauxList;
 
-    /* ************* *
-     * Constructeur *************
+    /* ************ *
+     * Constructeur *
+     * ************ *
      */
 
     public Categorie() {
 
     }
 
-    public Categorie( int idCategorie, String titreCategorie, List<Projet> projetList ) {
+    public Categorie( int idCategorie, String titreCategorie, List<Cheval> chevauxList ) {
         this.idCategorie = idCategorie;
         this.titreCategorie = titreCategorie;
-        this.projetList = projetList;
+        this.chevauxList = chevauxList;
     }
 
-    /* ***************** *
-     * Getter et Setter * *****************
+    /* **************** *
+     * Getter et Setter * 
+     * **************** *
      */
 
     public int getIdCategorie() {
@@ -52,12 +54,12 @@ public class Categorie {
         this.titreCategorie = titreCategorie;
     }
 
-    public List<Projet> getProjetList() {
-        return projetList;
+    public List<Cheval> getChevauxList() {
+        return chevauxList;
     }
 
-    public void setProjetList( List<Projet> projetList ) {
-        this.projetList = projetList;
+    public void setChevauxList( List<Cheval> chevauxList ) {
+        this.chevauxList = chevauxList;
     }
 
     @Override

@@ -21,8 +21,9 @@ public class Message implements Comparable<Message> {
     @ManyToOne
     private AUtilisateur emetteur;
 
-    /* ************* *
-     * Constructeur * *************
+    /* ************ *
+     * Constructeur * 
+     * ************ *
      */
 
     public Message() {
@@ -68,7 +69,7 @@ public class Message implements Comparable<Message> {
         return emetteur;
     }
 
-    public void setEmetteur( FinanceurPorteur emetteur ) {
+    public void setEmetteur( Donateur emetteur ) {
         this.emetteur = emetteur;
     }
 

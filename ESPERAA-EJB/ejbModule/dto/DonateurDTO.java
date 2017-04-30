@@ -3,25 +3,22 @@ package dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import entities.Aime;
-import entities.FinanceurPorteur;
+import entities.Donateur;
 import entities.Notification;
 
-public class FinanceurPorteurDTO extends AUtilisateurDTO {
+public class DonateurDTO extends AUtilisateurDTO {
     private static final long     serialVersionUID = 1L;
 
     private int                   montantAInvestir;
     private List<NotificationDTO> notificationList;
 
-    private List<AimeDTO>         aimeList;
 
-    public FinanceurPorteurDTO() {
+    public DonateurDTO() {
         super();
         notificationList = new ArrayList<NotificationDTO>();
-        aimeList = new ArrayList<AimeDTO>();
     }
 
-    public FinanceurPorteurDTO( FinanceurPorteur fp ) {
+    public DonateurDTO( Donateur fp ) {
         this.login = fp.getLogin();
         this.nom = fp.getNom();
         this.mdp = fp.getMdp();
@@ -30,10 +27,6 @@ public class FinanceurPorteurDTO extends AUtilisateurDTO {
         notificationList = new ArrayList<NotificationDTO>();
         for ( Notification notification : fp.getNotificationList() ) {
             notificationList.add( new NotificationDTO( notification ) );
-        }
-        this.aimeList = new ArrayList<AimeDTO>();
-        for ( Aime aime : fp.getAimeList() ) {
-            this.aimeList.add( new AimeDTO( aime ) );
         }
         this.image = fp.getImage();
     }
@@ -53,30 +46,4 @@ public class FinanceurPorteurDTO extends AUtilisateurDTO {
     public void setNotificationList( List<NotificationDTO> notificationList ) {
         this.notificationList = notificationList;
     }
-
-    public List<AimeDTO> getAimeList() {
-        return aimeList;
-    }
-
-    public void setAimeList( List<AimeDTO> aimeList ) {
-        this.aimeList = aimeList;
-    }
-
-    /**
-     * Donne le nombre de like du membre
-     * 
-     * @return
-     */
-    public int getNbAime() {
-        return aimeList.size();
-    }
-
-    public boolean aimeProjet( TousLesProjetsDTO projet ) {
-        for ( AimeDTO aime : this.aimeList ) {
-            if ( aime.getIdProjet() == projet.getIdProjet() )
-                return true;
-        }
-        return false;
-    }
-
 }

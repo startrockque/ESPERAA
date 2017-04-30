@@ -18,7 +18,7 @@ public class NotificationDAO {
     private EntityManager em;
 
     @EJB
-    private FinanceurDAO  financeurDAO;
+    private DonateurDAO  donateurDAO;
 
     /**
      * Créer une nouvelle Notification dans la BDD
@@ -80,19 +80,19 @@ public class NotificationDAO {
     }
 
     /**
-     * Recuperer les notifications dont loginFinanceur est le destinataire, et
-     * qui n'ont pas encore Ã©tÃ© consultÃ©es
+     * Recuperer les notifications dont loginDonateur est le destinataire, et
+     * qui n'ont pas encore été consultées
      * 
-     * @param loginFinanceur
+     * @param loginDonateur
      * @return
      * @throws DAOException
      */
     @SuppressWarnings( "unchecked" )
-    public List<Notification> findByFinanceurLogin( String loginFinanceur ) throws DAOException {
+    public List<Notification> findByDonateurLogin( String loginDonateur ) throws DAOException {
         try {
             String ejbql = "SELECT n FROM Notification n WHERE n.destinataire=?1 AND n.notificationVue=?2";
             Query query = em.createQuery( ejbql );
-            query.setParameter( "1", financeurDAO.findByLogin( loginFinanceur ) );
+            query.setParameter( "1", donateurDAO.findByLogin( loginDonateur ) );
             query.setParameter( "2", false );
             List<Notification> notifList = query.getResultList();
             if ( notifList.isEmpty() )

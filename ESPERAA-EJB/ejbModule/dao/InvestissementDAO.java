@@ -19,7 +19,7 @@ public class InvestissementDAO {
     private EntityManager em;
 
     @EJB
-    private FinanceurDAO  financeurDAO;
+    private DonateurDAO  donateurDAO;
 
     /**
      * Créer un Investissement en BDD
@@ -81,19 +81,19 @@ public class InvestissementDAO {
     }
 
     /**
-     * Trouver tous les Investissements d'un Financeur
+     * Trouver tous les Investissements d'un Donateur
      * 
-     * @param loginFinanceur
-     *            login du financeur
+     * @param loginDonateur
+     *            login du donateur
      * @return
      * @throws DAOException
      */
     @SuppressWarnings( "unchecked" )
-    public List<Investissement> findByFinanceur( String loginFinanceur ) throws DAOException {
+    public List<Investissement> findByDonateur( String loginDonateur ) throws DAOException {
         try {
-            String ejbql = "SELECT i FROM Investissement i WHERE i.financeur=?1";
+            String ejbql = "SELECT i FROM Investissement i WHERE i.donateur=?1";
             Query query = em.createQuery( ejbql );
-            query.setParameter( "1", financeurDAO.findByLogin( loginFinanceur ) );
+            query.setParameter( "1", donateurDAO.findByLogin( loginDonateur ) );
             List<Investissement> invList = query.getResultList();
             if ( invList.isEmpty() )
                 return new ArrayList<Investissement>();
@@ -105,12 +105,12 @@ public class InvestissementDAO {
     }
 
     /**
-     * Trouver le nombre d'Investissements en BDD
+     * Trouver le montant total d'Investissements en BDD
      * 
      * @return
      * @throws DAOException
      */
-    public int getSize() throws DAOException {
+    public int getTotal() throws DAOException {
         try {
             String sqlString = "SELECT SUM(SOMMEINVESTIE) FROM INVESTISSEMENT";
             Query query = em.createNativeQuery( sqlString );

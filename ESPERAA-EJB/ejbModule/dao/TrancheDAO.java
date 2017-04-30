@@ -10,7 +10,7 @@ import javax.persistence.TypedQuery;
 import entities.Tranche;
 
 /**
- * Class inspirï¿½ d'open class room
+ * Class inspirée d'open class room
  */
 @Stateless
 public class TrancheDAO {

@@ -8,18 +8,18 @@ public class InvestissementDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private int               idInvestissement;
-    private int               idProjet;
+    private int               idCheval;
     private int               sommeInvestie;
-    private String            financeur;
-    private String            titreProjet;
+    private String            donateur;
+    private String            nomCheval;
     private String            compensation;
 
     public InvestissementDTO( Investissement investissement ) {
         this.idInvestissement = investissement.getIdInvestissement();
-        this.idProjet = investissement.getTranche().getProjet().getIdProjet();
+        this.idCheval = investissement.getTranche().getCheval().getIdCheval();
         this.sommeInvestie = investissement.getSommeInvestie();
-        this.financeur = investissement.getFinanceur().getLogin();
-        this.titreProjet = investissement.getTranche().getProjet().getTitreProjet();
+        this.donateur = investissement.getDonateur().getLogin();
+        this.nomCheval = investissement.getTranche().getCheval().getNomCheval();
         this.compensation = investissement.getTranche().getCompensation();
     }
 
@@ -40,19 +40,19 @@ public class InvestissementDTO implements Serializable {
     }
 
     public String getFinanceur() {
-        return financeur;
+        return donateur;
     }
 
     public void setFinanceur( String financeur ) {
-        this.financeur = financeur;
+        this.donateur = financeur;
     }
 
-    public String getTitreProjet() {
-        return titreProjet;
+    public String getTitreCheval() {
+        return nomCheval;
     }
 
-    public void setTitreProjet( String titreProjet ) {
-        this.titreProjet = titreProjet;
+    public void setTitreCheval( String titreCheval ) {
+        this.nomCheval = titreCheval;
     }
 
     public String getCompensation() {
@@ -63,11 +63,11 @@ public class InvestissementDTO implements Serializable {
         this.compensation = compensation;
     }
 
-    public int getIdProjet() {
-        return idProjet;
+    public int getIdCheval() {
+        return idCheval;
     }
 
-    public void setIdProjet( int idProjet ) {
-        this.idProjet = idProjet;
+    public void setIdCheval( int idCheval ) {
+        this.idCheval = idCheval;
     }
 }

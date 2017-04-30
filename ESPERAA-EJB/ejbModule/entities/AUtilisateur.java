@@ -15,7 +15,7 @@ import javax.persistence.OneToMany;
  * 
  * @author Fabien
  * @see Admin
- * @see FinanceurPorteur
+ * @see Donateur
  */
 @Entity
 @Inheritance( strategy = InheritanceType.JOINED )
@@ -72,8 +72,9 @@ public abstract class AUtilisateur {
         notificationList = new ArrayList<Notification>();
     }
 
-    /* ***************** *
-     * Getter et Setter * *****************
+    /* **************** *
+     * Getter et Setter * 
+     * **************** *
      */
 
     public String getLogin() {

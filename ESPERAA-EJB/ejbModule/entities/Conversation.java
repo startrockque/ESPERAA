@@ -17,7 +17,7 @@ public class Conversation {
     private int           idConversation;
 
     @ManyToOne
-    private Projet        projet;
+    private Cheval        cheval;
 
     @ManyToOne
     private AUtilisateur  emetteur;
@@ -57,12 +57,12 @@ public class Conversation {
         this.messageList = messageList;
     }
 
-    public Projet getProjet() {
-        return projet;
+    public Cheval getCheval() {
+        return cheval;
     }
 
-    public void setProjet( Projet projet ) {
-        this.projet = projet;
+    public void setCheval( Cheval cheval ) {
+        this.cheval = cheval;
     }
 
     public AUtilisateur getEmetteur() {

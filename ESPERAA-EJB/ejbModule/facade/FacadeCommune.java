@@ -8,70 +8,70 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import dao.AdminDAO;
-import dao.AimeDAO;
 import dao.CategorieDao;
+import dao.ChevalDAO;
 import dao.ConversationDAO;
 import dao.DAOException;
-import dao.FinanceurDAO;
+import dao.DonateurDAO;
 import dao.MessageDAO;
-import dao.ProjetDAO;
 import dao.TagDAO;
 import dto.AUtilisateurDTO;
 import dto.AdminDTO;
 import dto.CategorieDTO;
-import dto.FinanceurPorteurDTO;
-import dto.ProjetDTO;
-import dto.TousLesProjetsDTO;
+import dto.ChevalDTO;
+import dto.DonateurDTO;
+import dto.TousLesChevauxDTO;
 import entities.AUtilisateur;
 import entities.Admin;
 import entities.Categorie;
+import entities.Cheval;
 import entities.Conversation;
-import entities.FinanceurPorteur;
-import entities.Investissement;
+import entities.Donateur;
 import entities.Message;
-import entities.Projet;
 import entities.Tag;
-import entities.Tranche;
 
 @Stateless
 public class FacadeCommune implements IFacadeCommune {
 
-    private static final String NOTIFICATION_PROJET_ABANDONNE         = " a abandonné le projet : ";
-    private static final String NOTIFICATION_PROJET_CLOTURE           = "Un administrateur a cloturé le projet : ";
-    private static final String NOTIFICATION_PROJET_CLOTURE_PORTEUR   = "Un administrateur a cloturé votre projet : ";
-    private static final String NOTIFICATION_MESSAGE                  = " a envoyé un message sur votre projet ";
     private static final String NOTIFICATION_MESSAGE_SUPPRIME         = "Un administrateur a supprimé votre commentaire ";
-    private static final String NOTIFICATION_MESSAGE_SUPPRIME_PORTEUR = "Un administrateur a supprimé un commentaire sur votre projet";
 
     @EJB
-    private ProjetDAO           projetDao;
+    private ChevalDAO           chevalDao;
     @EJB
     private CategorieDao        categorieDao;
     @EJB
     private AdminDAO            adminDao;
     @EJB
-    private FinanceurDAO        financeurDao;
+    private DonateurDAO         donateurDao;
     @EJB
     private TagDAO              tagDao;
     @EJB
     private ConversationDAO     conversationDao;
     @EJB
     private MessageDAO          messageDao;
-    @EJB
-    private AimeDAO             aimeDAO;
 
     /****************/
     // Recherche //
     /****************/
 
     @Override
-    public List<TousLesProjetsDTO> rechercherParTitre( String titreProjet ) {
+    public ChevalDTO findChevalById( int idCheval ) {
         try {
-            List<TousLesProjetsDTO> projetDtoList = new ArrayList<>();
-            for ( Projet projet : projetDao.findAllByTitre( titreProjet ) ) {
-                projetDtoList.add( new TousLesProjetsDTO( projet ) );
+            return new ChevalDTO( chevalDao.findById( idCheval ) );
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    @Override
+    public List<TousLesChevauxDTO> rechercherParNom( String nomCheval ) {
+        try {
+            List<TousLesChevauxDTO> chevalDtoList = new ArrayList<>();
+            for ( Cheval cheval : chevalDao.findAllByName( nomCheval ) ) {
+                chevalDtoList.add( new TousLesChevauxDTO( cheval ) );
             }
-            return projetDtoList;
+            return chevalDtoList;
         } catch ( DAOException e ) {
             e.printStackTrace();
             return null;
@@ -79,107 +79,52 @@ public class FacadeCommune implements IFacadeCommune {
     }
 
     @Override
-    public List<TousLesProjetsDTO> rechercherParCatgeorie( String categorie ) {
+    public List<TousLesChevauxDTO> rechercherParCategorie( String categorie ) {
         try {
-            List<TousLesProjetsDTO> projetDtoList = new ArrayList<TousLesProjetsDTO>();
-            for ( Projet projet : projetDao.findByCategorie( categorie ) ) {
-                projetDtoList.add( new TousLesProjetsDTO( projet ) );
+            List<TousLesChevauxDTO> chevalDtoList = new ArrayList<TousLesChevauxDTO>();
+            for ( Cheval cheval : chevalDao.findByCategorie( categorie ) ) {
+                chevalDtoList.add( new TousLesChevauxDTO( cheval ) );
             }
-            return projetDtoList;
+            return chevalDtoList;
         } catch ( DAOException e ) {
             e.printStackTrace();
             return null;
         }
     }
 
-    @Override
-    public List<TousLesProjetsDTO> rechercherParPorteur( String loginPorteur ) {
-        try {
-            List<TousLesProjetsDTO> projetDtoList = new ArrayList<TousLesProjetsDTO>();
-            for ( Projet projet : projetDao.findByPorteurLogin( loginPorteur ) ) {
-                projetDtoList.add( new TousLesProjetsDTO( projet ) );
-            }
-            return projetDtoList;
-        } catch ( DAOException e ) {
-            e.printStackTrace();
-            return new ArrayList<TousLesProjetsDTO>();
-        }
-    }
 
     @Override
-    public List<TousLesProjetsDTO> rechercherParTag( String tagString ) {
+    public List<TousLesChevauxDTO> rechercherParTag( String tagString ) {
         try {
             if ( tagString != null ) {
                 String[] tagNameTab = tagString.split( " " );
-                List<TousLesProjetsDTO> projetDTOList = new ArrayList<TousLesProjetsDTO>();
-                List<Projet> projetList = projetDao.findByTag( tagNameTab );
-                for ( Projet projet : projetList ) {
-                    projetDTOList.add( new TousLesProjetsDTO( projet ) );
+                List<TousLesChevauxDTO> chevalDTOList = new ArrayList<TousLesChevauxDTO>();
+                List<Cheval> chevalList = chevalDao.findByTag( tagNameTab );
+                for ( Cheval cheval : chevalList ) {
+                    chevalDTOList.add( new TousLesChevauxDTO( cheval ) );
                 }
-                return projetDTOList;
+                return chevalDTOList;
             }
         } catch ( DAOException e ) {
             e.printStackTrace();
         }
-        return new ArrayList<TousLesProjetsDTO>();
+        return new ArrayList<TousLesChevauxDTO>();
     }
 
     @Override
-    public List<TousLesProjetsDTO> rechercherParTitreCatgeorie( String titreProjet, String categorie ) {
+    public List<TousLesChevauxDTO> rechercherParNomCategorie( String nomCheval, String categorie ) {
         try {
-            List<TousLesProjetsDTO> projetDtoList = new ArrayList<TousLesProjetsDTO>();
-            for ( Projet projet : projetDao.findByTitreCategorie( titreProjet, categorie ) ) {
-                projetDtoList.add( new TousLesProjetsDTO( projet ) );
+            List<TousLesChevauxDTO> chevalDtoList = new ArrayList<TousLesChevauxDTO>();
+            for ( Cheval cheval : chevalDao.findByNomCategorie( nomCheval, categorie ) ) {
+                chevalDtoList.add( new TousLesChevauxDTO( cheval ) );
             }
-            return projetDtoList;
+            return chevalDtoList;
         } catch ( DAOException e ) {
             e.printStackTrace();
         }
         return null;
     }
 
-    @Override
-    public List<TousLesProjetsDTO> rechercherParTitreNom( String titreProjet, String loginPorteur ) {
-        try {
-            List<TousLesProjetsDTO> projetDtoList = new ArrayList<TousLesProjetsDTO>();
-            for ( Projet projet : projetDao.findByTitreNom( titreProjet, loginPorteur ) ) {
-                projetDtoList.add( new TousLesProjetsDTO( projet ) );
-            }
-            return projetDtoList;
-        } catch ( DAOException e ) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public List<TousLesProjetsDTO> rechercherParCatgeorieNom( String categorie, String loginPorteur ) {
-        try {
-            List<TousLesProjetsDTO> projetDtoList = new ArrayList<TousLesProjetsDTO>();
-            for ( Projet projet : projetDao.findByCategorieNom( categorie, loginPorteur ) ) {
-                projetDtoList.add( new TousLesProjetsDTO( projet ) );
-            }
-            return projetDtoList;
-        } catch ( DAOException e ) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public List<TousLesProjetsDTO> rechercherParTitreCatgeorieNom( String titreProjet, String categorie,
-            String loginPorteur ) {
-        try {
-            List<TousLesProjetsDTO> projetDtoList = new ArrayList<TousLesProjetsDTO>();
-            for ( Projet projet : projetDao.findByTitreCategorieNom( titreProjet, categorie, loginPorteur ) ) {
-                projetDtoList.add( new TousLesProjetsDTO( projet ) );
-            }
-            return projetDtoList;
-        } catch ( DAOException e ) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     /****************/
     // Categories //
@@ -219,17 +164,17 @@ public class FacadeCommune implements IFacadeCommune {
     }
 
     /****************/
-    // Projets //
+    // Chevaux //
     /****************/
 
     @Override
-    public List<TousLesProjetsDTO> recupererTousLesProjets() {
+    public List<TousLesChevauxDTO> recupererTousLesChevaux() {
         try {
-            List<TousLesProjetsDTO> projetDtoList = new ArrayList<TousLesProjetsDTO>();
-            for ( Projet projet : projetDao.findAll() ) {
-                projetDtoList.add( new TousLesProjetsDTO( projet ) );
+            List<TousLesChevauxDTO> chevalDtoList = new ArrayList<TousLesChevauxDTO>();
+            for ( Cheval cheval : chevalDao.findAll() ) {
+                chevalDtoList.add( new TousLesChevauxDTO( cheval ) );
             }
-            return projetDtoList;
+            return chevalDtoList;
         } catch ( DAOException e ) {
             e.printStackTrace();
             return null;
@@ -237,9 +182,9 @@ public class FacadeCommune implements IFacadeCommune {
     }
 
     @Override
-    public List<String> recupererTousLesTitresDesProjets() {
+    public List<String> recupererTousLesNomsDesChevaux() {
         try {
-            return projetDao.findAllTitles();
+            return chevalDao.findAllName();
         } catch ( DAOException e ) {
             e.printStackTrace();
             return null;
@@ -247,13 +192,13 @@ public class FacadeCommune implements IFacadeCommune {
     }
 
     @Override
-    public List<TousLesProjetsDTO> recupererProjetsEnAvant() {
+    public List<TousLesChevauxDTO> recupererChevauxEnAvant() {
         try {
-            List<TousLesProjetsDTO> projetDtoList = new ArrayList<TousLesProjetsDTO>();
-            for ( Projet projet : projetDao.findEnAvant() ) {
-                projetDtoList.add( new TousLesProjetsDTO( projet ) );
+            List<TousLesChevauxDTO> chevalDtoList = new ArrayList<TousLesChevauxDTO>();
+            for ( Cheval cheval : chevalDao.findEnAvant() ) {
+                chevalDtoList.add( new TousLesChevauxDTO( cheval ) );
             }
-            return projetDtoList;
+            return chevalDtoList;
         } catch ( DAOException e ) {
             e.printStackTrace();
             return null;
@@ -261,23 +206,13 @@ public class FacadeCommune implements IFacadeCommune {
     }
 
     @Override
-    public ProjetDTO findProjetById( int idProjet ) {
+    public ChevalDTO findChevalDTOById( int idCheval ) {
         try {
-            return new ProjetDTO( projetDao.findById( idProjet ) );
-        } catch ( DAOException e ) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @Override
-    public ProjetDTO findProjetDTOById( int idProjet ) {
-        try {
-            Projet projet = projetDao.findById( idProjet );
-            for ( Conversation conversation : projet.getConversationList() )
+            Cheval cheval = chevalDao.findById( idCheval );
+            for ( Conversation conversation : cheval.getConversationList() )
                 Collections.sort( conversation.getMessageList() );
-            ProjetDTO projetDto = new ProjetDTO( projet );
-            return projetDto;
+            ChevalDTO chevalDto = new ChevalDTO( cheval );
+            return chevalDto;
         } catch ( DAOException e ) {
             e.printStackTrace();
             return null;
@@ -285,57 +220,13 @@ public class FacadeCommune implements IFacadeCommune {
     }
 
     @Override
-    public void cloturerProjet( int idProjet, boolean admin ) {
+    public List<TousLesChevauxDTO> recupererChevauxRecents( int nbCheval ) {
         try {
-            Projet projet = projetDao.findById( idProjet );
-            int montantARembourser;
-            int montantAInvestir;
-            for ( Tranche tranche : projet.getTrancheList() ) {
-                for ( Investissement investissement : tranche.getInvestissementList() ) {
-                    montantARembourser = investissement.getSommeInvestie();
-                    montantAInvestir = investissement.getFinanceur().getMontantAInvestir();
-                    investissement.getFinanceur().setMontantAInvestir( montantARembourser + montantAInvestir );
-                    String notificationText = null;
-                    if ( admin ) {
-                        notificationText = NOTIFICATION_PROJET_CLOTURE
-                                + projet.getTitreProjet();
-                    } else {
-                        notificationText = projet.getPorteur().getLogin()
-                                + NOTIFICATION_PROJET_ABANDONNE
-                                + projet.getTitreProjet();
-                    }
-                    investissement.getFinanceur().addNotification( notificationText );
-                }
+            List<TousLesChevauxDTO> chevalList = new ArrayList<TousLesChevauxDTO>();
+            for ( Cheval cheval : chevalDao.findLastHorses( nbCheval ) ) {
+                chevalList.add( new TousLesChevauxDTO( cheval ) );
             }
-            if ( admin ) {
-                String notificationText = NOTIFICATION_PROJET_CLOTURE_PORTEUR
-                        + projet.getTitreProjet();
-                projet.getPorteur().addNotification( notificationText );
-            }
-            projetDao.delete( projet );
-        } catch ( DAOException e ) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public int nombreAimeProjet( int idProjet ) {
-        try {
-            return projetDao.howManyLikeOnProject( idProjet );
-        } catch ( DAOException e ) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
-
-    @Override
-    public List<TousLesProjetsDTO> recupererProjetsRecents( int nbProjet ) {
-        try {
-            List<TousLesProjetsDTO> projetList = new ArrayList<TousLesProjetsDTO>();
-            for ( Projet projet : projetDao.findLastProjects( nbProjet ) ) {
-                projetList.add( new TousLesProjetsDTO( projet ) );
-            }
-            return projetList;
+            return chevalList;
         } catch ( DAOException e ) {
             e.printStackTrace();
             return null;
@@ -343,58 +234,31 @@ public class FacadeCommune implements IFacadeCommune {
     }
 
     @Override
-    public List<TousLesProjetsDTO> recupererProjetsPresqueFinances( int nbProjet ) {
-        List<TousLesProjetsDTO> projetList = new ArrayList<TousLesProjetsDTO>();
+    public List<TousLesChevauxDTO> recupererChevauxPresqueFinances( int nbCheval ) {
+        List<TousLesChevauxDTO> chevalList = new ArrayList<TousLesChevauxDTO>();
         try {
-            for ( Projet projet : projetDao.findAlmostFinancedProjects( nbProjet ) ) {
-                projetList.add( new TousLesProjetsDTO( projet ) );
+            for ( Cheval cheval : chevalDao.findAlmostFinancedHorses( nbCheval ) ) {
+                chevalList.add( new TousLesChevauxDTO( cheval ) );
             }
         } catch ( DAOException e ) {
             e.printStackTrace();
         }
-        return projetList;
+        return chevalList;
     }
 
     @Override
-    public List<TousLesProjetsDTO> recupererProjetsPlusFinances( int nbProjet ) {
-        List<TousLesProjetsDTO> projetList = new ArrayList<TousLesProjetsDTO>();
+    public List<TousLesChevauxDTO> recupererChevauxPlusFinances( int nbCheval ) {
+        List<TousLesChevauxDTO> chevalList = new ArrayList<TousLesChevauxDTO>();
         try {
-            for ( Projet projet : projetDao.findMostFinancedProjets( nbProjet ) ) {
-                projetList.add( new TousLesProjetsDTO( projet ) );
+            for ( Cheval cheval : chevalDao.findMostFinancedHorses( nbCheval ) ) {
+                chevalList.add( new TousLesChevauxDTO( cheval ) );
             }
         } catch ( DAOException e ) {
             e.printStackTrace();
         }
-        return projetList;
+        return chevalList;
     }
 
-    @Override
-    public List<TousLesProjetsDTO> recupererTousLesProjetsEnCours() {
-        try {
-            List<Projet> listProjets = projetDao.findAllEnCours();
-            List<TousLesProjetsDTO> projetDtoList = new ArrayList<TousLesProjetsDTO>();
-            for ( Projet projet : listProjets ) {
-                projetDtoList.add( new TousLesProjetsDTO( projet ) );
-            }
-            return projetDtoList;
-        } catch ( DAOException e ) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @Override
-    public List<TousLesProjetsDTO> recupererProjetsPlusAimes( int nbProjet ) {
-        List<TousLesProjetsDTO> projetList = new ArrayList<TousLesProjetsDTO>();
-        try {
-            for ( Projet projet : projetDao.findMostLikedProjects( nbProjet ) ) {
-                projetList.add( new TousLesProjetsDTO( projet ) );
-            }
-        } catch ( DAOException e ) {
-            e.printStackTrace();
-        }
-        return projetList;
-    }
 
     /****************/
     // Membres //
@@ -406,11 +270,11 @@ public class FacadeCommune implements IFacadeCommune {
             AUtilisateur utilisateur = adminDao.findByLogin( login );
             AUtilisateurDTO utilisateurDto = null;
             if ( utilisateur == null ) {
-                utilisateur = financeurDao.findByLogin( login );
+                utilisateur = donateurDao.findByLogin( login );
                 if ( utilisateur == null ) {
                     return null;
                 } else {
-                    utilisateurDto = new FinanceurPorteurDTO( (FinanceurPorteur) utilisateur );
+                    utilisateurDto = new DonateurDTO( (Donateur) utilisateur );
                 }
             } else {
                 utilisateurDto = new AdminDTO( (Admin) utilisateur );
@@ -425,24 +289,9 @@ public class FacadeCommune implements IFacadeCommune {
     }
 
     @Override
-    public List<TousLesProjetsDTO> recupererMesProjets( String loginPorteur ) {
+    public List<String> recupererTousLesNomsDeDonateurs() {
         try {
-            List<Projet> mesProjetList = projetDao.findByLoginPorteur( loginPorteur );
-            List<TousLesProjetsDTO> mesProjetDtoList = new ArrayList<TousLesProjetsDTO>();
-            for ( Projet projet : mesProjetList ) {
-                mesProjetDtoList.add( new TousLesProjetsDTO( projet ) );
-            }
-            return mesProjetDtoList;
-        } catch ( DAOException e ) {
-            e.printStackTrace();
-        }
-        return new ArrayList<TousLesProjetsDTO>();
-    }
-
-    @Override
-    public List<String> recupererTousLesNomsDeFinanceurs() {
-        try {
-            return financeurDao.findAllLogins();
+            return donateurDao.findAllLogins();
         } catch ( DAOException e ) {
             e.printStackTrace();
         }
@@ -450,13 +299,13 @@ public class FacadeCommune implements IFacadeCommune {
     }
 
     @Override
-    public FinanceurPorteurDTO findFinanceurDTOByLogin( String login ) {
+    public DonateurDTO findDonateurDTOByLogin( String login ) {
         try {
-            FinanceurPorteur membre = financeurDao.findByLogin( login );
+            Donateur membre = donateurDao.findByLogin( login );
             if ( membre == null ) {
                 return null;
             } else {
-                return new FinanceurPorteurDTO( membre );
+                return new DonateurDTO( membre );
             }
         } catch ( DAOException e ) {
             e.printStackTrace();
@@ -479,22 +328,15 @@ public class FacadeCommune implements IFacadeCommune {
     /****************/
 
     @Override
-    public void envoyerMessage( String loginEmetteur, int idProjet, String contenuMessage ) {
+    public void envoyerMessage( String loginEmetteur, int idCheval, String contenuMessage ) {
         try {
-            AUtilisateur emetteur = financeurDao.findByLogin( loginEmetteur );
+            AUtilisateur emetteur = donateurDao.findByLogin( loginEmetteur );
             if ( emetteur == null ) {
                 emetteur = adminDao.findByLogin( loginEmetteur );
             }
-            Projet projet = projetDao.findById( idProjet );
-            projet.creerConversation( emetteur, contenuMessage );
-            if ( !projet.getPorteur().getLogin().equals( emetteur.getLogin() ) ) {
-                String notificationText = emetteur.getLogin()
-                        + NOTIFICATION_MESSAGE
-                        + projet.getTitreProjet() + " : "
-                        + contenuMessage;
-
-                projet.getPorteur().addNotification( notificationText );
-            }
+            Cheval cheval = chevalDao.findById( idCheval );
+            cheval.creerConversation( emetteur, contenuMessage );
+            //TODO avertir admin
         } catch ( DAOException e ) {
             e.printStackTrace();
         }
@@ -504,40 +346,32 @@ public class FacadeCommune implements IFacadeCommune {
     public void repondreMessage( String loginEmetteur, int idConversation, String message ) {
         try {
             Conversation conversation = conversationDao.findById( idConversation );
-            AUtilisateur emetteur = financeurDao.findByLogin( loginEmetteur );
+            AUtilisateur emetteur = donateurDao.findByLogin( loginEmetteur );
             if ( emetteur == null ) {
                 emetteur = adminDao.findByLogin( loginEmetteur );
             }
-            Projet projet = conversation.getProjet();
             conversation.repondreConversation( emetteur, message );
-            if ( !emetteur.getLogin().equals( projet.getPorteur().getLogin() ) ) {
-                String notificationText = emetteur.getLogin()
-                        + NOTIFICATION_MESSAGE
-                        + projet.getTitreProjet() + " : "
-                        + message;
-
-                projet.getPorteur().addNotification( notificationText );
-            }
+            //TODO avertir admin
         } catch ( DAOException e ) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void supprimerMessage( int idMessage, int idConversation, int idProjet, boolean admin ) {
+    public void supprimerMessage( int idMessage, int idConversation, int idCheval, boolean admin ) {
         try {
             Message message = messageDao.findById( idMessage );
             Conversation conversation = conversationDao.findById( idConversation );
-            Projet projet = projetDao.findById( idProjet );
+            Cheval cheval = chevalDao.findById( idCheval );
             Collections.sort( conversation.getMessageList() );
             if ( admin ) {
                 String notificationSuppression = NOTIFICATION_MESSAGE_SUPPRIME
-                        + " (dans  " + projet.getTitreProjet() + ")";
+                        + " (dans  " + cheval.getNomCheval() + ")";
                 if ( conversation.getMessageList().get( 0 ).equals( message ) ) {
                     for ( Message mess : conversation.getMessageList() ) {
                         mess.getEmetteur().addNotification( notificationSuppression );
                     }
-                    projet.removeConversation( conversation );
+                    cheval.removeConversation( conversation );
                     conversationDao.delete( conversation );
                 }
                 else {
@@ -545,12 +379,9 @@ public class FacadeCommune implements IFacadeCommune {
                     conversation.removeMessage( message );
                     conversationDao.delete( conversation );
                 }
-                String notificationSuppressionPorteur = NOTIFICATION_MESSAGE_SUPPRIME_PORTEUR
-                        + " (dans  " + projet.getTitreProjet() + ")";
-                projet.getPorteur().addNotification( notificationSuppressionPorteur );
             } else {
                 if ( conversation.getMessageList().get( 0 ).equals( message ) ) {
-                    projet.removeConversation( conversation );
+                    cheval.removeConversation( conversation );
                     conversationDao.delete( conversation );
                 }
                 else {

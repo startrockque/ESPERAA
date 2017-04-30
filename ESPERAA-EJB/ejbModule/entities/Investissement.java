@@ -13,7 +13,7 @@ public class Investissement {
     private int              idInvestissement;
     private int              sommeInvestie;
     @ManyToOne
-    private FinanceurPorteur financeur;
+    private Donateur donateur;
     @ManyToOne
     private Tranche          tranche;
 
@@ -25,13 +25,14 @@ public class Investissement {
 
     }
 
-    public Investissement( int sommeInvestie, FinanceurPorteur financeur ) {
+    public Investissement( int sommeInvestie, Donateur financeur ) {
         this.sommeInvestie = sommeInvestie;
-        this.financeur = financeur;
+        this.donateur = financeur;
     }
 
-    /* ***************** *
-     * Getter et Setter * *****************
+    /* **************** *
+     * Getter et Setter *
+     * **************** *
      */
 
     public int getIdInvestissement() {
@@ -50,12 +51,12 @@ public class Investissement {
         this.sommeInvestie = sommeInvestie;
     }
 
-    public FinanceurPorteur getFinanceur() {
-        return financeur;
+    public Donateur getDonateur() {
+        return donateur;
     }
 
-    public void setFinanceur( FinanceurPorteur financeur ) {
-        this.financeur = financeur;
+    public void setDonateur( Donateur donateur ) {
+        this.donateur = donateur;
     }
 
     public Tranche getTranche() {

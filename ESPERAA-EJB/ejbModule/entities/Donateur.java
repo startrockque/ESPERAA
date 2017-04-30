@@ -1,36 +1,30 @@
 package entities;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 
 @Entity
-public class FinanceurPorteur extends AUtilisateur {
+public class Donateur extends AUtilisateur {
 
     private int        montantAInvestir;
 
-    @OneToMany( mappedBy = "financeur", cascade = { CascadeType.PERSIST, CascadeType.REMOVE } )
-    private List<Aime> aimeList;
 
-    /* ************* *
-     * Constructeur *************
+    /* ************ *
+     * Constructeur *
+     * ************ *
      */
 
-    public FinanceurPorteur() {
+    public Donateur() {
         super();
         montantAInvestir = 0;
         notificationList = new ArrayList<Notification>();
-        aimeList = new ArrayList<Aime>();
     }
 
-    public FinanceurPorteur( String nom, String login, String mdp, String email, String image ) {
+    public Donateur( String nom, String login, String mdp, String email, String image ) {
         super( nom, login, mdp, email, image );
         montantAInvestir = 0;
         notificationList = new ArrayList<Notification>();
-        aimeList = new ArrayList<Aime>();
     }
 
     public void alimenterPortefeuille( int montantACrediter ) {
@@ -40,13 +34,6 @@ public class FinanceurPorteur extends AUtilisateur {
         this.montantAInvestir = sommeInteger;
     }
 
-    public void aimerProjet( Projet projet ) {
-        Aime aime = new Aime();
-        aime.setFinanceur( this );
-        this.aimeList.add( aime );
-        aime.setProjet( projet );
-        projet.getAimeList().add( aime );
-    }
 
     /* ***************** *
      * Getter et Setter * *****************
@@ -66,13 +53,5 @@ public class FinanceurPorteur extends AUtilisateur {
 
     public void setMontantAInvestir( int montantAInvestir ) {
         this.montantAInvestir = montantAInvestir;
-    }
-
-    public List<Aime> getAimeList() {
-        return aimeList;
-    }
-
-    public void setAimeList( List<Aime> aimeList ) {
-        this.aimeList = aimeList;
     }
 }

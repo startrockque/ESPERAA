@@ -9,12 +9,12 @@ public class CategorieDTO implements Serializable {
 
     private int               idCategorie;
     private String            titreCategorie;
-    private int               nbProjets;
+    private int               nbChevaux;
 
     public CategorieDTO( Categorie categorie ) {
         this.idCategorie = categorie.getIdCategorie();
         this.titreCategorie = categorie.getTitreCategorie();
-        this.nbProjets = categorie.getProjetList().size();
+        this.nbChevaux = categorie.getChevauxList().size();
     }
 
     public int getIdCategorie() {
@@ -33,11 +33,11 @@ public class CategorieDTO implements Serializable {
         this.titreCategorie = titreCategorie;
     }
 
-    public int getNbProjets() {
-        return nbProjets;
+    public int getNbChevaux() {
+        return nbChevaux;
     }
 
-    public void setNbProjets( int nbProjets ) {
-        this.nbProjets = nbProjets;
+    public void setNbChevaux( int nbChevaux ) {
+        this.nbChevaux = nbChevaux;
     }
 }

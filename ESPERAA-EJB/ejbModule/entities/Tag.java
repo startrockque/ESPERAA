@@ -13,15 +13,15 @@ public class Tag {
     private String       tag;
 
     @ManyToMany
-    private List<Projet> projetList;
+    private List<Cheval> chevauxList;
 
     public Tag() {
-        projetList = new ArrayList<Projet>();
+        chevauxList = new ArrayList<Cheval>();
     }
 
     public Tag( String tag ) {
         this.tag = tag;
-        projetList = new ArrayList<Projet>();
+        chevauxList = new ArrayList<Cheval>();
     }
 
     public String getTag() {
@@ -32,12 +32,12 @@ public class Tag {
         this.tag = tag;
     }
 
-    public List<Projet> getProjeList() {
-        return projetList;
+    public List<Cheval> getChevauxList() {
+        return chevauxList;
     }
 
-    public void setProjetList( List<Projet> projet ) {
-        this.projetList = projet;
+    public void setChevalList( List<Cheval> chevaux ) {
+        this.chevauxList = chevaux;
     }
 
     @Override

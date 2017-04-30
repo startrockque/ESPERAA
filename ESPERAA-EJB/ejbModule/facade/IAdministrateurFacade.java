@@ -3,7 +3,8 @@ package facade;
 import java.util.List;
 
 import dao.DAOException;
-import dto.FinanceurPorteurMinDTO;
+import dto.DonateurMinDTO;
+import dto.TrancheDTO;
 
 public interface IAdministrateurFacade {
 
@@ -35,36 +36,69 @@ public interface IAdministrateurFacade {
     int recupererNbCategories();
 
     /****************/
-    // Projet //
+    // Cheval //
     /****************/
 
     /**
-     * Mise en avant d'un projet
+     * Mise en avant d'un cheval
      * 
-     * @param idProjet
+     * @param idCheval
      */
-    void mettreEnAvant( int idProjet );
+    void mettreEnAvant( int idCheval );
 
     /**
-     * Mise en arriï¿½re d'un projet
+     * Mise en arrière d'un cheval
      * 
-     * @param idProjet
+     * @param idCheval
      */
-    void mettreEnArriere( int idProjet );
+    void mettreEnArriere( int idCheval );
 
     /**
-     * Provoque l'abandon d'un projet
+     * Récupère le nombre de chevaux
      * 
-     * @param idProjet
+     * @return le nombre de chevaux
      */
-    void cloturerProjet( int idProjet );
+    int recupererNbChevaux();
+    
+    /**
+     * Ajoute un cheval à la BDD
+     * 
+     * @param nom
+     * @param description
+     * @param butArgent
+     * @param montantDemande
+     * @param titreCategorie
+     * @param tagString
+     * @param trancheDtoList
+     * @param image
+     */
+    void ajouterCheval( String nom, String description, String butArgent,
+            int montantDemande, String titreCategorie, String tagString,
+            List<TrancheDTO> trancheDTOList, String image );
 
     /**
-     * Récupère le nombre de projets
+     * Modifier les attributs d'un cheval
      * 
-     * @return le nombre de projets
+     * @param idCheval
+     * @param nom
+     * @param description
+     * @param butArgent
+     * @param montantDemande
+     * @param titreCategorie
+     * @param tagString
+     * @param trancheDTOList
+     * @param image
      */
-    int recupererNbProjets();
+    void modifierCheval( int idCheval, String nom, String description,
+            String butArgent, int montantDemande, String titreCategorie,
+            String tagString, List<TrancheDTO> trancheDTOList, String image );
+
+    /**
+     * Retirer un cheval
+     * 
+     * @param idCheval
+     */
+    void supprimerCheval( int idCheval );
 
     /****************/
     // Membres //
@@ -76,7 +110,7 @@ public interface IAdministrateurFacade {
      * @return
      * @throws DAOException
      */
-    List<FinanceurPorteurMinDTO> recupererTousLesMembres();
+    List<DonateurMinDTO> recupererTousLesMembres();
 
     /****************/
     // Compteurs //
@@ -90,13 +124,6 @@ public interface IAdministrateurFacade {
     int recupererNbMembres();
 
     /**
-     * Récupère le nombre de like
-     * 
-     * @return le nombre de like
-     */
-    int recupererNbAimes();
-
-    /**
      * Récupère le nombre de messages
      * 
      * @return le nombre de messages
@@ -104,11 +131,11 @@ public interface IAdministrateurFacade {
     int recupererNbMessages();
 
     /**
-     * Récupère le nombre d'investissements
+     * Récupère le total d'investissements
      * 
-     * @return le nombre de investissements
+     * @return le total de investissements
      */
-    int recupererNbInvestissements();
+    int recupererTotalInvestissements();
 
     /**
      * Récupère le nombre de tags
