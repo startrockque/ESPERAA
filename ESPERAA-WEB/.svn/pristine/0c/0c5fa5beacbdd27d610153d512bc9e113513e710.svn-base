@@ -1,0 +1,88 @@
+/*!
+ * Start Bootstrap - Shop Item HTML Template (http://startbootstrap.com)
+ * Code licensed under the Apache License v2.0.
+ * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ */
+
+body {
+    padding-top: 70px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+}
+
+.thumbnail img {
+    width: 100%;
+}
+
+.ratings {
+    padding-right: 10px;
+    padding-left: 10px;
+    color: #d17581;
+}
+
+.thumbnail {
+    padding: 0;
+}
+
+.thumbnail .caption-full {
+    padding: 9px;
+    color: #333;
+}
+
+.caption-full > div{
+	border: 1px solid #E3E3E3;
+	border-radius : 4px;
+	margin-left: 5%;
+	margin-right: 5%;
+	padding: 1%;
+}
+
+.gestionProjetAdmin{
+	background-color: #E3E3E3;
+	height: 50px;
+	padding: 10px;
+	border-radius: 8px;
+}
+
+.gestionProjet {
+	background-color: #E3E3E3;
+	height: 100px;
+	padding: 5px;
+	border-radius: 8px;
+}
+
+.gestionProjet > form {
+	margin-bottom: 34px;
+}
+
+.btnMarginTop {
+	margin-top: 5px;
+}
+
+.greyBack {
+	background-color: #F5EBFF;
+}
+
+.blueBack {
+	background-color: #fff;
+}
+
+.conversation {
+	padding : 2%;
+	background-color: #fff;
+	border-radius: 4px;
+	margin-left: 5%;
+	margin-right: 5%;
+}
+
+.reponses {
+	border-left: 2px solid #e3e3e3;
+	padding: 1%;
+	margin-left: 5%;
+}
+
+.lightMarginBottom {
+	margin-bottom: 3px;
+}
+
+footer {
+    margin: 50px 0;
+}

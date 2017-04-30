@@ -1,0 +1,57 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<c:if test="${empty listeProjets}">
+	<i>Aucun projet trouvé</i>
+	<form action="Accueil" method="get">
+		<input type="submit" value="Voir tous"> 
+	</form>
+</c:if>
+<c:if test="${!empty listeProjets}">
+	<c:forEach var="projet" items="${listeProjets}">
+		<c:url value="/Admin/AfficherProjet" var="afficherProjet"> 
+			<c:param name="idProjet" value="${projet.idProjet}"/>
+		</c:url>
+		<div class="col-sm-4 col-lg-4 col-md-4">
+			<div class="thumbnail">
+				<a href="${afficherProjet}">
+	    			<c:choose>
+					    <c:when test="${empty projet.image}">
+					        <img height="150" width="320" src="http://lookmag.look-voyages.fr/wp-content/photos/maldives.jpg" alt="">
+					    </c:when>
+					    <c:otherwise>
+					        <img height="150" width="320" src="<c:url value="/images/${ projet.image }"/>" alt="">
+					    </c:otherwise>
+					</c:choose>
+	    		</a>
+	    		<div class="caption">
+					<c:if test="${not projet.enAvant}">
+						<form action="MettreEnAvant" method="post">
+							<input type="hidden" name="idProjet" value="${projet.idProjet}">
+							<input type="submit" name="mea" value="Mettre en avant" class="btn btn-primary btn-success pull-right"/>
+						</form>
+					</c:if>
+					<c:if test="${projet.enAvant}">
+						<form action="MettreEnAvant" method="post">
+							<input type="hidden" name="idProjet" value="${projet.idProjet}">
+							<input type="submit" name="mea" value="Mettre en arriere" class="btn btn-primary btn-danger pull-right" />
+						</form>
+					</c:if>
+					<h4><a href="<c:out value="${afficherProjet}" />"> <c:out value="${projet.titreProjet}"/></a></h4>
+					<p><c:out value="${projet.butArgent}" /></p>
+				</div>
+				<div class="ratings">
+	    			<p class="pull-right">Fin : <c:out value="${projet.frenchDate}"/></p>
+					<p>Fonds : 	<fmt:formatNumber type="number" pattern="##.##" 
+						value="${projet.montantInvesti*100/projet.montantDemande}" />%</p>
+					<div class="progress">
+						<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${projet.montantInvesti}" 
+							aria-valuemin="0" aria-valuemax="${projet.montantDemande}" style="width:${projet.montantInvesti*100/projet.montantDemande}%">
+				   	 		<fmt:formatNumber type="number" pattern="##.##" value="${projet.montantInvesti*100/projet.montantDemande}" />%
+					  	</div>
+	        		</div>
+				</div>
+			</div>
+		</div>
+	</c:forEach>
+</c:if>

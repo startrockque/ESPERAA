@@ -1,0 +1,116 @@
+package servlets.financeurPorteur;
+
+import java.io.IOException;
+
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import dto.FinanceurPorteurDTO;
+import dto.ProjetDTO;
+import facade.IFacadeCommune;
+import facade.IFinanceurPorteurFacade;
+
+/**
+ * Servlet implementation class AfficherProjet
+ */
+@WebServlet( "/Membre/AfficherProjet" )
+public class AfficherProjetServlet extends HttpServlet {
+    private static final long       serialVersionUID      = 1L;
+    private int                     idProjet;
+
+    private static final String     PAGE_AFFICHER_PROJET  = "/WEB-INF/financeurPorteur/pageAfficherProjet.jsp";
+
+    private static final String     ATT_SESSION_MEMBRE    = "financeur";
+    private static final String     ATT_ID_PROJET         = "idProjet";
+    private static final String     ATT_ID_CONVERSATION   = "idConversation";
+    private static final String     ATT_PROJET            = "projet";
+    private static final String     ATT_MESSAGE           = "message";
+    private static final String     ATT_ERREUR            = "erreur";
+    private static final String     ATT_ACTION            = "act";
+
+    private static final String     ACTION_ENVOYER        = "Envoyer";
+    private static final String     ACTION_REPONDRE       = "Repondre";
+    private static final String     ACTION_FINANCER       = "Financer";
+
+    private static final String     CHAMP_CONTENU_MESSAGE = "contenuMessage";
+    private static final String     CHAMP_CONTENU_REPONSE = "contenuReponse";
+    private static final String     CHAMP_MONTANT         = "montant";
+
+    @EJB
+    private IFacadeCommune          facadeCommune;
+    @EJB
+    private IFinanceurPorteurFacade facadeMembre;
+
+    public AfficherProjetServlet() {
+        super();
+    }
+
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
+        ProjetDTO projet = facadeCommune.findProjetDTOById( idProjet );
+        request.setAttribute( ATT_PROJET, projet );
+        request.getRequestDispatcher( PAGE_AFFICHER_PROJET ).forward( request, response );
+    }
+
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        FinanceurPorteurDTO membre = (FinanceurPorteurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
+        String loginEmetteur = membre.getLogin();
+        String action = request.getParameter( ATT_ACTION );
+        // TODO servlet Gerer Messages
+        switch ( action ) {
+        case ACTION_ENVOYER:
+            String contenuMessage = request.getParameter( CHAMP_CONTENU_MESSAGE );
+            facadeCommune.envoyerMessage( loginEmetteur, idProjet, contenuMessage );
+            break;
+        case ACTION_REPONDRE:
+            String contenuReponse = request.getParameter( CHAMP_CONTENU_REPONSE );
+            int idConversation = Integer.parseInt( request.getParameter( ATT_ID_CONVERSATION ) );
+            facadeCommune.repondreMessage( loginEmetteur, idConversation, contenuReponse );
+            break;
+        case ACTION_FINANCER:
+            financer( request, response );
+            break;
+        }
+        ProjetDTO projet = facadeCommune.findProjetDTOById( idProjet );
+        request.setAttribute( ATT_PROJET, projet );
+        request.getRequestDispatcher( PAGE_AFFICHER_PROJET ).forward( request, response );
+    }
+
+    // TODO servlet financer un projet
+    public void financer( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        int idProjetAFinancer = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
+        String montantIvestString = request.getParameter( CHAMP_MONTANT ).trim();
+        int montantIvest = 0;
+        if ( !montantIvestString.isEmpty() ) {
+            montantIvest = Integer.parseInt( montantIvestString );
+        }
+        int sommeMin = 0;
+        if ( montantIvest > sommeMin ) {
+            FinanceurPorteurDTO financeur = (FinanceurPorteurDTO) request.getSession()
+                    .getAttribute( ATT_SESSION_MEMBRE );
+            String nomFinanceur = financeur.getLogin();
+            if ( montantIvest <= financeur.getMontantAInvestir() ) {
+                facadeMembre.financerProjet( nomFinanceur, idProjetAFinancer, montantIvest );
+                request.getSession().setAttribute( ATT_SESSION_MEMBRE,
+                        facadeCommune.findFinanceurDTOByLogin( nomFinanceur ) );
+                ProjetDTO projet = facadeCommune.findProjetDTOById( idProjetAFinancer );
+                request.setAttribute( ATT_PROJET, projet );
+                idProjetAFinancer = -1;
+                request.setAttribute( ATT_MESSAGE, "Merci de votre aide " + financeur.getLogin() );
+            } else {
+                request.setAttribute( ATT_ERREUR, "Vous ne disposez que de " + financeur.getMontantAInvestir()
+                        + " pour investir." );
+            }
+        } else {
+            request.setAttribute( ATT_ERREUR, "Veuillez entrer une somme sup�rieure �0." );
+        }
+    }
+
+}

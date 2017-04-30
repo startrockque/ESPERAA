@@ -1,0 +1,70 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<div class="well">
+    <div class="text-right">
+        <form action="AfficherProjet" method="post">
+			<textarea name="contenuMessage" rows="3" placeholder="Entrez votre message ..." class="form-control lightMarginBottom" required></textarea>
+			<button name="act" value="Envoyer" class="btn btn-success"><i class="glyphicon glyphicon-send"></i> Envoyer</button>	
+		</form>
+    </div>
+    <hr>
+	<c:forEach var="conversation" items="${projet.conversationList}">
+		<c:set var="compteurMessage" scope="page" value="${0}"/>
+		<div class="conversation">
+			<c:forEach var="message" items="${conversation.messageList}">
+				<div class="row">
+	   				<div class="col-md-12">
+	       				<c:choose>
+					    <c:when test="${compteurMessage == 0}">
+					      	<span class="pull-right"><c:out value="${message.dateHeureMessage}"/></span>
+							<c:url value="/Membre/AfficherProfil" var="afficherProfil"> 
+								<c:param name="loginFinanceur" value="${message.emetteur}"/>
+							</c:url>
+							<a href="<c:out value="${afficherProfil}" />"> <c:out value="${message.emetteur}" /> </a> a envoyé :<br>
+						    <pre><c:out value="${message.message}" /></pre>
+						    <c:if test="${message.emetteur == sessionScope.financeur.login }">
+							    <form action="SupprimerMessage" method="post" id="formSupprimer">
+									<input type="hidden" name="idConversation" value="${conversation.idConversation}" />	
+									<input type="hidden" name="idMessage" value="${message.idMessage}" />
+									<input type="hidden" name="idProjet" value="${projet.idProjet}" />	
+									<button name="act" value="Supprimer" class="btn btn-primary btn-danger"><i class="glyphicon glyphicon-trash"></i> Supprimer</button>	
+								</form>
+							</c:if>
+							<br/>
+					    </c:when>
+					    <c:otherwise>
+					    	<div class="reponses">
+						    	<span class="pull-right"><c:out value="${message.dateHeureMessage}"/></span>
+						    	<c:url value="/Membre/AfficherProfil" var="afficherProfil"> 
+									<c:param name="loginFinanceur" value="${message.emetteur}"/>
+								</c:url>
+								<a href="<c:out value="${afficherProfil}" />"><c:out value="${message.emetteur}" /> </a> a envoyé :<br>
+							    <pre><c:out value="${message.message}" /></pre>
+							    <c:if test="${message.emetteur == sessionScope.financeur.login }">
+								    <form action="SupprimerMessage" method="post" id="formSupprimer">
+										<input type="hidden" name="idConversation" value="${conversation.idConversation}" />	
+										<input type="hidden" name="idMessage" value="${message.idMessage}" />
+										<input type="hidden" name="idProjet" value="${projet.idProjet}" />	
+										<button name="act" value="Supprimer" class="btn btn-primary btn-danger"><i class="glyphicon glyphicon-trash"></i> Supprimer</button>	
+									</form>
+								</c:if>
+							</div>
+					    </c:otherwise>
+						</c:choose>
+						<c:set var="compteurMessage" scope="page" value="${compteurMessage + 1}"/>
+					</div>
+				</div>
+	    	</c:forEach>
+	    	<br/>
+	    	<form action="AfficherProjet" method="post">
+			<label for="rep">Répondre à ce message  : </label><textarea name="contenuReponse" id="rep" placeholder="Entrez votre message ..." class="form-control lightMarginBottom" required></textarea>
+			<input type="hidden" name="idConversation" value="${conversation.idConversation}" />	
+			<button name="act" value="Repondre" class="btn btn-primary btn-success"><i class="glyphicon glyphicon-share-alt"></i> Répondre</button>	
+		</form>
+    	</div>
+    	<hr>
+   		<c:set var="compteurMessage" scope="page" value="${0}"/>
+    	
+	</c:forEach>
+</div>

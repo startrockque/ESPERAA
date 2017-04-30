@@ -1,0 +1,6 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<form action="CloturerProjet" method="get">
+	<input type="hidden" name="idProjet" value="${projet.idProjet}">
+	<button name="act" value="Cloturer ce projet" class="btn btn-promary btn-danger col-md-12"><i class="glyphicon glyphicon-alert"></i> Cloturer ce projet <i class="glyphicon glyphicon-alert"></i></button>
+</form>

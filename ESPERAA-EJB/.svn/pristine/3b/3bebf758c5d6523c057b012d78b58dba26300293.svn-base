@@ -1,0 +1,56 @@
+package entities;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+@Entity
+public class Conversation {
+	@Id @GeneratedValue
+	private int idConversation;
+	@OneToMany(cascade={CascadeType.PERSIST,CascadeType.REMOVE})
+	private List<Message> messageList;
+	
+	public Conversation(){
+		messageList = new ArrayList<Message>();
+	}
+	public void repondreConversation(FinanceurPorteur emetteur, String message) {
+		messageList.add(new Message(message, emetteur));
+	}
+	
+	public void addMessage(Message message) {
+		messageList.add(message);
+	}
+	
+	public void removeMessage(Message message) {
+		messageList.remove(message);
+	}
+
+	public int getIdConversation() {
+		return idConversation;
+	}
+
+	public void setIdConversation(int idConversation) {
+		this.idConversation = idConversation;
+	}
+
+	public List<Message> getMessageList() {
+		return messageList;
+	}
+
+	public void setMessageList(List<Message> messageList) {
+		this.messageList = messageList;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		Conversation conversation = (Conversation) obj;
+		return conversation.getIdConversation() == this.idConversation;
+	}
+}

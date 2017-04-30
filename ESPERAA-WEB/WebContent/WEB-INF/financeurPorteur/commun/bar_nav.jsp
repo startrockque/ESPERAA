@@ -1,0 +1,104 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<c:url value="/Membre/Accueil" var="accueil"/>
+<c:url value="/Membre/CreationProjet" var="ajoutProjet"/>
+<c:url value="/Membre/SeFinancer" var="seFinancer"/>
+<c:url value="/Membre/MesProjets" var="mesProjet"/>
+<c:url value="/Membre/MonProfil" var="monProfil"/>
+<c:url value="/Deconnexion" var="deconnexion"/>
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	<div class="navbar-header">
+		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+		<span class="sr-only">Cacher la barre</span>
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+		</button>
+		<a class="navbar-brand" href="<c:out value="${accueil}"/>"><i class="glyphicon glyphicon-home"></i> Accueil </a>
+	</div>
+	<div class="navbar-custom">
+		<ul class="nav navbar-nav">
+			<li><a href="<c:out value="${ajoutProjet}" />"><i class="glyphicon glyphicon-plus"></i> Ajout Projet</a></li>
+			<li><a href="<c:out value="${monProfil}" />"><i class="glyphicon glyphicon-user"></i> Mon profil</a></li>
+			 <c:import url="commun/menu_deroulant_notif.jsp"/>
+	        <li class="dropdown">
+	          	<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-search"></i> Recherche simple<b class="caret"></b></a>
+	          	<ul class="dropdown-menu">
+	            	<li>
+						<form class="navbar-form col-md-3 widther" role="search" action="Rechercher" method="post" role="form">
+							<div class="input-group">
+								<input list="titres" name="titreProjet" class="form-control" placeholder="Titre du projet">
+								<datalist id="titres">
+							    	<c:forEach items="${autoCompletionProjet}" var="pro">
+										<option value="${pro}"></option>
+									</c:forEach>
+							  	</datalist>
+								<div class="input-group-btn">
+									<button value="simpleTitre" name="action" class="higher btn btn-primary btn-primary" type="submit" ><i class="glyphicon glyphicon-search"></i></button>
+								</div>
+							</div>
+						</form>	
+					</li>
+			   	 	<li>
+			    		<form class="navbar-form col-md-3 widther" role="search" action="Rechercher" method="post" role="form">
+							<div class="input-group">
+								<select name="categorie" size="1" class="form-control col-md-12">
+									<option value="0">Aucune catégorie</option>
+									<c:forEach items="${listeCategories}" var="cat">
+										<option value="${cat}">${cat}</option>
+									</c:forEach>
+								</select>
+								<div class="input-group-btn">
+									<button value="simpleCat" name="action" class="higher btn btn-primary btn-primary" type="submit" ><i class="glyphicon glyphicon-search"></i></button>
+								</div>
+							</div>
+						</form>
+					</li>
+					<li>
+						<form class="navbar-form col-md-3 widther" role="search" action="Rechercher" method="post" role="form">
+							<div class="input-group">
+								<input list="porteurs" name="nomPorteur" class="form-control" placeholder="Nom du porteur">
+								<datalist id="porteurs">
+							    	<c:forEach items="${listePorteurs}" var="por">
+										<option value="${por}"></option>
+									</c:forEach>
+							  	</datalist>
+								<div class="input-group-btn">
+									<button value="simpleName" name="action" class="higher btn btn-primary btn-primary" type="submit" ><i class="glyphicon glyphicon-search"></i></button>
+								</div>
+							</div>
+						</form>
+					</li>
+					<li>
+						<form class="navbar-form col-md-3 widther" role="search" action="Rechercher" method="post">
+							<div class="input-group">
+								<input list="tags" type="text" name="tagProjet" class="form-control" placeholder="Recherche par tag">
+								<datalist id="tags">
+							    	<c:forEach items="${listeTag}" var="tag">
+										<option value="${tag}"></option>
+									</c:forEach>
+							  	</datalist>
+								<div class="input-group-btn">
+									<button value="simpleTag" name="action" class="higher btn btn-primary btn-primary" type="submit" ><i class="glyphicon glyphicon-search"></i></button>
+								</div>
+							</div>
+						</form>
+					</li>
+				</ul>
+	        </li>
+	    </ul>
+		<a href="<c:out value="${deconnexion}"/>" class="btnDeco btn btn-primary btn-danger"><i class="glyphicon glyphicon-off"></i> Deconnexion</a>
+	</div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+<script src="../css/bootstrap/js/bootstrap.min.js"></script>
+<script src="../css/dist/js/jquery.slimscroll.min.js"></script>
+<script>
+	$(function(){
+	    $('#notifications').slimScroll({
+	        height: '200px'
+	    });
+	});
+</script>

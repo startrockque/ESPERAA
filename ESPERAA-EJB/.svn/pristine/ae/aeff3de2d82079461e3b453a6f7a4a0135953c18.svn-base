@@ -1,0 +1,153 @@
+package dto;
+
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import entities.Aime;
+import entities.Projet;
+import entities.Tag;
+
+public class TousLesProjetsDTO implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
+	private int idProjet;
+	private String titreProjet;
+	private float montantDemande;
+	private String butArgent;
+	private Calendar dateFin;
+	private float montantInvesti;
+	private boolean enAvant;
+	private String porteur;
+	private String categorie;
+	private List<String> tagList;
+	private List<AimeDTO> aimeList;
+	private String image;	
+	
+	public TousLesProjetsDTO(int idProjet, String titreProjet,
+			float montantDemande, String butArgent, Calendar dateFin,
+			float montantInvesti, boolean enAvant, String porteur,
+			String categorie, List<String> tagList, List<AimeDTO> aimeList) {
+		super();
+		this.idProjet = idProjet;
+		this.titreProjet = titreProjet;
+		this.montantDemande = montantDemande;
+		this.butArgent = butArgent;
+		this.dateFin = dateFin;
+		this.montantInvesti = montantInvesti;
+		this.enAvant = enAvant;
+		this.porteur = porteur;
+		this.categorie = categorie;
+		this.tagList = tagList;
+		this.aimeList = aimeList;
+		
+	}
+	
+	public TousLesProjetsDTO(Projet projet) {
+		this.idProjet = projet.getIdProjet();
+		this.titreProjet = projet.getTitreProjet();
+		this.montantDemande = projet.getMontantDemande();
+		this.butArgent = projet.getButArgent();
+		this.dateFin = projet.getDateFin();
+		this.montantInvesti = projet.getMontantInvesti();
+		this.enAvant = projet.isEnAvant();
+		this.porteur = projet.getPorteur().getLogin();
+		this.categorie = projet.getCategorie().getTitreCategorie();
+		this.image = projet.getImage();
+		List<String> tagNameList = new ArrayList<>();
+		for(Tag tag : projet.getTagList()) {
+			tagNameList.add(tag.getTag());
+		}
+		this.tagList = tagNameList;
+		this.aimeList = new ArrayList<AimeDTO>();
+		for(Aime aime : projet.getAimeList()){
+			aimeList.add(new AimeDTO(aime));
+		}
+	}
+
+	public int getIdProjet() {
+		return idProjet;
+	}
+	public void setIdProjet(int idProjet) {
+		this.idProjet = idProjet;
+	}
+	public String getTitreProjet() {
+		return titreProjet;
+	}
+	public void setTitreProjet(String titreProjet) {
+		this.titreProjet = titreProjet;
+	}
+	public float getMontantDemande() {
+		return montantDemande;
+	}
+	public void setMontantDemande(float montantDemande) {
+		this.montantDemande = montantDemande;
+	}
+	public String getButArgent() {
+		return butArgent;
+	}
+	public void setButArgent(String butArgent) {
+		this.butArgent = butArgent;
+	}
+	public Calendar getDateFin() {
+		return dateFin;
+	}
+	public void setDateFin(Calendar dateFin) {
+		this.dateFin = dateFin;
+	}
+	public float getMontantInvesti() {
+		return montantInvesti;
+	}
+	public void setMontantInvesti(float montantInvesti) {
+		this.montantInvesti = montantInvesti;
+	}
+	public boolean isEnAvant() {
+		return enAvant;
+	}
+	public void setEnAvant(boolean enAvant) {
+		this.enAvant = enAvant;
+	}
+	public String getPorteur() {
+		return porteur;
+	}
+	public void setPorteur(String porteur) {
+		this.porteur = porteur;
+	}
+	public String getCategorie() {
+		return categorie;
+	}
+	public void setCategorie(String categorie) {
+		this.categorie = categorie;
+	}
+	public List<String> getTagList() {
+		return tagList;
+	}
+	public void setTagList(List<String> tagList) {
+		this.tagList = tagList;
+	}
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+
+	public List<AimeDTO> getAimeList() {
+		return aimeList;
+	}
+
+	public void setAimeList(List<AimeDTO> aimeList) {
+		this.aimeList = aimeList;
+	}
+
+	/**
+	 * Formate la date de fin du projet en un format compréhensible
+	 * @return
+	 */
+	public String getFrenchDate() {
+		SimpleDateFormat formater = new SimpleDateFormat("dd-MM-yyyy");
+		return formater.format(dateFin.getTime());
+	}
+}

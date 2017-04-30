@@ -1,0 +1,359 @@
+package facade;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+
+import dao.AimeDAO;
+import dao.CategorieDao;
+import dao.DAOException;
+import dao.FinanceurDAO;
+import dao.InvestissementDAO;
+import dao.NotificationDAO;
+import dao.ProjetDAO;
+import dao.TagDAO;
+import dto.FinanceurPorteurDTO;
+import dto.InvestissementDTO;
+import dto.NotificationDTO;
+import dto.TrancheDTO;
+import entities.Aime;
+import entities.Categorie;
+import entities.FinanceurPorteur;
+import entities.Investissement;
+import entities.Notification;
+import entities.Projet;
+import entities.Tag;
+import entities.Tranche;
+
+@Stateless
+public class FinanceurPorteurFacade implements IFinanceurPorteurFacade {
+
+    private static final String NOTIFICATION_PROJET_FINANCE     = " a investi dans votre projet la somme de ";
+    private static final String NOTIFICATION_PROJET_FINANCE_100 = "Le projet a été entierement financé : ";
+    private static final String NOTIFICATION_PROJET_MODIFIE     = "Le projet suivant a été modifié : ";
+    private static final String NOTIFICATION_PROJET_ABANDONNE   = " a abandonné le projet : ";
+    private static final String NOTIFICATION_AIME_PROJET		= " aime votre projet : ";
+
+    @EJB
+    private ProjetDAO           projetDao;
+    @EJB
+    private CategorieDao        categorieDao;
+    @EJB
+    private FinanceurDAO        financeurDao;
+    @EJB
+    private InvestissementDAO   investissementDao;
+    @EJB
+    private TagDAO              tagDao;
+    @EJB
+    private NotificationDAO     notificationDAO;
+    @EJB
+    private AimeDAO 			aimeDAO;
+
+    @Override
+    public void alimenterPortefeuille( String loginMembre, int montantACrediter ) {
+        try {
+            FinanceurPorteur membre = financeurDao.findByLogin( loginMembre );
+            membre.alimenterPortefeuille( montantACrediter );
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void financerProjet( String loginFinanceur, int idProjet, int sommeInvestie ) {
+        try {
+            Projet projet = projetDao.findById( idProjet );
+            boolean finance = projet.getMontantDemande() <= projet.getMontantInvesti();
+
+            FinanceurPorteur financeur = financeurDao.findByLogin( loginFinanceur );
+            projet.investir( sommeInvestie, financeur );
+            
+            String notificationInvestissement = financeur.getLogin()
+                    + NOTIFICATION_PROJET_FINANCE
+                    + sommeInvestie
+                    + " (dans  " + projet.getTitreProjet() + ")";
+
+            projet.getPorteur().addNotification( notificationInvestissement );
+
+            // si le projet n'Ã©tait pas financÃ© Ã  100% avant
+            // l'investissement et qu'il l'est maintenant
+            if ( !finance && projet.getMontantDemande() <= projet.getMontantInvesti() ) {
+                String notificationProjetFinance = NOTIFICATION_PROJET_FINANCE_100
+                        + projet.getTitreProjet();
+                for ( FinanceurPorteur investisseur : projet.getFinanceurList() ) {
+                    investisseur.addNotification( notificationProjetFinance );
+                }
+                projet.getPorteur().addNotification( notificationProjetFinance );
+            }
+
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void inscription( String nom, String login, String mdp, String email, String image ) {
+        try {
+            FinanceurPorteur utilisateurTemp = financeurDao.findByLogin( login );
+            if ( utilisateurTemp == null ) {
+                FinanceurPorteur financeurAAjouter = new FinanceurPorteur( nom, login, mdp, email, image );
+                financeurDao.create( financeurAAjouter );
+            }
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<InvestissementDTO> recupererInvesissementParFinanceur( String loginFinanceur ) {
+        try {
+            List<InvestissementDTO> investissementDtoList = new ArrayList<InvestissementDTO>();
+            List<Investissement> investissementList = investissementDao.findByFinanceur( loginFinanceur );
+            for ( Investissement investissement : investissementList ) {
+                investissementDtoList.add( new InvestissementDTO( investissement ) );
+            }
+            return investissementDtoList;
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean verifierMdpFinanceur( String loginFinanceur, String mdp ) {
+        try {
+            FinanceurPorteur fPorteur = financeurDao.findByLogin( loginFinanceur );
+            return fPorteur.getMdp().equals( mdp );
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public void modifierFinanceurPorteur( FinanceurPorteurDTO membreDto ) {
+        try {
+            FinanceurPorteur fp = financeurDao.findByLogin( membreDto.getLogin() );
+            fp.setEmail( membreDto.getEmail() );
+            fp.setMdp( membreDto.getMdp() );
+            fp.setNom( membreDto.getNom() );
+            fp.setImage( membreDto.getImage() );
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean verifierTitreProjet( String titreProjet ) {
+        try {
+            Projet projet = projetDao.findByTitre( titreProjet );
+            if ( projet == null ) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public void ajouterProjet( String titre, String description, String butArgent,
+            int montantDemande, String titreCategorie, String tagString,
+            String dateFinString, String loginPorteur, List<TrancheDTO> trancheDtoList, String image ) {
+        try {
+            Categorie categorie = categorieDao.findByTitre( titreCategorie );
+            FinanceurPorteur porteur = financeurDao.findByLogin( loginPorteur );
+            SimpleDateFormat formater = new SimpleDateFormat( "yyyy-MM-dd" );
+            Calendar dateFin = Calendar.getInstance();
+            dateFin.setTime( formater.parse( dateFinString ) );
+
+            Projet projet = new Projet();
+            projet.setTitreProjet( titre );
+            projet.setDescription( description );
+            projet.setButArgent( butArgent );
+            projet.setMontantDemande( montantDemande );
+            projet.setDateFin( dateFin );
+            projet.setDateCreation( Calendar.getInstance() );
+            projet.setCategorie( categorie );
+            projet.setPorteur( porteur );
+
+            if ( image != null ) {
+                projet.setImage( image );
+            }
+
+            if ( tagString != null ) {
+                String[] tagTab = tagString.split( " " );
+                for ( String tagName : tagTab ) {
+                    if ( !tagName.equals( "" ) ) {
+                        Tag tag = tagDao.findByName( tagName );
+                        if ( tag == null ) {
+                            projet.addTag( new Tag( tagName ) );
+                        } else if ( !projet.getTagList().contains( tag ) ) {
+                            projet.addTag( tag );
+                        }
+                    }
+                }
+            }
+            projet.addTranche( new Tranche( "aucune compensation", 0 ) );
+            for ( TrancheDTO trancheDto : trancheDtoList ) {
+                projet.addTranche( new Tranche( trancheDto.getCompensation(), trancheDto.getMontantTranche() ) );
+            }
+
+            projetDao.create( projet );
+        } catch ( DAOException | ParseException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void modifierProjet( int idProjet, String titre, String description,
+            String butArgent, int montantDemande, String titreCategorie,
+            String tagString, List<TrancheDTO> trancheDtoList, String image ) {
+        try {
+            Projet projet = projetDao.findById( idProjet );
+            Categorie categorie = categorieDao.findByTitre( titreCategorie );
+            projet.setTitreProjet( titre );
+            projet.setDescription( description );
+            projet.setButArgent( butArgent );
+            projet.setMontantDemande( montantDemande );
+            projet.setCategorie( categorie );
+            if ( image != null ) {
+                projet.setImage( image );
+            }
+
+            projet.removeAllTag();
+            if ( tagString != null ) {
+                String[] tagTab = tagString.split( " " );
+                for ( String tagName : tagTab ) {
+                    if ( !tagName.equals( "" ) ) {
+                        Tag tag = tagDao.findByName( tagName );
+                        if ( tag == null ) {
+                            projet.addTag( new Tag( tagName ) );
+                        } else if ( !projet.getTagList().contains( tag ) ) {
+                            projet.addTag( tag );
+                        }
+                    }
+                }
+            }
+            for ( TrancheDTO trancheDto : trancheDtoList ) {
+                boolean existeDeja = false;
+                for ( Tranche tranche : projet.getTrancheList() ) {
+                    if ( tranche.getMontantTranche() == trancheDto.getMontantTranche() ) {
+                        existeDeja = true;
+                    }
+                }
+                if ( !existeDeja ) {
+                    projet.addTranche( new Tranche( trancheDto.getCompensation(), trancheDto.getMontantTranche() ) );
+                }
+            }
+            for ( Tranche tranche : projet.getTrancheList() ) {
+                for ( Investissement investissement : tranche.getInvestissementList() ) {
+                    String notificationText = NOTIFICATION_PROJET_MODIFIE
+                            + projet.getTitreProjet();
+                    investissement.getFinanceur().addNotification( notificationText );
+                }
+            }
+
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public boolean verifierTitreProjet( String titre, int idProjet ) {
+        try {
+            Projet projet = projetDao.findByTitre( titre );
+
+            if ( projet == null ) {
+                return true;
+            } else {
+                if ( idProjet == projet.getIdProjet() ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public void aimerProjet( int idProjet , String loginFinanceur) {
+        try {
+            Projet projet = projetDao.findById( idProjet );
+            FinanceurPorteur financeur = financeurDao.findByLogin(loginFinanceur);
+            financeur.aimerProjet( projet );
+            String notification = loginFinanceur + NOTIFICATION_AIME_PROJET + projet.getTitreProjet();
+            projet.getPorteur().addNotification(notification);
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void nePlusAimerProjet(int idProjet , String loginFinanceur){
+    	try {
+            Aime aime = aimeDAO.findByFinanceurAndProjet(idProjet, loginFinanceur);
+            aimeDAO.delete(aime);
+    	} catch ( DAOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<NotificationDTO> recupererNotificationParLoginFinanceur( String loginFinanceur ) {
+        List<NotificationDTO> listNotificationDTO = new ArrayList<NotificationDTO>();
+        try {
+            List<Notification> list = notificationDAO.findByFinanceurLogin( loginFinanceur );
+            for ( Notification notification : list ) {
+                listNotificationDTO.add( new NotificationDTO( notification ) );
+            }
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+        }
+        return listNotificationDTO;
+    }
+
+    @Override
+    public void viderNotification( String loginFinanceur ) {
+        try {
+            FinanceurPorteur membre = financeurDao.findByLogin( loginFinanceur );
+            membre.viderNotifications();
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void cloturerProjet( int idProjet ) {
+        try {
+            Projet projet = projetDao.findById( idProjet );
+            int montantARembourser;
+            int montantAInvestir;
+            for ( Tranche tranche : projet.getTrancheList() ) {
+                for ( Investissement investissement : tranche.getInvestissementList() ) {
+                    montantARembourser = investissement.getSommeInvestie();
+                    montantAInvestir = investissement.getFinanceur().getMontantAInvestir();
+                    investissement.getFinanceur().setMontantAInvestir( montantARembourser + montantAInvestir );
+                    String notificationText = null;
+                    notificationText = projet.getPorteur().getLogin()
+                            + NOTIFICATION_PROJET_ABANDONNE
+                            + projet.getTitreProjet();
+                    investissement.getFinanceur().addNotification( notificationText );
+                }
+            }
+            projetDao.delete( projet );
+        } catch ( DAOException e ) {
+            e.printStackTrace();
+        }
+    }
+}

@@ -1,0 +1,79 @@
+package servlets.financeurPorteur.gestionProfils;
+
+import java.io.IOException;
+
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import dto.FinanceurPorteurDTO;
+import facade.IFacadeCommune;
+import facade.IFinanceurPorteurFacade;
+
+@WebServlet( "/Membre/ModifierProfil" )
+public class ModifierProfilServlet extends HttpServlet {
+    private static final long       serialVersionUID       = 1L;
+
+    private static final String     PAGE_MODIFIER_PROFIL   = "/WEB-INF/financeurPorteur/pageModifierProfil.jsp";
+    private static final String     REDIRECT_MON_PROFIL    = "MonProfil";
+
+    private static final String     ATT_SESSION_MEMBRE     = "financeur";
+    private static final String     ATT_ERREUR             = "erreur";
+
+    private static final String     CHAMP_NOM              = "nom";
+    private static final String     CHAMP_EMAIL            = "email";
+    private static final String     CHAMP_ANCIEN_MDP       = "ancienPassword";
+    private static final String     CHAMP_NOUVEAU_MDP      = "password";
+    private static final String     CHAMP_NOUVEAU_MDP_CONF = "confirmation_password";
+
+    @EJB
+    private IFacadeCommune          facade;
+    @EJB
+    private IFinanceurPorteurFacade facadeMembre;
+
+    private FinanceurPorteurDTO     financeurPorteurDTO;
+
+    public ModifierProfilServlet() {
+        super();
+
+    }
+
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        financeurPorteurDTO = (FinanceurPorteurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
+        request.setAttribute( ATT_SESSION_MEMBRE, financeurPorteurDTO );
+        request.getRequestDispatcher( PAGE_MODIFIER_PROFIL ).forward( request, response );
+    }
+
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        String ancienMdp = request.getParameter( CHAMP_ANCIEN_MDP );
+        String nvMdp = request.getParameter( CHAMP_NOUVEAU_MDP );
+        String confirmedMdp = request.getParameter( CHAMP_NOUVEAU_MDP_CONF );
+        String loginFinanceur = financeurPorteurDTO.getLogin();
+        if ( facadeMembre.verifierMdpFinanceur( loginFinanceur, ancienMdp ) ) {
+            if ( nvMdp.equals( confirmedMdp ) ) {
+                financeurPorteurDTO.setEmail( request.getParameter( CHAMP_EMAIL ) );
+                financeurPorteurDTO.setNom( request.getParameter( CHAMP_NOM ) );
+                financeurPorteurDTO.setMdp( request.getParameter( CHAMP_NOUVEAU_MDP ) );
+                facadeMembre.modifierFinanceurPorteur( financeurPorteurDTO );
+                request.getSession().setAttribute( ATT_SESSION_MEMBRE, financeurPorteurDTO );
+                response.sendRedirect( REDIRECT_MON_PROFIL );
+            }
+            else {
+                request.setAttribute( ATT_SESSION_MEMBRE, financeurPorteurDTO );
+                request.setAttribute( ATT_ERREUR, "Les deux mots de passe ne sont pas égaux" );
+                request.getRequestDispatcher( PAGE_MODIFIER_PROFIL ).forward( request, response );
+            }
+        }
+        else {
+            request.setAttribute( ATT_SESSION_MEMBRE, financeurPorteurDTO );
+            request.setAttribute( ATT_ERREUR, "Erreur dans l'ancien mot de passe" );
+            request.getRequestDispatcher( PAGE_MODIFIER_PROFIL ).forward( request, response );
+        }
+    }
+
+}

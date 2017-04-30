@@ -1,0 +1,40 @@
+package dto;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import entities.Conversation;
+import entities.Message;
+
+public class ConversationDTO {
+	private int idConversation;
+	private List<MessageDTO> messageList;
+	
+	public ConversationDTO(Conversation conversation){
+		this.idConversation=conversation.getIdConversation();
+		this.messageList = new ArrayList<MessageDTO>();
+		for(Message m : conversation.getMessageList()){
+			this.messageList.add(new MessageDTO(m));
+		}
+		Collections.sort(this.messageList);
+	}
+	
+	public int getIdConversation() {
+		return idConversation;
+	}
+	public void setIdConversation(int idConversation) {
+		this.idConversation = idConversation;
+	}
+
+	public List<MessageDTO> getMessageList() {
+		return messageList;
+	}
+
+	public void setMessageList(List<MessageDTO> messageList) {
+		this.messageList = messageList;
+	}
+	
+	
+	
+}

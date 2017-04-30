@@ -1,0 +1,59 @@
+package dao;
+
+import java.math.BigInteger;
+import java.util.List;
+
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
+import entities.Message;
+
+
+@Stateless
+public class MessageDAO{
+
+	@PersistenceContext( unitName = "monUnite" )
+	private EntityManager em;
+
+	public void create(Message obj) throws DAOException {
+		try {
+            em.persist( obj );
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	public void delete(Message obj) throws DAOException {
+		try {
+            em.remove( em.merge( obj ) );
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	public Message findById(int id) throws DAOException {
+		try {
+            return em.find( Message.class, id );
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	public List<Message> findAll() throws DAOException {
+		try {
+            TypedQuery<Message> query = em.createQuery( "SELECT m FROM Message m ORDER BY m.idMessage", Message.class );
+            return query.getResultList();
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	public int getSize() {
+    	String sqlString = "SELECT COUNT(*) FROM MESSAGE";
+        Query query = em.createNativeQuery( sqlString );
+		return ((BigInteger) query.getResultList().get(0)).intValue();
+	}
+}

@@ -1,0 +1,100 @@
+package entities;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+@Entity
+public class Tranche implements Comparable<Tranche> {
+	@Id @GeneratedValue
+	private int idTranche;
+	private int montantTranche;
+	private String compensation;
+	@ManyToOne
+	private Projet projet;
+	
+	@OneToMany(mappedBy="tranche", cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+	private List<Investissement> investissementList;
+	
+	/* ************* *
+	 *  Constructeur 
+	 * ************* */
+	
+	public Tranche() {
+		this.investissementList = new ArrayList<Investissement>();
+	}
+	
+	public Tranche(String compensation, int montantTranche) {
+		this.montantTranche = montantTranche;
+		this.compensation = compensation;
+		this.investissementList = new ArrayList<Investissement>();
+	}
+	
+	public void addInvestissement(Investissement investissement) {
+		this.investissementList.add(investissement);
+		investissement.setTranche(this);
+	}
+	
+	public void removeInvestissement(Investissement investissement) {
+		this.investissementList.remove(investissement);
+		investissement.setTranche(null);
+	}
+
+	/* ***************** *
+	 *  Getter et Setter *
+	 * ***************** */
+
+	public int getIdTranche() {
+		return idTranche;
+	}
+
+	public void setIdTranche(int idTranche) {
+		this.idTranche = idTranche;
+	}
+
+	public int getMontantTranche() {
+		return montantTranche;
+	}
+
+	public void setMontantTranche(int montantTranche) {
+		this.montantTranche = montantTranche;
+	}
+
+	public String getCompensation() {
+		return compensation;
+	}
+
+	public void setCompensation(String compensation) {
+		this.compensation = compensation;
+	}
+
+	public List<Investissement> getInvestissementList() {
+		return investissementList;
+	}
+
+	public void setInvestissementList(List<Investissement> investissementList) {
+		this.investissementList = investissementList;
+	}
+	
+	public Projet getProjet() {
+		return projet;
+	}
+
+	public void setProjet(Projet projet) {
+		this.projet = projet;
+	}
+
+	@Override
+	public int compareTo(Tranche o) {
+		Tranche t = (Tranche) o;	
+		return (int) (this.montantTranche - t.getMontantTranche());
+	}
+	
+	
+}

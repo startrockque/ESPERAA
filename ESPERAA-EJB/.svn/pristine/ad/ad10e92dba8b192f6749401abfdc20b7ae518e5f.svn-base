@@ -1,0 +1,54 @@
+package entities;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+
+@Entity
+public class FinanceurPorteur extends AUtilisateur {
+
+	private int montantAInvestir;
+	
+	/* ************* *
+	 *  Constructeur 
+	 * ************* */
+	
+	public FinanceurPorteur() {
+		super();
+		montantAInvestir = 0;
+		notificationList = new ArrayList<Notification>();
+	}
+
+	public FinanceurPorteur(String nom, String login, String mdp, String email) {
+		super(nom, login, mdp, email);
+		montantAInvestir = 0;
+		notificationList = new ArrayList<Notification>();
+	}
+	
+	public void alimenterPortefeuille(int montantACrediter) {
+		this.montantAInvestir = montantAInvestir + montantACrediter;
+	}
+	
+	/* ***************** *
+	 *  Getter et Setter *
+	 * ***************** */
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public int getMontantAInvestir() {
+		return montantAInvestir;
+	}
+
+	public void setMontantAInvestir(int montantAInvestir) {
+		this.montantAInvestir = montantAInvestir;
+	}
+}

@@ -1,0 +1,29 @@
+package facade;
+
+public interface IAdministrateurFacade {
+
+	/**
+	 * Creation d'une categorie
+	 * @param titreCategorie le titre de la catégorie
+	 */
+	void creerCategorie(String titreCategorie);
+
+	/**
+	 * Mise en avant d'un projet
+	 * @param idProjet
+	 */
+	void mettreEnAvant(int idProjet);
+	
+	/**
+	 * Mise en arri�re d'un projet
+	 * @param idProjet
+	 */
+	void mettreEnArriere(int idProjet);
+
+	/**
+	 * Recuperer une categorie par son nom
+	 * @param nomCategorie
+	 * @return
+	 */
+	boolean verifierCategorie(String nomCategorie);
+}

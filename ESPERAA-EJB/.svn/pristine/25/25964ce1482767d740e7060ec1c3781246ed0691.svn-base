@@ -1,0 +1,56 @@
+package facade;
+
+import java.util.ArrayList;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+
+import dao.AdminDAO;
+import dao.CategorieDao;
+import dao.DAOException;
+import dao.ProjetDAO;
+import entities.Categorie;
+import entities.Projet;
+
+@Stateless
+public class AdministrateurFacade implements IAdministrateurFacade{
+
+	@EJB
+	private CategorieDao categorieDao;
+	@EJB
+	private AdminDAO adminDao;
+	@EJB
+	private ProjetDAO projetDao;
+	
+	@Override
+	public void creerCategorie(String titreCategorie){
+		Categorie c = new Categorie();
+		c.setTitreCategorie(titreCategorie);
+		c.setProjetList(new ArrayList<Projet>());
+		try {
+			categorieDao.create(c);
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public boolean verifierCategorie(String nomCategorie){
+		try {
+			return categorieDao.findByTitre(nomCategorie) != null;
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	@Override
+	public void mettreEnAvant(int idProjet) {
+		projetDao.mettreEnAvant(idProjet);
+	}
+
+	@Override
+	public void mettreEnArriere(int idProjet) {
+		projetDao.mettreEnArriere(idProjet);
+	}
+}

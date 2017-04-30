@@ -1,0 +1,74 @@
+package servlets.administrateur;
+
+import java.io.IOException;
+
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import dto.AdminDTO;
+import dto.ProjetDTO;
+import facade.IFacadeCommune;
+
+/**
+ * Servlet implementation class AfficherProjet
+ */
+@WebServlet( "/Admin/AfficherProjet" )
+public class AfficherProjetServlet extends HttpServlet {
+    private static final long   serialVersionUID      = 1L;
+    private int                 idProjet;
+
+    private static final String PAGE_AFFICHER_PROJET  = "/WEB-INF/admin/pageAfficherProjet.jsp";
+
+    private static final String ATT_SESSION_ADMIN     = "admin";
+    private static final String ATT_ID_PROJET         = "idProjet";
+    private static final String ATT_ID_CONVERSATION   = "idConversation";
+    private static final String ATT_PROJET            = "projet";
+    private static final String ATT_ACTION            = "act";
+
+    private static final String ACTION_ENVOYER        = "Envoyer";
+    private static final String ACTION_REPONDRE       = "Repondre";
+
+    private static final String CHAMP_CONTENU_MESSAGE = "contenuMessage";
+    private static final String CHAMP_CONTENU_REPONSE = "contenuReponse";
+
+    @EJB
+    private IFacadeCommune      facade;
+
+    public AfficherProjetServlet() {
+        super();
+    }
+
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
+        ProjetDTO projet = facade.findProjetById( idProjet );
+        request.setAttribute( ATT_PROJET, projet );
+        request.getRequestDispatcher( PAGE_AFFICHER_PROJET ).forward( request, response );
+    }
+
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        AdminDTO admin = (AdminDTO) request.getSession().getAttribute( ATT_SESSION_ADMIN );
+        String loginEmetteur = admin.getLogin();
+        String action = request.getParameter( ATT_ACTION );
+        // TODO servlet Gerer Messages
+        switch ( action ) {
+        case ACTION_ENVOYER:
+            String contenuMessage = request.getParameter( CHAMP_CONTENU_MESSAGE );
+            facade.envoyerMessage( loginEmetteur, idProjet, contenuMessage );
+            break;
+        case ACTION_REPONDRE:
+            String contenuReponse = request.getParameter( CHAMP_CONTENU_REPONSE );
+            int idConversation = Integer.parseInt( request.getParameter( ATT_ID_CONVERSATION ) );
+            facade.repondreMessage( loginEmetteur, idConversation, contenuReponse );
+            break;
+        }
+        ProjetDTO projet = facade.findProjetDTOById( idProjet );
+        request.setAttribute( ATT_PROJET, projet );
+        request.getRequestDispatcher( PAGE_AFFICHER_PROJET ).forward( request, response );
+    }
+}

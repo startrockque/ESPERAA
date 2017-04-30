@@ -1,0 +1,66 @@
+package servlets;
+
+import java.io.IOException;
+
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import dto.AUtilisateurDTO;
+import dto.FinanceurPorteurDTO;
+import facade.IFacadeCommune;
+
+/**
+ * Servlet implementation class Connexion
+ */
+@WebServlet( "/Connexion" )
+public class ConnexionServlet extends HttpServlet {
+    private static final long   serialVersionUID           = 1L;
+
+    private static final String PAGE_CONNEXION             = "/WEB-INF/pageConnexion.jsp";
+    private static final String REDIRECT_ACCUEIL_FINANCEUR = "/MiniProjet-WEB/Membre/Accueil";
+    private static final String REDIRECT_ACCUEIL_ADMIN     = "/MiniProjet-WEB/Admin/Accueil";
+
+    private static final String ATT_SESSION_ADMIN          = "admin";
+    private static final String ATT_SESSION_MEMBRE         = "financeur";
+    private static final String ATT_ERREUR                 = "erreur";
+
+    private static final String CHAMP_LOGIN                = "login";
+    private static final String CHAMP_MDP                  = "passwd";
+
+    @EJB
+    private IFacadeCommune      facadeCommune;
+
+    public ConnexionServlet() {
+        super();
+    }
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.getSession().setAttribute(ATT_ERREUR, null);
+		request.getRequestDispatcher(PAGE_CONNEXION).forward(request,response);
+	}
+
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        String login = request.getParameter( CHAMP_LOGIN );
+        String mdp = request.getParameter( CHAMP_MDP );
+        AUtilisateurDTO user = facadeCommune.connexion( login, mdp );
+        if ( user == null ) {
+            request.setAttribute( ATT_ERREUR, "Login ou mot de passe incorrect" );
+            request.getRequestDispatcher( PAGE_CONNEXION ).forward( request, response );
+        } else {
+            if ( user instanceof FinanceurPorteurDTO ) {
+                request.getSession().setAttribute( ATT_SESSION_ADMIN, null );
+                request.getSession().setAttribute( ATT_SESSION_MEMBRE, user );
+                response.sendRedirect( REDIRECT_ACCUEIL_FINANCEUR );
+            } else {
+                request.getSession().setAttribute( ATT_SESSION_MEMBRE, null );
+                request.getSession().setAttribute( ATT_SESSION_ADMIN, user );
+                response.sendRedirect( REDIRECT_ACCUEIL_ADMIN );
+            }
+        }
+    }
+}

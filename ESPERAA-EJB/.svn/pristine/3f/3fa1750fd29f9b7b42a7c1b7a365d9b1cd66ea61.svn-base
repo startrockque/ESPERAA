@@ -1,0 +1,36 @@
+package dto;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import entities.FinanceurPorteur;
+import entities.Notification;
+
+public class FinanceurPorteurDTO extends AUtilisateurDTO {
+	private int montantAInvestir;
+	private List<NotificationDTO> notificationList;
+	
+	public FinanceurPorteurDTO() {
+		super();
+		notificationList = new ArrayList<NotificationDTO>();
+	}
+
+	public FinanceurPorteurDTO(FinanceurPorteur fp){
+		this.login = fp.getLogin();
+		this.nom = fp.getNom();
+		this.mdp = fp.getMdp();
+		this.email = fp.getEmail();
+		this.montantAInvestir = fp.getMontantAInvestir();
+		notificationList = new ArrayList<NotificationDTO>();
+		for(Notification notification : fp.getNotificationList()){
+			notificationList.add(new NotificationDTO(notification));
+		}
+	}
+	
+	public int getMontantAInvestir() {
+		return montantAInvestir;
+	}
+	public void setMontantAInvestir(int montantAInvestir) {
+		this.montantAInvestir = montantAInvestir;
+	}
+}

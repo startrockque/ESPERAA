@@ -1,0 +1,106 @@
+package facade;
+
+import java.util.List;
+
+import javax.ejb.Local;
+
+import dto.FinanceurPorteurDTO;
+import dto.InvestissementDTO;
+import dto.NotificationDTO;
+import dto.ProjetDTO;
+import dto.TrancheDTO;
+
+@Local
+public interface IFinanceurPorteurFacade {
+	
+	/**
+	 * Methode d'inscription d'un Financeur Porteur
+	 * @param FinanceurPorteur
+	 */
+	void inscription(String nom, String login, String mdp, String email);
+	
+	/**
+	 * Le financeur remet de l'argent sur son compte
+	 * @param loginMembre login du financeur
+	 * @param montantACrediter montant que le financeur veut ajouter a son compte
+	 * @return le nouveau solde du compte
+	 */
+	void alimenterPortefeuille(String loginMembre, int montantACrediter);
+	
+	/**
+	 * Un financeur investie de l'argent sur un projet
+	 * @param monLogin nom du financeur
+	 * @param idProjetAInvestir id du projet 
+	 * @param montantAInvestir	somme a investir
+	 */
+	void financerProjet(String monLogin, int idProjetAInvestir, int montantAInvestir);
+	
+	/**
+	 * Recuperer la liste des projets finances par un porteur
+	 * @param loginFinanceur du porteur
+	 * @return la liste des projets du porteur
+	 */
+	List<ProjetDTO> recupererMesProjets(String loginFinanceur);
+
+	/**
+	 * Recuperer la liste des investissements
+	 * @param loginFinanceurlogin du financeur
+	 * @return
+	 */
+	List<InvestissementDTO> recupererInvesissementParFinanceur(
+			String loginFinanceur);
+	
+	/**
+	 * Permet de savoir si le titre du projet existe d�j� ou non.
+	 * @param titreProjet
+	 * @return booleen
+	 */
+	boolean verifierTitreProjet(String titreProjet);
+	
+	boolean verifierTitreProjet(String titre, int idProjet);
+
+	void ajouterProjet(String titre, String description, String butArgent,
+			int montantDemande, String titreCategorie, String tagString,
+			String dateFin, String loginPorteur, List<TrancheDTO> trancheDtoList, String image);
+
+	/**
+	 * Verifier le mdp de l'utilisateur
+	 * @param loginFinanceur
+	 * @param mdp
+	 * @return
+	 */
+	boolean verifierMdpFinanceur(String loginFinanceur, String mdp);
+
+	/**
+	 * Modifier le financeur porteur
+	 * @param ancienLoginFinanceur
+	 * @param financeur
+	 * @return
+	 */
+	void modifierFinanceurPorteur(FinanceurPorteurDTO financeur);
+
+	void modifierProjet(int idProjet, String titre, String description,
+			String butArgent, int montantDemande, String titreCategorie,
+			String tagString, List<TrancheDTO> trancheList, String image);
+
+	void aimerProjet(int idProjet);
+
+	/**
+	 * R�cup�rer toutes les notifications d'un FinanceurPorteur
+	 * @param loginFinanceur
+	 * @return
+	 */
+	List<NotificationDTO> recupererNotificationParLoginFinanceur(String loginFinanceur);
+
+	/**
+	 * Toutes les notifications du financeur sont vues
+	 * @param loginFinanceur
+	 */
+	void viderNotification(String loginFinanceur);
+
+	List<String> listeTagPopulaire(int nbTag);
+
+	List<String> listeCategoriePopulaire(int nbCat);
+
+	void cloturerProjet(int idProjet);
+}

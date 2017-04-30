@@ -1,0 +1,323 @@
+package facade;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+
+import dao.AdminDAO;
+import dao.CategorieDao;
+import dao.DAOException;
+import dao.FinanceurDAO;
+import dao.ProjetDAO;
+import dao.TagDAO;
+import dto.AUtilisateurDTO;
+import dto.AdminDTO;
+import dto.CategorieDTO;
+import dto.FinanceurPorteurDTO;
+import dto.ProjetDTO;
+import dto.TousLesProjetsDTO;
+import entities.AUtilisateur;
+import entities.Admin;
+import entities.Categorie;
+import entities.Conversation;
+import entities.FinanceurPorteur;
+import entities.Investissement;
+import entities.Notification;
+import entities.Projet;
+import entities.Tag;
+import entities.Tranche;
+
+@Stateless
+public class FacadeCommune implements IFacadeCommune{
+
+	@EJB
+	private ProjetDAO projetDao;
+	@EJB
+	private CategorieDao categorieDao;
+	@EJB
+	private AdminDAO adminDao;
+	@EJB
+	private FinanceurDAO financeurDao;
+	@EJB
+	private TagDAO tagDao;
+
+	private static final String NOTIFICATION_PROJET_ABANDONNE = " a abandonnÃ© le projet : ";
+	private static final String NOTIFICATION_PROJET_CLOTURE = "Un administrateur a cloturé le projet : ";
+	private static final String NOTIFICATION_PROJET_CLOTURE_PORTEUR = "Un administrateur a cloturé votre projet : ";
+
+	@Override
+	public AUtilisateurDTO connexion(String login, String mdp) {
+		try {
+			AUtilisateur ut = adminDao.findByLogin(login);
+			AUtilisateurDTO utilisateurDto = null;
+			if(ut == null){
+				ut = financeurDao.findByLogin(login);
+				if(ut == null){
+					return null;
+				} else {
+					utilisateurDto = new FinanceurPorteurDTO((FinanceurPorteur)ut);
+				}
+			} else {
+				utilisateurDto = new AdminDTO((Admin) ut); 
+			}
+			if(ut.getMdp().equals(mdp)){
+				return utilisateurDto;
+			}
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<TousLesProjetsDTO> rechercherParTitre(String titreProjet){
+		try {
+			List<TousLesProjetsDTO> projetDtoList = new ArrayList<>();
+			for(Projet projet : projetDao.findAllByTitre(titreProjet)) {
+				projetDtoList.add(new TousLesProjetsDTO(projet));
+			}
+			return projetDtoList;
+		} catch (DAOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public List<TousLesProjetsDTO> rechercherParCatgeorie(String categorie) {
+		List<TousLesProjetsDTO> projetDtoList = new ArrayList<>();
+		for(Projet projet : projetDao.findByCategorie(categorie)) {
+			projetDtoList.add(new TousLesProjetsDTO(projet));
+		}
+		return projetDtoList;
+	}
+
+	@Override
+	public List<TousLesProjetsDTO> rechercherParPorteur(String nomPorteur) {
+		try {
+			List<TousLesProjetsDTO> projetDtoList = new ArrayList<>();
+			for(Projet projet : projetDao.findByPorteurLogin(nomPorteur)) {
+				projetDtoList.add(new TousLesProjetsDTO(projet));
+			}
+			return projetDtoList;
+		} catch (DAOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public List<ProjetDTO> rechercherParTag(String tagString){
+		if (tagString != null) {
+			String[] tabTag = tagString.split(" ");
+			List<ProjetDTO> projetDTOList = new ArrayList<ProjetDTO>();
+			List<Projet> lProjets = projetDao.findByTag(tabTag);
+			for(Projet projet : lProjets){
+				projetDTOList.add(new ProjetDTO(projet));
+			}
+			return projetDTOList;
+		}
+		return new ArrayList<ProjetDTO>();
+	}
+
+	@Override
+	public List<TousLesProjetsDTO> rechercherParTitreCatgeorie(String titreProjet, String categorie) {
+		try {
+			List<TousLesProjetsDTO> projetDtoList = new ArrayList<>();
+			for(Projet projet : projetDao.findByTitreCategorie(titreProjet, categorie)) {
+				projetDtoList.add(new TousLesProjetsDTO(projet));
+			}
+			return projetDtoList;
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<TousLesProjetsDTO> rechercherParTitreNom(String titreProjet, String nomPorteur) {
+		try {
+			List<TousLesProjetsDTO> projetDtoList = new ArrayList<>();
+			for(Projet projet : projetDao.findByTitreNom(titreProjet, nomPorteur)) {
+				projetDtoList.add(new TousLesProjetsDTO(projet));
+			}
+			return projetDtoList;
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<TousLesProjetsDTO> rechercherParCatgeorieNom(String categorie, String nomPorteur) {
+		try {
+			List<TousLesProjetsDTO> projetDtoList = new ArrayList<>();
+			for(Projet projet : projetDao.findByCategorieNom(categorie, nomPorteur)) {
+				projetDtoList.add(new TousLesProjetsDTO(projet));
+			}
+			return projetDtoList;
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<TousLesProjetsDTO> rechercherParTitreCatgeorieNom(String titreProjet, String categorie, String nomPorteur) {
+		try {
+			List<TousLesProjetsDTO> projetDtoList = new ArrayList<>();
+			for(Projet projet : projetDao.findByTitreCategorieNom(titreProjet, categorie, nomPorteur)) {
+				projetDtoList.add(new TousLesProjetsDTO(projet));
+			}
+			return projetDtoList;
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<String> getAllCategoriesNames() {
+		try {
+			return categorieDao.findAllNames();
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<TousLesProjetsDTO> recupererTousLesProjets() {
+		try {
+			List<TousLesProjetsDTO> projetDtoList = new ArrayList<>();
+			for(Projet projet : projetDao.findAll()) {
+				projetDtoList.add(new TousLesProjetsDTO(projet));
+			}
+			return projetDtoList;
+		} catch (DAOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public List<String> recupererTousLesTitresDesProjets() {
+		return projetDao.findAllTitles();
+	}
+
+	@Override
+	public List<TousLesProjetsDTO> recupererProjetsEnAvant() {
+		List<TousLesProjetsDTO> projetDtoList = new ArrayList<>();
+		for(Projet projet : projetDao.findEnAvant()) {
+			projetDtoList.add(new TousLesProjetsDTO(projet));
+		}
+		return projetDtoList;
+	}
+
+	@Override
+	public ProjetDTO findProjetById(int idProjet) {
+		try {
+			return new ProjetDTO(projetDao.findById(idProjet));
+		} catch (DAOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public ProjetDTO findProjetDTOById(int idProjet) {
+		try {
+			Projet p = projetDao.findById(idProjet);
+			for(Conversation conv : p.getConversationList())
+				Collections.sort(conv.getMessageList());
+			ProjetDTO projet = new ProjetDTO(p);
+			return projet;
+		} catch (DAOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public List<String> recupererTousLesNomsDeFinanceurs() {
+		try {
+			return financeurDao.findAllLogins();
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<CategorieDTO> findAllCategorieDto() {
+		try {
+			List<CategorieDTO> categorieDtoList = new ArrayList<CategorieDTO>();
+			for(Categorie categorie : categorieDao.findAll()) {
+				categorieDtoList.add(new CategorieDTO(categorie));
+			}
+			return categorieDtoList;
+		} catch (DAOException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public List<String> recupererTousLesTag(){
+		List<String> listTag = new ArrayList<String>();
+		try {
+			for(Tag tag : tagDao.findAll()){
+				listTag.add(tag.getTag());
+			}
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+		return listTag;
+	}
+
+	@Override
+	public FinanceurPorteurDTO findFinanceurDTOByLogin(String login){
+		try {
+			return new FinanceurPorteurDTO(financeurDao.findByLogin(login));
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public void cloturerProjet(int idProjet, boolean admin){
+		try {
+			Projet projet = projetDao.findById(idProjet);
+			int montantARembourser;
+			int montantAInvestir;
+			for(Tranche tranche : projet.getTrancheList()){
+				for(Investissement investissement : tranche.getInvestissementList()){
+					montantARembourser = investissement.getSommeInvestie();
+					montantAInvestir = investissement.getFinanceur().getMontantAInvestir();
+					investissement.getFinanceur().setMontantAInvestir(montantARembourser + montantAInvestir);
+					String notificationText = null;
+					if (admin){
+						notificationText = NOTIFICATION_PROJET_CLOTURE 
+								+ projet.getTitreProjet();
+					} else {
+						notificationText = projet.getPorteur().getLogin() 
+								+ NOTIFICATION_PROJET_ABANDONNE 
+								+ projet.getTitreProjet();
+					}
+					investissement.getFinanceur().addNotification(notificationText);
+				}
+			}
+			if (admin){
+				String notificationText = NOTIFICATION_PROJET_CLOTURE_PORTEUR 
+						+ projet.getTitreProjet();
+				projet.getPorteur().addNotification(notificationText);
+			}
+			projetDao.delete(projet);
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+	}
+}

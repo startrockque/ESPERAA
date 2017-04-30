@@ -1,0 +1,19 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<form action="CloturerProjet" method="get">
+	<input type="hidden" name="idProjet" value="${projet.idProjet}">
+	<button name="act" value="Cloturer ce projet" class="btn btn-promary btn-danger col-md-12"><i class="glyphicon glyphicon-alert"></i> Cloturer ce projet <i class="glyphicon glyphicon-alert"></i></button>
+</form>
+<br />
+<c:if test="${not projet.enAvant}">
+	<form action="MettreEnAvant" method="post">
+		<input type="hidden" name="idProjet" value="${projet.idProjet}">
+		<button name="mea" value="Mettre en avant" class="btn btn-primary btn-success pull-right col-md-12"><i class="glyphicon glyphicon-star-empty"></i>Mettre en avant<i class="glyphicon glyphicon-star-empty"></i></button>
+	</form>
+</c:if>
+<c:if test="${projet.enAvant}">
+	<form action="MettreEnAvant" method="post">
+		<input type="hidden" name="idProjet" value="${projet.idProjet}">
+		<button name="mea" value="Mettre en arriere" class="btn btn-primary btn-danger pull-right col-md-12"><i class="glyphicon glyphicon-star"></i>Mettre en arrière<i class="glyphicon glyphicon-star"></i></button>
+	</form>
+</c:if>

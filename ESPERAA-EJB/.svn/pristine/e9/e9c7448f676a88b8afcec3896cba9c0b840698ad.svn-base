@@ -1,0 +1,131 @@
+package entities;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
+
+/**
+ * Classe abstraite pour les utilisateurs
+ * @author Fabien
+ * @see Admin
+ * @see FinanceurPorteur
+ */
+@Entity
+@Inheritance(strategy=InheritanceType.JOINED)
+public abstract class AUtilisateur {
+
+    @Id
+    protected String login;
+    protected String nom;
+    protected String mdp;
+    protected String email;
+    protected String image;
+
+    @OneToMany(mappedBy="destinataire",cascade={CascadeType.PERSIST, CascadeType.REMOVE})
+    protected List<Notification> notificationList;
+
+    /* ************* *
+     *  Constructeur 
+     * ************* */
+
+    public AUtilisateur() {
+
+    }
+
+    public AUtilisateur(String nom, String login, String mdp, String email) {
+        super();
+        this.login = login;
+        this.nom = nom;
+        this.mdp = mdp;
+        this.email = email;
+    }
+
+    public AUtilisateur( String nom, String login, String mdp, String email, String image ) {
+        this.login = login;
+        this.nom = nom;
+        this.mdp = mdp;
+        this.email = email;
+        this.image = image;
+    }
+
+    public void addNotification(String notificationText){
+        Notification notification = new Notification(notificationText, this);
+        this.notificationList.add(notification);
+    }
+
+    public void removeNotification(Notification notification){
+        notification.setDestinataire(null);
+        this.notificationList.remove(notification);
+    }
+    
+    public void viderNotifications() {
+        for(Notification notification : notificationList) {
+            notification.setDestinataire(null);
+        }
+        notificationList = new ArrayList<Notification>();
+    }
+
+
+    /* ***************** *
+     *  Getter et Setter *
+     * ***************** */
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getMdp() {
+        return mdp;
+    }
+
+    public void setMdp(String mdp) {
+        this.mdp = mdp;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public List<Notification> getNotificationList() {
+        return notificationList;
+    }
+
+    public void setNotificationList(List<Notification> notificationList) {
+        this.notificationList = notificationList;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage( String image ) {
+        this.image = image;
+    }
+
+    @Override
+    public String toString() {
+        return "AUtilisateur [nom=" + login + "]";
+    }	
+}

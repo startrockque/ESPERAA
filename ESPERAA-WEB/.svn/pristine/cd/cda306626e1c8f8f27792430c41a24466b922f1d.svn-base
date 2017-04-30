@@ -1,0 +1,43 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<fieldset class="profilInfos">
+<legend>Mon profil</legend>
+	<div>
+		<strong>Mon login : </strong><c:out value="${financeur.login}"/><br/>
+		<strong>Mon nom : </strong><c:out value="${financeur.nom}"/><br>
+		<strong>Mon email : </strong><c:out value="${financeur.email}"/><br>
+	</div>
+	<div>
+		<c:url value="/Membre/ModifierProfil" var="modifierProfil"/>
+		<a href="<c:out value="${modifierProfil}"/>" class="new-account">Modifier mon profil</a>
+	</div>
+	
+	<fieldset class="col-md-10 col-md-offset-1">
+		<p><strong>Mon portefeuille : </strong><c:out value="${financeur.montantAInvestir}"/></p>
+		<hr>
+		<form action="MonProfil" method="post" role="form" class="col-md-12">
+			<label for="montant">Montant ра crediter  : </label><input type=number size="2" step=1 min=1 name="montant" id="montant" class="form-control"/><br />
+			<input type="submit" name="act" value="Valider" class="btn btn-primary col-md-10 col-md-offset-1"/>	
+		</form>
+	</fieldset>
+		
+	<c:if test="${not empty investissements}">
+		<fieldset class="col-md-10 col-md-offset-1">
+			<h5>Liste de mes investissements : </h5>
+			<hr>
+			<ul>
+				<c:forEach var="inv" items="${investissements}"> 
+					<li>
+						<c:url value="/Membre/AfficherProjet" var="afficherProjet"> 
+						<c:param name="idProjet" value="${inv.idProjet}"/>
+						</c:url>
+						Projet : <a href="<c:out value="${afficherProjet}" />"> <c:out value="${inv.titreProjet}"/></a> 
+						<br />
+						Somme investie : <c:out value="${inv.sommeInvestie}"/> E
+						<br />
+						Compensation : <c:out value="${inv.compensation}"/>
+					</li>			
+				</c:forEach>
+			</ul>
+		</fieldset>
+	</c:if>
+</fieldset>

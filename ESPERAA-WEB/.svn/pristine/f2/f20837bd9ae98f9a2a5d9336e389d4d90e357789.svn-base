@@ -1,0 +1,475 @@
+package servlets.financeurPorteur.forms;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
+
+import dto.TrancheDTO;
+import eu.medsea.mimeutil.MimeUtil;
+import facade.IFinanceurPorteurFacade;
+
+public class ProjetForm {
+
+    private static final String     CHAMP_TITRE           = "titre";
+    private static final String     CHAMP_DESCRIPTION     = "description";
+    private static final String     CHAMP_BUT             = "butArgent";
+    private static final String     CHAMP_MONTANT_DEMANDE = "montantDemande";
+    private static final String     CHAMP_CATEGORIE       = "titreCategorie";
+    private static final String     CHAMP_TAG             = "tagText";
+    private static final String     CHAMP_DATE_FIN        = "dateFin";
+    private static final String     CHAMP_IMAGE           = "imageProjet";
+
+    private static final int        TAILLE_TAMPON         = 10240;
+
+    private static final String     CHAMP_COMPENSATION    = "compensation";
+    private static final String     CHAMP_MONTANT_TRANCHE = "montantTranche";
+
+    private Map<String, String>     erreursProjet;
+    private Map<String, String>     erreursTranche;
+    private String                  resultatTranche;
+    private String                  chemin;
+    private String                  imageProjet;
+
+    private List<TrancheDTO>        trancheDtoList;
+
+    private IFinanceurPorteurFacade facadeMembre;
+
+    public ProjetForm( IFinanceurPorteurFacade facadeMembre ) {
+        this.facadeMembre = facadeMembre;
+        erreursProjet = new HashMap<String, String>();
+        erreursTranche = new HashMap<String, String>();
+    }
+
+    public void verificationProjet( HttpServletRequest request ) {
+        resultatTranche = null;
+        erreursProjet = new HashMap<String, String>();
+        String titre = getValeurChamp( request, CHAMP_TITRE );
+        String description = getValeurChamp( request, CHAMP_DESCRIPTION );
+        String butArgent = getValeurChamp( request, CHAMP_BUT );
+        String montantDemande = getValeurChamp( request, CHAMP_MONTANT_DEMANDE );
+        String titreCategorie = getValeurChamp( request, CHAMP_CATEGORIE );
+        String tagString = getValeurChamp( request, CHAMP_TAG );
+        String dateFin = getValeurChamp( request, CHAMP_DATE_FIN );
+
+        request.setAttribute( CHAMP_TITRE, titre );
+        request.setAttribute( CHAMP_DESCRIPTION, description );
+        request.setAttribute( CHAMP_BUT, butArgent );
+        request.setAttribute( CHAMP_MONTANT_DEMANDE, montantDemande );
+        request.setAttribute( CHAMP_CATEGORIE, titreCategorie );
+        request.setAttribute( CHAMP_TAG, tagString );
+        request.setAttribute( CHAMP_DATE_FIN, dateFin );
+
+        traiterTitre( titre );
+        traiterDescription( description );
+        traiterButArgent( butArgent );
+        traiterMontantDemande( montantDemande );
+        traiterCategorie( titreCategorie );
+        traiterDateFin( dateFin );
+        traiterImage( request );
+        if ( trancheDtoList == null ) {
+            resultatTranche = "Le projet doit avoir au moins une tranche";
+        }
+
+    }
+
+    public void verificationModifierProjet( HttpServletRequest request, int idProjet ) {
+        resultatTranche = null;
+        erreursProjet = new HashMap<String, String>();
+        String titre = getValeurChamp( request, CHAMP_TITRE );
+        String description = getValeurChamp( request, CHAMP_DESCRIPTION );
+        String butArgent = getValeurChamp( request, CHAMP_BUT );
+        String montantDemande = getValeurChamp( request, CHAMP_MONTANT_DEMANDE );
+        String titreCategorie = getValeurChamp( request, CHAMP_CATEGORIE );
+        String tagString = getValeurChamp( request, CHAMP_TAG );
+        String dateFin = getValeurChamp( request, CHAMP_DATE_FIN );
+
+        request.setAttribute( CHAMP_TITRE, titre );
+        request.setAttribute( CHAMP_DESCRIPTION, description );
+        request.setAttribute( CHAMP_BUT, butArgent );
+        request.setAttribute( CHAMP_MONTANT_DEMANDE, montantDemande );
+        request.setAttribute( CHAMP_CATEGORIE, titreCategorie );
+        request.setAttribute( CHAMP_TAG, tagString );
+        request.setAttribute( CHAMP_DATE_FIN, dateFin );
+
+        traiterTitre( titre, idProjet );
+        traiterDescription( description );
+        traiterButArgent( butArgent );
+        traiterMontantDemande( montantDemande );
+        traiterCategorie( titreCategorie );
+        traiterDateFin( dateFin );
+        traiterImage( request );
+        if ( trancheDtoList == null ) {
+            resultatTranche = "Le projet doit avoir au moins une tranche";
+        }
+    }
+
+    public void verificationTranche( HttpServletRequest request ) {
+        resultatTranche = null;
+        erreursTranche = new HashMap<String, String>();
+        String compensationTranche = getValeurChamp( request, CHAMP_COMPENSATION );
+        String montantTranche = getValeurChamp( request, CHAMP_MONTANT_TRANCHE );
+
+        request.setAttribute( CHAMP_COMPENSATION, compensationTranche );
+        request.setAttribute( CHAMP_MONTANT_TRANCHE, montantTranche );
+
+        traiterCompensation( compensationTranche );
+        traiterMontantTranche( montantTranche );
+    }
+
+    private void traiterImage( HttpServletRequest request ) {
+        imageProjet = null;
+        try {
+            imageProjet = validationImage( request, chemin );
+        } catch ( FormValidationException e ) {
+            setErreurProjet( CHAMP_IMAGE, e.getMessage() );
+        }
+    }
+
+    private void traiterTitre( String titre, int idProjet ) {
+        if ( titre != null && !titre.isEmpty() ) {
+            if ( !facadeMembre.verifierTitreProjet( titre, idProjet ) ) {
+                setErreurProjet( CHAMP_TITRE, "Ce titre est déjà utilisé pour un autre projet" );
+            }
+        } else {
+            setErreurProjet( CHAMP_TITRE, "Le champ titre est obligatoire" );
+        }
+    }
+
+    private void traiterTitre( String titre ) {
+        if ( titre != null && !titre.isEmpty() ) {
+            if ( !facadeMembre.verifierTitreProjet( titre ) ) {
+                setErreurProjet( CHAMP_TITRE, "Ce titre est déjà utilisé pour un autre projet" );
+            }
+        } else {
+            setErreurProjet( CHAMP_TITRE, "Le champ titre est obligatoire" );
+        }
+    }
+
+    private void traiterDescription( String description ) {
+        if ( description != null && !description.isEmpty() ) {
+            if ( description.length() < 10 ) {
+                setErreurProjet( CHAMP_DESCRIPTION, "La description du projet doit faire au moins 10 caractères" );
+            }
+        } else {
+            setErreurProjet( CHAMP_DESCRIPTION, "Le champ description est obligatoire" );
+        }
+    }
+
+    private void traiterButArgent( String butArgent ) {
+        if ( butArgent != null && !butArgent.isEmpty() ) {
+            if ( butArgent.length() < 10 ) {
+                setErreurProjet( CHAMP_BUT, "Le but du projet doit faire au moins 10 caractères" );
+            }
+        } else {
+            setErreurProjet( CHAMP_BUT, "Le champ but argent est obligatoire" );
+        }
+
+    }
+
+    private void traiterMontantDemande( String montantDemande ) {
+        if ( montantDemande != null && !montantDemande.isEmpty() ) {
+            try {
+                Integer.parseInt( montantDemande );
+            } catch ( Exception e ) {
+                setErreurProjet( CHAMP_MONTANT_DEMANDE, "Le champ ne doit pas comporté de lettre" );
+            }
+        } else {
+            setErreurProjet( CHAMP_MONTANT_DEMANDE, "Le champ montant demande est obligatoire" );
+        }
+    }
+
+    private void traiterCategorie( String titreCategorie ) {
+        if ( titreCategorie == null ) {
+            erreursProjet.put( CHAMP_CATEGORIE, "Choississez une categorie pour votre projet" );
+        } else if ( titreCategorie.isEmpty() ) {
+            erreursProjet.put( CHAMP_CATEGORIE, "Choississez une categorie pour votre projet" );
+        }
+    }
+
+    private void traiterDateFin( String dateFin ) {
+        if ( dateFin != null ) {
+            Calendar aujourdhui = Calendar.getInstance();
+            Calendar dateMax = Calendar.getInstance();
+            dateMax.add( Calendar.MONTH, 2 );
+
+            SimpleDateFormat formater = new SimpleDateFormat( "yyyy-MM-dd" );
+            Calendar currentDate = Calendar.getInstance();
+            try {
+                currentDate.setTime( formater.parse( dateFin ) );
+                if ( currentDate.before( aujourdhui ) || currentDate.after( dateMax ) ) {
+                    setErreurProjet( CHAMP_DATE_FIN, "La date de fin ne peut pas dépasser les 2 mois" );
+                }
+            } catch ( ParseException pe ) {
+                setErreurProjet( CHAMP_DATE_FIN, "Un problème est survenu lors de la saisie de la date" );
+            }
+        }
+    }
+
+    private void traiterCompensation( String compensationTranche ) {
+        if ( compensationTranche == null ) {
+            setErreurTranche( CHAMP_COMPENSATION, "Le champ est obligatoire" );
+        } else if ( compensationTranche.isEmpty() ) {
+            setErreurTranche( CHAMP_COMPENSATION, "Le champ est obligatoire" );
+        }
+    }
+
+    private void traiterMontantTranche( String montantTranche ) {
+        if ( montantTranche != null && !montantTranche.isEmpty() ) {
+            try {
+                float montant = Float.parseFloat( montantTranche );
+                if ( !verifierMontantTranche( montant ) ) {
+                    setErreurTranche( CHAMP_MONTANT_TRANCHE, "Ce montant est déjà associé à une compensation" );
+                }
+            } catch ( Exception e ) {
+                setErreurTranche( CHAMP_MONTANT_TRANCHE, "Le champ ne doit pas comporté de lettre" );
+            }
+        } else {
+            setErreurTranche( CHAMP_MONTANT_TRANCHE, "Le champ est obligatoire" );
+        }
+    }
+
+    /*
+     * Ajoute un message correspondant au champ spécifié à la map des erreurs.
+     */
+    private void setErreurProjet( String champ, String message ) {
+        erreursProjet.put( champ, message );
+    }
+
+    /*
+     * Ajoute un message correspondant au champ spécifié à la map des erreurs.
+     */
+    private void setErreurTranche( String champ, String message ) {
+        erreursTranche.put( champ, message );
+    }
+
+    public void ajouterTranche( String compensation, int montant ) {
+        if ( trancheDtoList == null ) {
+            trancheDtoList = new ArrayList<TrancheDTO>();
+            trancheDtoList.add( new TrancheDTO( compensation, montant ) );
+        } else {
+            trancheDtoList.add( new TrancheDTO( compensation, montant ) );
+        }
+    }
+
+    private boolean verifierMontantTranche( float montantTranche ) {
+        if ( trancheDtoList != null ) {
+            for ( TrancheDTO trancheDTO : trancheDtoList ) {
+                if ( trancheDTO.getMontantTranche() == montantTranche ) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public String getChemin() {
+        return chemin;
+    }
+
+    public void setChemin( String chemin ) {
+        this.chemin = chemin;
+    }
+
+    public String getImage() {
+        return imageProjet;
+    }
+
+    public List<TrancheDTO> getTrancheList() {
+        return trancheDtoList;
+    }
+
+    public String getResultatTranche() {
+        return resultatTranche;
+    }
+
+    public Map<String, String> getErreursProjet() {
+        return erreursProjet;
+    }
+
+    public Map<String, String> getErreursTranche() {
+        return erreursTranche;
+    }
+
+    public void setTrancheDtoList( List<TrancheDTO> trancheDtoList ) {
+        this.trancheDtoList = trancheDtoList;
+    }
+
+    /*
+     * Méthode utilitaire qui retourne null si un champ est vide, et son contenu
+     * sinon.
+     */
+    private static String getValeurChamp( HttpServletRequest request, String nomChamp ) {
+        String valeur = request.getParameter( nomChamp );
+        if ( valeur == null || valeur.trim().length() == 0 ) {
+            return null;
+        } else {
+            return valeur;
+        }
+    }
+
+    /*
+     * Méthode utilitaire qui a pour unique but d'analyser l'en-tête
+     * "content-disposition", et de vérifier si le paramètre "filename" y est
+     * présent. Si oui, alors le champ traité est de type File et la méthode
+     * retourne son nom, sinon il s'agit d'un champ de formulaire classique et
+     * la méthode retourne null.
+     */
+    private static String getNomFichier( Part part ) {
+        /* Boucle sur chacun des paramètres de l'en-tête "content-disposition". */
+        for ( String contentDisposition : part.getHeader( "content-disposition" ).split( ";" ) ) {
+            /* Recherche de l'éventuelle présence du paramètre "filename". */
+            if ( contentDisposition.trim().startsWith( "filename" ) ) {
+                /*
+                 * Si "filename" est présent, alors renvoi de sa valeur,
+                 * c'est-à-dire du nom de fichier sans guillemets.
+                 */
+                return contentDisposition.substring( contentDisposition.indexOf( '=' ) + 1 ).trim().replace( "\"", "" );
+            }
+        }
+        /* Et pour terminer, si rien n'a été trouvé... */
+        return null;
+    }
+
+    private String validationImage( HttpServletRequest request, String chemin ) throws FormValidationException {
+        /*
+         * Récupération du contenu du champ image du formulaire. Il faut ici
+         * utiliser la méthode getPart().
+         */
+        String nomFichier = null;
+        InputStream contenuFichier = null;
+        try {
+            Part part = request.getPart( CHAMP_IMAGE );
+            nomFichier = getNomFichier( part );
+
+            /*
+             * Si la méthode getNomFichier() a renvoyé quelque chose, il s'agit
+             * donc d'un champ de type fichier (input type="file").
+             */
+            if ( nomFichier != null && !nomFichier.isEmpty() ) {
+                /*
+                 * Antibug pour Internet Explorer, qui transmet pour une raison
+                 * mystique le chemin du fichier local à la machine du client...
+                 * 
+                 * Ex : C:/dossier/sous-dossier/fichier.ext
+                 * 
+                 * On doit donc faire en sorte de ne sélectionner que le nom et
+                 * l'extension du fichier, et de se débarrasser du superflu.
+                 */
+                nomFichier = nomFichier.substring( nomFichier.lastIndexOf( '/' ) + 1 )
+                        .substring( nomFichier.lastIndexOf( '\\' ) + 1 );
+
+                /* Récupération du contenu du fichier */
+                contenuFichier = part.getInputStream();
+
+                /* Extraction du type MIME du fichier depuis l'InputStream */
+                MimeUtil.registerMimeDetector( "eu.medsea.mimeutil.detector.MagicMimeMimeDetector" );
+                Collection<?> mimeTypes = MimeUtil.getMimeTypes( contenuFichier );
+
+                /*
+                 * Si le fichier est bien une image, alors son en-tête MIME
+                 * commence par la chaîne "image"
+                 */
+                if ( mimeTypes.toString().startsWith( "image" ) ) {
+                    /* Écriture du fichier sur le disque */
+                    ecrireFichier( contenuFichier, nomFichier, chemin );
+                } else {
+                    // throw new FormValidationException(
+                    // "Le fichier envoyé doit être une image." );
+                }
+            }
+        } catch ( IllegalStateException e ) {
+            /*
+             * Exception retournée si la taille des données dépasse les limites
+             * définies dans la section <multipart-config> de la déclaration de
+             * notre servlet d'upload dans le fichier web.xml
+             */
+            e.printStackTrace();
+            throw new FormValidationException( "Le fichier envoyé ne doit pas dépasser 1Mo." );
+        } catch ( IOException e ) {
+            /*
+             * Exception retournée si une erreur au niveau des répertoires de
+             * stockage survient (répertoire inexistant, droits d'accès
+             * insuffisants, etc.)
+             */
+            e.printStackTrace();
+            throw new FormValidationException( "Erreur de configuration du serveur." );
+        } catch ( ServletException e ) {
+            /*
+             * Exception retournée si la requête n'est pas de type
+             * multipart/form-data.
+             */
+            e.printStackTrace();
+            throw new FormValidationException(
+                    "Ce type de requête n'est pas supporté, merci d'utiliser le formulaire prévu pour envoyer votre fichier." );
+        }
+
+        return nomFichier;
+    }
+
+    private void ecrireFichier( InputStream contenuFichier, String nomFichier, String chemin )
+            throws FormValidationException {
+        /* Prépare les flux. */
+        BufferedInputStream entree = null;
+        BufferedOutputStream sortie = null;
+        try {
+            /* Ouvre les flux. */
+
+            File theDir = new File( chemin );
+
+            // if the directory does not exist, create it
+            if ( !theDir.exists() ) {
+                System.out.println( "creating directory: " + chemin );
+                boolean result = false;
+
+                try {
+                    theDir.mkdir();
+                    result = true;
+                } catch ( SecurityException se ) {
+                    // handle it
+                }
+                if ( result ) {
+                    System.out.println( "DIR created" );
+                }
+            }
+            entree = new BufferedInputStream( contenuFichier, TAILLE_TAMPON );
+            sortie = new BufferedOutputStream( new FileOutputStream( new File( chemin + nomFichier ) ),
+                    TAILLE_TAMPON );
+
+            /*
+             * Lit le fichier reçu et écrit son contenu dans un fichier sur le
+             * disque.
+             */
+            byte[] tampon = new byte[TAILLE_TAMPON];
+            int longueur = 0;
+            while ( ( longueur = entree.read( tampon ) ) > 0 ) {
+                sortie.write( tampon, 0, longueur );
+            }
+        } catch ( Exception e ) {
+            throw new FormValidationException( "Erreur lors de l'écriture du fichier sur le disque." );
+        } finally {
+            try {
+                sortie.close();
+            } catch ( IOException ignore ) {
+            }
+            try {
+                entree.close();
+            } catch ( IOException ignore ) {
+            }
+        }
+    }
+}

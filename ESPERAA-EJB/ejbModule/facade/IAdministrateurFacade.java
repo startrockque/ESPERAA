@@ -1,0 +1,119 @@
+package facade;
+
+import java.util.List;
+
+import dao.DAOException;
+import dto.FinanceurPorteurMinDTO;
+
+public interface IAdministrateurFacade {
+
+    /****************/
+    // Catégorie //
+    /****************/
+
+    /**
+     * Creation d'une categorie
+     * 
+     * @param titreCategorie
+     *            le titre de la catÃ©gorie
+     */
+    void creerCategorie( String titreCategorie );
+
+    /**
+     * Recuperer une categorie par son nom
+     * 
+     * @param nomCategorie
+     * @return
+     */
+    boolean verifierCategorie( String nomCategorie );
+
+    /**
+     * Récupère le nombre de catégories
+     * 
+     * @return le nombre de catégories
+     */
+    int recupererNbCategories();
+
+    /****************/
+    // Projet //
+    /****************/
+
+    /**
+     * Mise en avant d'un projet
+     * 
+     * @param idProjet
+     */
+    void mettreEnAvant( int idProjet );
+
+    /**
+     * Mise en arriï¿½re d'un projet
+     * 
+     * @param idProjet
+     */
+    void mettreEnArriere( int idProjet );
+
+    /**
+     * Provoque l'abandon d'un projet
+     * 
+     * @param idProjet
+     */
+    void cloturerProjet( int idProjet );
+
+    /**
+     * Récupère le nombre de projets
+     * 
+     * @return le nombre de projets
+     */
+    int recupererNbProjets();
+
+    /****************/
+    // Membres //
+    /****************/
+
+    /**
+     * Récupère la liste de tous les membres
+     * 
+     * @return
+     * @throws DAOException
+     */
+    List<FinanceurPorteurMinDTO> recupererTousLesMembres();
+
+    /****************/
+    // Compteurs //
+    /****************/
+
+    /**
+     * Récupère le nombre de membres
+     * 
+     * @return le nombre de membres
+     */
+    int recupererNbMembres();
+
+    /**
+     * Récupère le nombre de like
+     * 
+     * @return le nombre de like
+     */
+    int recupererNbAimes();
+
+    /**
+     * Récupère le nombre de messages
+     * 
+     * @return le nombre de messages
+     */
+    int recupererNbMessages();
+
+    /**
+     * Récupère le nombre d'investissements
+     * 
+     * @return le nombre de investissements
+     */
+    int recupererNbInvestissements();
+
+    /**
+     * Récupère le nombre de tags
+     * 
+     * @return le nombre de tags
+     */
+    int recupererNbTags();
+}

@@ -1,0 +1,7 @@
+@CHARSET "ISO-8859-1";
+@import url("dist/css/AdminLTE.min.css");
+
+.dashboard {
+	background: #E3E3E3 none repeat scroll 0% 0%;
+	padding: 15%;
+}

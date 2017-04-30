@@ -1,0 +1,76 @@
+package servlets.administrateur;
+
+import java.io.IOException;
+
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import facade.IFacadeCommune;
+
+/**
+ * Servlet implementation class PageAccueilEtRecherche
+ */
+@WebServlet( "/Admin/Accueil" )
+public class AccueilServlet extends HttpServlet {
+    private static final long   serialVersionUID         = 1L;
+
+    private static final String PAGE_ACCUEIL             = "/WEB-INF/admin/pageAccueil.jsp";
+
+    private static final String ATT_LIST_PROJET          = "listeProjets";
+    private static final String ATT_COMPLETION_PROJET    = "autoCompletionProjet";
+    private static final String ATT_LIST_TAG             = "listeTag";
+    private static final String ATT_LIST_PROJET_EN_AVANT = "listeEnAvant";
+    private static final String ATT_LIST_CATEGORIE       = "listeCategories";
+    private static final String ATT_LIST_PORTEUR         = "listePorteurs";
+
+    @EJB
+    private IFacadeCommune      facade;
+
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public AccueilServlet() {
+        super();
+    }
+
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+     *      response)
+     */
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        request.setAttribute( ATT_LIST_PROJET, facade.recupererTousLesProjets() );
+        dispatchPage( request, response );
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+     *      response)
+     */
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        dispatchPage( request, response );
+    }
+
+    /**
+     * Affichage de la jsp avec chargement des données
+     * 
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
+    private void dispatchPage( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        request.setAttribute( ATT_COMPLETION_PROJET, facade.recupererTousLesTitresDesProjets() );
+        request.setAttribute( ATT_LIST_TAG, facade.recupererTousLesTag() );
+        request.setAttribute( ATT_LIST_PROJET_EN_AVANT, facade.recupererProjetsEnAvant() );
+        request.setAttribute( ATT_LIST_CATEGORIE, facade.getAllCategoriesNames() );
+        request.setAttribute( ATT_LIST_PORTEUR, facade.recupererTousLesNomsDeFinanceurs() );
+        request.getRequestDispatcher( PAGE_ACCUEIL ).forward( request, response );
+    }
+}

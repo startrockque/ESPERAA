@@ -1,0 +1,77 @@
+package dao;
+
+import java.math.BigInteger;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
+import entities.Aime;
+
+@Stateless
+public class AimeDAO {
+	@PersistenceContext( unitName = "monUnite" )
+	private EntityManager em;
+
+	@EJB
+	private ProjetDAO projetDAO;
+
+	@EJB
+	private FinanceurDAO financeurDAO;
+
+
+	public void create( Aime obj ) throws DAOException {
+		try {
+			em.persist( obj );
+		} catch ( Exception e ) {
+			throw new DAOException( e );
+		}
+	}
+
+	public void delete( Aime obj ) throws DAOException {
+		try {
+			em.remove( em.merge( obj ) );
+		} catch ( Exception e ) {
+			throw new DAOException( e );
+		}
+	}
+
+	public Aime findById( int id ) throws DAOException {
+		try {
+			return em.find( Aime.class, id );
+		} catch ( Exception e ) {
+			throw new DAOException( e );
+		}
+	}
+
+	public List<Aime> findAll() throws DAOException {
+		try {
+			TypedQuery<Aime> query = em.createQuery( "SELECT a FROM Aime a ORDER BY a.idAime",
+					Aime.class );
+			return query.getResultList();
+		} catch ( Exception e ) {
+			throw new DAOException( e );
+		}
+	}
+
+	public Aime findByFinanceurAndProjet(int idProjet, String loginFinanceur) throws DAOException{
+		String ejbql = 
+				"SELECT a "
+						+ "FROM Aime a "
+						+ "WHERE a.financeur=?1 AND a.projet=?2 ";
+		Query query = em.createQuery(ejbql);
+		query.setParameter(1, financeurDAO.findByLogin(loginFinanceur));
+		query.setParameter(2, projetDAO.findById(idProjet));
+		return (Aime) query.getResultList().get(0);
+	}
+
+	public int getSize() {
+    	String sqlString = "SELECT COUNT(*) FROM AIME";
+        Query query = em.createNativeQuery( sqlString );
+		return ((BigInteger) query.getResultList().get(0)).intValue();
+	}
+}

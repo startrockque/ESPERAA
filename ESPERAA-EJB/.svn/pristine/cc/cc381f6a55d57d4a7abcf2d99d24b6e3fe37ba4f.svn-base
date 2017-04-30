@@ -1,0 +1,236 @@
+package dao;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
+import entities.FinanceurPorteur;
+import entities.Projet;
+import entities.Tag;
+
+/**
+ * Class inspir� d'open class room
+ */
+@Stateless
+public class ProjetDAO {
+	
+	@PersistenceContext( unitName = "monUnite" )
+	private EntityManager em;
+
+	@EJB
+	private TagDAO tagDao;
+	@EJB
+	private TrancheDAO trancheDao;
+	@EJB
+	private InvestissementDAO investissementDao;
+	@EJB
+	private FinanceurDAO membreDao;
+	
+	
+	public void create(Projet obj) throws DAOException {
+		try {
+            em.persist( obj );
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	public void delete(Projet obj) throws DAOException {
+		try {
+			for(Tag tag : obj.getTagList()){
+				tagDao.findByName(tag.getTag()).getProjeList().remove(obj);
+			}
+            em.remove( em.merge( obj ) );
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	public Projet findById(int id) throws DAOException {
+		try {
+            return em.find(Projet.class, id );
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+	
+	public List<Projet> findAll() throws DAOException {
+		try {
+            TypedQuery<Projet> query = em.createQuery( "SELECT p FROM Projet p ORDER BY p.idProjet", Projet.class );
+            return query.getResultList();
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<String> findAllTitles() {
+		return em.createQuery("SELECT p.titreProjet FROM Projet p ORDER BY p.titreProjet").getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Projet> findEnAvant(){
+		return em.createQuery("SELECT p FROM Projet p WHERE p.enAvant=true ORDER BY p.idProjet").getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Projet> findAllByTitre(String titre) throws DAOException {
+		try {
+			String ejbql = "SELECT p FROM Projet p WHERE p.titreProjet LIKE :pattern ORDER BY p.idProjet";
+			Query query = em.createQuery(ejbql);
+			query.setParameter("pattern", "%" + titre + "%");
+			return query.getResultList();
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Projet> findByCategorie(String categorie) {
+		Query query = em.createQuery("SELECT p FROM Projet p WHERE p.categorie.titreCategorie=?1 ORDER BY p.idProjet");
+		query.setParameter("1", categorie);
+		return query.getResultList();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Projet> findByPorteurLogin(String nomPorteur) throws DAOException {
+		try {
+			String ejbql = "SELECT p FROM Projet p WHERE p.porteur.nom LIKE :pattern ORDER BY p.idProjet";
+			Query query = em.createQuery(ejbql);
+			query.setParameter("pattern", "%" + nomPorteur + "%");
+			return query.getResultList();
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Projet> findByTitreCategorie(String titreProjet, String categorie) throws DAOException {
+		try {
+			String ejbql = "SELECT p FROM Projet p WHERE p.titreProjet LIKE :pattern AND p.categorie.titreCategorie=?1 ORDER BY p.idProjet";
+			Query query = em.createQuery(ejbql);
+			query.setParameter("pattern", titreProjet);
+			query.setParameter("1", categorie);
+			return query.getResultList();
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Projet> findByTitreNom(String titreProjet, String nomPorteur) throws DAOException {
+		try {
+			String ejbql = "SELECT p FROM Projet p WHERE p.titreProjet LIKE :pattern AND p.porteur.nom LIKE :pattern2 ORDER BY p.idProjet";
+			Query query = em.createQuery(ejbql);
+			query.setParameter("pattern", titreProjet);
+			query.setParameter("pattern2", nomPorteur);
+			return query.getResultList();
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Projet> findByCategorieNom(String categorie, String nomPorteur) throws DAOException {
+		try {
+			String ejbql = "SELECT p FROM Projet p WHERE p.categorie.titreCategorie=?1 AND p.porteur.nom LIKE :pattern ORDER BY p.idProjet";
+			Query query = em.createQuery(ejbql);
+			query.setParameter("pattern", "%" + nomPorteur + "%");
+			query.setParameter("1", categorie);
+			return query.getResultList();
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Projet findByTitre(String titreProjet) throws DAOException {
+		try {
+			Query query = em.createQuery("SELECT p FROM Projet p WHERE p.titreProjet=?1");
+			query.setParameter("1", titreProjet);
+			List<Projet> projetList = query.getResultList();
+			if (!projetList.isEmpty()) {
+				return projetList.get(0);
+			} else {
+				return null;
+			}
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Projet> findByTitreCategorieNom(String titreProjet, String categorie, String nomPorteur) throws DAOException {
+		try {
+			String ejbql = "SELECT p FROM Projet p WHERE p.titreProjet LIKE :pattern AND p.categorie.titreCategorie=?1 AND p.porteur.nom LIKE :pattern2 ORDER BY p.idProjet";
+			Query query = em.createQuery(ejbql);
+			query.setParameter("pattern", "%" + titreProjet + "%");
+			query.setParameter("1", categorie);
+			query.setParameter("pattern2", "%" + nomPorteur + "%");
+			return query.getResultList();
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+	
+	public List<Projet> findByTag(String[] stringTab){
+		List<Projet> projetTag = new ArrayList<Projet>();
+		try {
+			List<Tag> tagsList = new ArrayList<Tag>();
+			Tag tag;
+			for(String nomTag : stringTab){
+				tag = tagDao.findByName(nomTag);
+				if(tag != null){
+					tagsList.add(tag);
+				}
+			}
+			if(!tagsList.isEmpty()){
+				List<Projet> allProjets = findAll();
+				for(Projet p : allProjets){
+					projetTag.add(p);
+					for(Tag t : tagsList){
+						if(  p.getTagList() == null ||  (! p.getTagList().contains(t)) ){
+							projetTag.remove(p);
+						}
+					}
+				}
+			}
+		} catch (DAOException e) {
+			e.printStackTrace();
+		}
+		return projetTag;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Projet> findByLoginPorteur(String loginPorteur) throws DAOException {
+		try {
+			FinanceurPorteur membre = membreDao.findByLogin(loginPorteur);
+			Query query = em.createQuery("SELECT p FROM Projet p WHERE p.porteur=?1");
+			query.setParameter("1", membre);
+			List<Projet> projetList = query.getResultList();
+			if (!projetList.isEmpty()) {
+				return projetList;
+			} else {
+				return new ArrayList<Projet>();
+			}
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+	
+	public void mettreEnAvant(int idProjet){
+		Query query = em.createQuery("UPDATE Projet p SET p.enAvant=true WHERE p.idProjet=?1").setParameter(1, idProjet);
+		query.executeUpdate();
+	}
+	
+	public void mettreEnArriere(int idProjet){
+		Query query = em.createQuery("UPDATE Projet p SET p.enAvant=false WHERE p.idProjet=?1").setParameter(1, idProjet);
+		query.executeUpdate();
+	}
+}

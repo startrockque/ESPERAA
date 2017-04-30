@@ -1,0 +1,14 @@
+@CHARSET "ISO-8859-1";
+
+.bottomMargined {
+	margin-bottom: 20px;
+}
+
+.greyBack {
+	background-color: #eee;
+}
+
+.greyBackLegend {
+	padding: 1%;
+	background-color: #eee;
+}

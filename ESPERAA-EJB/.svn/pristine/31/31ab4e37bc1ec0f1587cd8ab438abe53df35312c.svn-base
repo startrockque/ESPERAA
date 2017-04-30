@@ -1,0 +1,73 @@
+package dao;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
+import entities.Investissement;
+
+
+@Stateless
+public class InvestissementDAO {
+
+	@PersistenceContext( unitName = "monUnite" )
+	private EntityManager em;
+	
+	@EJB
+	private FinanceurDAO financeurDAO;
+
+	public Investissement create(Investissement obj) throws DAOException {
+		try {
+            em.persist( obj );
+            return obj;
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	public void delete(Investissement obj) throws DAOException {
+		try {
+            em.remove( em.merge( obj ) );
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	public Investissement findById(int id) throws DAOException {
+		try {
+            return em.find( Investissement.class, id );
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	public List<Investissement> findAll() throws DAOException {
+		try {
+            TypedQuery<Investissement> query = em.createQuery( "SELECT i FROM Investissement i ORDER BY i.idInvestissement", Investissement.class );
+            return query.getResultList();
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Investissement> findByFinanceur(String loginFinanceur) throws DAOException{
+		try{
+			String ejbql = "SELECT i FROM Investissement i WHERE i.financeur=?1";
+			Query query = em.createQuery(ejbql);
+			query.setParameter("1", financeurDAO.findByLogin(loginFinanceur));
+			List<Investissement> invList = query.getResultList();
+			if(invList.isEmpty())
+				return new ArrayList<Investissement>();
+			else return invList;
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+}

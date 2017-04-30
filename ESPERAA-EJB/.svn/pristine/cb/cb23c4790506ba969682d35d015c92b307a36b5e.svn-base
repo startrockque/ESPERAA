@@ -1,0 +1,83 @@
+package entities;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+
+/**
+ * Classe abstraite pour les utilisateurs
+ * @author Fabien
+ * @see Admin
+ * @see FinanceurPorteur
+ */
+@Entity
+@Inheritance(strategy=InheritanceType.JOINED)
+public abstract class AUtilisateur {
+
+	@Id
+	protected String login;
+	protected String nom;
+	protected String mdp;
+	protected String email;
+
+	/* ************* *
+	 *  Constructeur 
+	 * ************* */
+	
+	public AUtilisateur() {
+		
+	}
+
+	public AUtilisateur(String nom, String login, String mdp, String email) {
+		super();
+		this.login = login;
+		this.nom = nom;
+		this.mdp = mdp;
+		this.email = email;
+	}
+	
+
+	/* ***************** *
+	 *  Getter et Setter *
+	 * ***************** */
+
+	public String getLogin() {
+		return login;
+	}
+
+	public void setLogin(String login) {
+		this.login = login;
+	}
+
+	public String getNom() {
+		return nom;
+	}
+
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+	
+	public String getMdp() {
+		return mdp;
+	}
+
+	public void setMdp(String mdp) {
+		this.mdp = mdp;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	@Override
+	public String toString() {
+		return "AUtilisateur [nom=" + login + "]";
+	}	
+	
+	
+}

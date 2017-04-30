@@ -1,0 +1,13 @@
+package dto;
+
+import entities.Admin;
+
+public class AdminDTO extends AUtilisateurDTO{
+
+	public AdminDTO(Admin admin) {
+		this.login = admin.getLogin();
+		this.nom = admin.getNom();
+		this.mdp = admin.getMdp();
+		this.email = admin.getEmail();
+	}
+}

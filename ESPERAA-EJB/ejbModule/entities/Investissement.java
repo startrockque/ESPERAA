@@ -1,0 +1,68 @@
+package entities;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
+@Entity
+public class Investissement {
+
+    @Id
+    @GeneratedValue
+    private int              idInvestissement;
+    private int              sommeInvestie;
+    @ManyToOne
+    private FinanceurPorteur financeur;
+    @ManyToOne
+    private Tranche          tranche;
+
+    /* ************* *
+     * Constructeur * *************
+     */
+
+    public Investissement() {
+
+    }
+
+    public Investissement( int sommeInvestie, FinanceurPorteur financeur ) {
+        this.sommeInvestie = sommeInvestie;
+        this.financeur = financeur;
+    }
+
+    /* ***************** *
+     * Getter et Setter * *****************
+     */
+
+    public int getIdInvestissement() {
+        return idInvestissement;
+    }
+
+    public void setIdInvestissement( int idInvestissement ) {
+        this.idInvestissement = idInvestissement;
+    }
+
+    public int getSommeInvestie() {
+        return sommeInvestie;
+    }
+
+    public void setSommeInvestie( int sommeInvestie ) {
+        this.sommeInvestie = sommeInvestie;
+    }
+
+    public FinanceurPorteur getFinanceur() {
+        return financeur;
+    }
+
+    public void setFinanceur( FinanceurPorteur financeur ) {
+        this.financeur = financeur;
+    }
+
+    public Tranche getTranche() {
+        return tranche;
+    }
+
+    public void setTranche( Tranche tranche ) {
+        this.tranche = tranche;
+    }
+}

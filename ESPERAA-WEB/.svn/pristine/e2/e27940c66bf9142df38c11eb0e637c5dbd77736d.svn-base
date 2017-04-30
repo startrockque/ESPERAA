@@ -1,0 +1,55 @@
+package servlets.administrateur;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import dto.FinanceurPorteurDTO;
+import dto.TousLesProjetsDTO;
+import facade.IFacadeCommune;
+
+/**
+ * Servlet implementation class AfficherProjet
+ */
+@WebServlet( "/Admin/AfficherProfil" )
+public class AfficherProfilServlet extends HttpServlet {
+    private static final long       serialVersionUID      = 1L;
+
+    private static final String     PAGE_AFFICHER_PROFIL  = "/WEB-INF/admin/pageAfficherProfilFinanceur.jsp";
+
+    private static final String     ATT_MES_PROJETS_LIST  = "listeProjets";
+    private static final String     ATT_MEMBRE_PROFIL     = "financeur";
+    private static final String 	ATT_NB_PROJETS        = "nbProjets";
+
+    private static final String     CHAMP_LOGIN_FINANCEUR = "loginFinanceur";
+
+    @EJB
+    private IFacadeCommune          facadeCommune;
+
+    private String                  loginFinanceur;
+
+    public AfficherProfilServlet() {
+        super();
+    }
+
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+        loginFinanceur = request.getParameter( CHAMP_LOGIN_FINANCEUR );
+        FinanceurPorteurDTO membreProfil = facadeCommune.findFinanceurDTOByLogin( loginFinanceur );
+        request.setAttribute( ATT_MEMBRE_PROFIL, membreProfil );
+        List<TousLesProjetsDTO> sesProjets = facadeCommune.recupererMesProjets( loginFinanceur );
+        request.setAttribute( ATT_MES_PROJETS_LIST, sesProjets );
+        request.setAttribute( ATT_NB_PROJETS, facadeCommune.recupererMesProjets( loginFinanceur ).size());
+        request.getRequestDispatcher( PAGE_AFFICHER_PROFIL ).forward( request, response );
+    }
+
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+
+    }
+}

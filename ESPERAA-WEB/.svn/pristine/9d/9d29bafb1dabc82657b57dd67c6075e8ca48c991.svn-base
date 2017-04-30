@@ -1,0 +1,25 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<fieldset class="searchForm">
+	<legend>Listes Prédéfinies</legend>  
+		<div class="form-group" id="categorieForm">
+			<!-- 		TAG -->
+			<c:forEach var="tag" items="${tagsPop}">
+				<c:url value="/Membre/Rechercher" var="rechercherParTag"> 
+					<c:param name="tagProjet" value="${tag}"/>
+					<c:param name="action" value="simpleTag"/>
+				</c:url>
+				<a href="<c:out value="${rechercherParTag}" />"> #<c:out value="${tag}" /> </a></br> 
+			</c:forEach>
+			
+			<!-- 		CATEGORIES -->
+			<c:forEach var="categoriePop" items="${categoriesPop}">
+				<c:url value="/Membre/Rechercher" var="rechercherParCategorie"> 
+					<c:param name="categorie" value="${categoriePop}"/>
+					<c:param name="action" value="simpleCat"/>
+				</c:url>
+				<a href="<c:out value="${rechercherParCategorie}" />"> <c:out value="${categoriePop}" /> </a></br> 
+			</c:forEach>
+		</div>
+</fieldset>

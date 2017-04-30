@@ -1,0 +1,90 @@
+package servlets.administrateur;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import dto.TousLesProjetsDTO;
+import facade.IAdministrateurFacade;
+import facade.IFacadeCommune;
+
+/**
+ * Servlet implementation class MettreEnAvant
+ */
+@WebServlet( "/Admin/MettreEnAvant" )
+public class MettreEnAvantProjetServlet extends HttpServlet {
+    private static final long     serialVersionUID       = 1L;
+
+    private static final String   ATT_LIST_PROJET        = "listeProjets";
+    private static final String   ATT_MESSAGE            = "message";
+    private static final String   ATT_ID_PROJET          = "idProjet";
+    private static final String   ATT_MISE_EN_AVANT      = "mea";
+
+    private static final String   ACTION_METTRE_EN_AVANT = "Mettre en avant";
+
+    @EJB
+    private IFacadeCommune        facadeCommune;
+    @EJB
+    private IAdministrateurFacade facadeAdmin;
+
+    public MettreEnAvantProjetServlet() {
+        super();
+    }
+
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+     *      response)
+     */
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+     *      response)
+     */
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        String mettreEnAvant = request.getParameter( ATT_MISE_EN_AVANT );
+        if ( mettreEnAvant.equals( ACTION_METTRE_EN_AVANT ) ) {
+            mettreEnAvant( request, response );
+        } else {
+            mettreEnArriere( request, response );
+        }
+        request.setAttribute( ATT_LIST_PROJET, facadeCommune.recupererTousLesProjets() );
+        response.sendRedirect(request.getHeader("referer"));
+    }
+
+    /**
+     * Appel de la fonction pour mettre en avant les projets
+     * 
+     * @param request
+     * @param response
+     */
+    private void mettreEnAvant( HttpServletRequest request, HttpServletResponse response ) {
+        List<TousLesProjetsDTO> enAvant = facadeCommune.recupererProjetsEnAvant();
+        if ( enAvant.size() < 10 ) {
+            int idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
+            facadeAdmin.mettreEnAvant( idProjet );
+        } else {
+            request.setAttribute( ATT_MESSAGE, "Vous ne pouvez pas mettre en avant plus de 10 projets" );
+        }
+    }
+
+    /**
+     * Appel de la fonction pour qu'un projet ne soit plus mis en avant
+     * 
+     * @param request
+     * @param response
+     */
+    private void mettreEnArriere( HttpServletRequest request, HttpServletResponse response ) {
+        int idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
+        facadeAdmin.mettreEnArriere( idProjet );
+    }
+}

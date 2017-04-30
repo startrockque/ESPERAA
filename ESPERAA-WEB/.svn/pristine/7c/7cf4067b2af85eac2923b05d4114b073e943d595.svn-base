@@ -1,0 +1,412 @@
+package servlets.financeurPorteur;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import dto.TousLesProjetsDTO;
+import facade.IFacadeCommune;
+import facade.IFinanceurPorteurFacade;
+
+/**
+ * Servlet implementation class RechercherParTag
+ */
+@WebServlet( "/Membre/Rechercher" )
+public class RechercherServlet extends HttpServlet {
+    private static final long       serialVersionUID                  = 1L;
+
+    private static final String     PAGE_ACCUEIL                      = "/WEB-INF/financeurPorteur/pageAccueil.jsp";
+
+    private static final String     CHAMP_TITRE                       = "titreProjet";
+    private static final String     CHAMP_CATEGORIE                   = "categorie";
+    private static final String     CHAMP_LOGIN_PORTEUR               = "nomPorteur";
+    private static final String     CHAMP_CHECK_BOX_RECHERCHE         = "recherche";
+
+    private static final String     CHECK_BOX_TITRE                   = "Titre";
+    private static final String     CHECK_BOX_CATEGORIE               = "Categorie";
+
+    private static final String     ATT_LIST_PROJET                   = "listeProjets";
+    private static final String     ATT_AUTO_COMPLETION_PROJET        = "autoCompletionProjet";
+    private static final String     ATT_LIST_PROJET_TAG               = "listeTag";
+    private static final String     ATT_LIST_PROJET_EN_AVANT          = "listeEnAvant";
+    private static final String     ATT_LIST_PROJET_CATEGORIE         = "listeCategories";
+    private static final String     ATT_AUTO_COMPLETION_PORTEUR       = "listePorteurs";
+    private static final String     ATT_TAG_PROJET                    = "tagProjet";
+    private static final String     ATT_ACTION                        = "action";
+    private static final String     ATT_NUMERO_PAGE                   = "numeroPage";
+    private static final String     ATT_NB_PAGE                       = "nbPage";
+    private static final String     ATT_TAG_POP                       = "tagsPop";
+    private static final String     ATT_CATEGORIE_POP                 = "categoriesPop";
+
+    private static final String     ACTION_RECHERCHE_SIMPLE_TAG       = "simpleTag";
+    private static final String     ACTION_RECHERCHE_SIMPLE_CATEGORIE = "simpleCat";
+    private static final String     ACTION_RECHERCHE_SIMPLE_PROJET    = "simpleTitre";
+    private static final String     ACTION_RECHERCHE_SIMPLE_LOGIN     = "simpleName";
+    private static final String     ACTION_PROJET_PLUS_FINANCES       = "projetsPlusFinances";
+    private static final String     ACTION_PROJET_PRESQUE_FINANCES    = "projetsPresqueFinances";
+    private static final String     ACTION_PROJET_PLUS_AIMES          = "projetsAimes";
+
+    private static final int        CONST_NB_PROJET_PAR_PAGE          = 9;
+
+    private int                     numeroPageCourante;
+
+    @EJB
+    private IFacadeCommune          facadeCommune;
+    @EJB
+    private IFinanceurPorteurFacade facadeMembre;
+
+    public RechercherServlet() {
+        super();
+    }
+
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        String btn = request.getParameter( ATT_ACTION );
+        if ( btn != null ) {
+            switch ( btn ) {
+            case ACTION_PROJET_PLUS_AIMES:
+                chercherProjetPlusAimes( request, response );
+                break;
+            case ACTION_RECHERCHE_SIMPLE_CATEGORIE:
+                chercherParCategorie( request, response );
+                break;
+            case ACTION_RECHERCHE_SIMPLE_TAG:
+                chercherParTag( request, response );
+                break;
+            case ACTION_PROJET_PLUS_FINANCES:
+                chercherProjetPlusFinances( request, response );
+                break;
+            case ACTION_PROJET_PRESQUE_FINANCES:
+                chercherProjetPresqueFinances( request, response );
+                break;
+            default:
+                break;
+            }
+        }
+        dispatchPage( request, response );
+    }
+
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        String[] checkedIds = request.getParameterValues( CHAMP_CHECK_BOX_RECHERCHE );
+
+        // Recherche simple
+        if ( checkedIds == null ) {
+            String btn = request.getParameter( ATT_ACTION );
+            if ( btn != null ) {
+                switch ( btn ) {
+                case ACTION_RECHERCHE_SIMPLE_PROJET:
+                    chercherParTitre( request, response );
+                    break;
+                case ACTION_RECHERCHE_SIMPLE_CATEGORIE:
+                    chercherParCategorie( request, response );
+                    break;
+                case ACTION_RECHERCHE_SIMPLE_LOGIN:
+                    chercherParPorteur( request, response );
+                    break;
+                case ACTION_RECHERCHE_SIMPLE_TAG:
+                    chercherParTag( request, response );
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+        // Recherche crois�e
+        else {
+            /*
+             * Les cas sont : - Titre - Categorie - Nom - Titre & Cat�gorie -
+             * Titre & Nom - Cat�gorie & Nom - Titre & Cat�gorie & Nom
+             */
+            switch ( checkedIds.length ) {
+            case 1:
+                if ( checkedIds[0].equals( CHECK_BOX_TITRE ) ) {
+                    chercherParTitre( request, response );
+                } else if ( checkedIds[0].equals( CHECK_BOX_CATEGORIE ) ) {
+                    chercherParCategorie( request, response );
+                } else {
+                    chercherParPorteur( request, response );
+                }
+                break;
+            case 2:
+                if ( checkedIds[0].equals( CHECK_BOX_TITRE ) ) {
+                    if ( checkedIds[1].equals( CHECK_BOX_CATEGORIE ) ) {
+                        chercherParTitreCategorie( request, response );
+                    } else {
+                        chercherParTitreNom( request, response );
+                    }
+                } else {
+                    chercherParCategorieNom( request, response );
+                }
+                break;
+            case 3:
+                chercherParTitreCategorieNom( request, response );
+                break;
+            default:
+            }
+        }
+        dispatchPage( request, response );
+    }
+
+    /**
+     * Appel de la recherche par titre
+     * 
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
+    private void chercherParTitre( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        String titreProjet = request.getParameter( CHAMP_TITRE );
+        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
+        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTitre( titreProjet );
+        if ( numeroPageString == null ) {
+            numeroPageCourante = 1;
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        } else {
+            numeroPageCourante = Integer.parseInt( numeroPageString );
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        }
+        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
+    }
+
+    /**
+     * Appel de la recherche pas cat�gorie
+     * 
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
+    private void chercherParCategorie( HttpServletRequest request, HttpServletResponse response )
+            throws ServletException, IOException {
+        String categorie = request.getParameter( CHAMP_CATEGORIE );
+        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
+        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParCatgeorie( categorie );
+        if ( numeroPageString == null ) {
+            numeroPageCourante = 1;
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        } else {
+            numeroPageCourante = Integer.parseInt( numeroPageString );
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        }
+        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
+    }
+
+    /**
+     * Appel de la recherche par porteur
+     * 
+     * @param request
+     * @param response
+     */
+    private void chercherParPorteur( HttpServletRequest request, HttpServletResponse response ) {
+        String porteur = request.getParameter( CHAMP_LOGIN_PORTEUR );
+        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
+        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParPorteur( porteur );
+        if ( numeroPageString == null ) {
+            numeroPageCourante = 1;
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        } else {
+            numeroPageCourante = Integer.parseInt( numeroPageString );
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        }
+        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
+    }
+
+    /**
+     * Appel de la recherche par tag
+     * 
+     * @param request
+     * @param response
+     */
+    private void chercherParTag( HttpServletRequest request, HttpServletResponse response ) {
+        String tags = request.getParameter( ATT_TAG_PROJET );
+        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
+        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTag( tags );
+        if ( numeroPageString == null ) {
+            numeroPageCourante = 1;
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        } else {
+            numeroPageCourante = Integer.parseInt( numeroPageString );
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        }
+        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
+    }
+
+    private void chercherProjetPlusFinances( HttpServletRequest request, HttpServletResponse response ) {
+        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
+        List<TousLesProjetsDTO> listProjet = facadeCommune.recupererProjetsPlusFinances( 9 );
+        if ( numeroPageString == null ) {
+            numeroPageCourante = 1;
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        } else {
+            numeroPageCourante = Integer.parseInt( numeroPageString );
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        }
+        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
+    }
+
+    private void chercherProjetPlusAimes( HttpServletRequest request, HttpServletResponse response ) {
+        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
+        List<TousLesProjetsDTO> listProjet = facadeCommune.recupererProjetsPlusAimes( 9 );
+        if ( numeroPageString == null ) {
+            numeroPageCourante = 1;
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        } else {
+            numeroPageCourante = Integer.parseInt( numeroPageString );
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        }
+        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
+    }
+
+    private void chercherProjetPresqueFinances( HttpServletRequest request, HttpServletResponse response ) {
+        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
+        List<TousLesProjetsDTO> listProjet = facadeCommune.recupererProjetsPresqueFinances( 9 );
+        if ( numeroPageString == null ) {
+            numeroPageCourante = 1;
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        } else {
+            numeroPageCourante = Integer.parseInt( numeroPageString );
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        }
+        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
+    }
+
+    /**
+     * Appel de la fonction de techerche par titre et cat�gorie
+     * 
+     * @param request
+     * @param response
+     */
+    private void chercherParTitreCategorie( HttpServletRequest request, HttpServletResponse response ) {
+        String titreProjet = request.getParameter( CHAMP_TITRE );
+        String categorie = request.getParameter( CHAMP_CATEGORIE );
+        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTitreCatgeorie( titreProjet, categorie );
+        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
+        if ( numeroPageString == null ) {
+            numeroPageCourante = 1;
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        } else {
+            numeroPageCourante = Integer.parseInt( numeroPageString );
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        }
+        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
+    }
+
+    /**
+     * Appel de la fonction de recherce par titre et par porteur
+     * 
+     * @param request
+     * @param response
+     */
+    private void chercherParTitreNom( HttpServletRequest request, HttpServletResponse response ) {
+        String titreProjet = request.getParameter( CHAMP_TITRE );
+        String nomPorteur = request.getParameter( CHAMP_LOGIN_PORTEUR );
+        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTitreNom( titreProjet, nomPorteur );
+        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
+        if ( numeroPageString == null ) {
+            numeroPageCourante = 1;
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        } else {
+            numeroPageCourante = Integer.parseInt( numeroPageString );
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        }
+        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
+    }
+
+    /**
+     * Appel de la fonction de recherche par cat�gorie et par porteur
+     * 
+     * @param request
+     * @param response
+     */
+    private void chercherParCategorieNom( HttpServletRequest request, HttpServletResponse response ) {
+        String categorie = request.getParameter( CHAMP_CATEGORIE );
+        String nomPorteur = request.getParameter( CHAMP_LOGIN_PORTEUR );
+        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParCatgeorieNom( categorie, nomPorteur );
+        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
+        if ( numeroPageString == null ) {
+            numeroPageCourante = 1;
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        } else {
+            numeroPageCourante = Integer.parseInt( numeroPageString );
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        }
+        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
+    }
+
+    /**
+     * Appel de la fonction de recherche avec 3 param�tres
+     * 
+     * @param request
+     * @param response
+     */
+    private void chercherParTitreCategorieNom( HttpServletRequest request, HttpServletResponse response ) {
+        String titreProjet = request.getParameter( CHAMP_TITRE );
+        String categorie = request.getParameter( CHAMP_CATEGORIE );
+        String nomPorteur = request.getParameter( CHAMP_LOGIN_PORTEUR );
+        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTitreCatgeorieNom( titreProjet, categorie,
+                nomPorteur );
+        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
+        if ( numeroPageString == null ) {
+            numeroPageCourante = 1;
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        } else {
+            numeroPageCourante = Integer.parseInt( numeroPageString );
+            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+        }
+        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
+    }
+
+    /**
+     * Affichage de la jsp avec chargement des donn�es
+     * 
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
+    private void dispatchPage( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        request.setAttribute( ATT_TAG_POP, facadeCommune.listeTagPopulaire( 3 ) );
+        request.setAttribute( ATT_CATEGORIE_POP, facadeCommune.listeCategoriePopulaire( 3 ) );
+        request.setAttribute( ATT_AUTO_COMPLETION_PROJET, facadeCommune.recupererTousLesTitresDesProjets() );
+        request.setAttribute( ATT_LIST_PROJET_TAG, facadeCommune.recupererTousLesTagName() );
+        request.setAttribute( ATT_LIST_PROJET_EN_AVANT, facadeCommune.recupererProjetsEnAvant() );
+        request.setAttribute( ATT_LIST_PROJET_CATEGORIE, facadeCommune.getAllCategoriesNames() );
+        request.setAttribute( ATT_AUTO_COMPLETION_PORTEUR, facadeCommune.recupererTousLesNomsDeFinanceurs() );
+        request.getRequestDispatcher( PAGE_ACCUEIL ).forward( request, response );
+    }
+
+    private List<TousLesProjetsDTO> recupererProjetPage( List<TousLesProjetsDTO> projetAllList, int numeroPage,
+            HttpServletRequest request ) {
+        int indexFin = 0;
+        int indexDeb = ( numeroPage - 1 ) * CONST_NB_PROJET_PAR_PAGE;
+
+        List<TousLesProjetsDTO> projetPageList = new ArrayList<TousLesProjetsDTO>();
+        if ( indexDeb + CONST_NB_PROJET_PAR_PAGE > projetAllList.size() ) {
+            indexFin = projetAllList.size();
+        } else {
+            indexFin = indexDeb + CONST_NB_PROJET_PAR_PAGE;
+        }
+        int nbPage = 0;
+        for ( int i = 0; i < projetAllList.size(); i = i + CONST_NB_PROJET_PAR_PAGE ) {
+            nbPage++;
+        }
+
+        request.setAttribute( ATT_NB_PAGE, nbPage );
+        for ( int i = indexDeb; i < indexFin; i++ ) {
+            projetPageList.add( projetAllList.get( i ) );
+        }
+
+        return projetPageList;
+    }
+}

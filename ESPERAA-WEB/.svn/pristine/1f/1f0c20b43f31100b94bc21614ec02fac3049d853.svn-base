@@ -1,0 +1,52 @@
+package servlets.administrateur.gestionProjets;
+
+import java.io.IOException;
+
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import dto.ProjetDTO;
+import facade.IFacadeCommune;
+
+/**
+ * Servlet implementation class AfficherProjet
+ */
+@WebServlet( "/Admin/AfficherProjet" )
+public class AfficherProjetServlet extends HttpServlet {
+    private static final long   serialVersionUID     = 1L;
+    private int                 idProjet;
+
+    private static final String PAGE_AFFICHER_PROJET = "/WEB-INF/admin/pageAfficherProjet.jsp";
+
+    private static final String ATT_ID_PROJET        = "idProjet";
+    private static final String ATT_PROJET           = "projet";
+    private static final String ATT_NB_PROJETS       = "nbProjets";
+
+    @EJB
+    private IFacadeCommune      facade;
+
+    public AfficherProjetServlet() {
+        super();
+    }
+
+    /**
+     * Affiche la page complete d'un projet
+     */
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
+        ProjetDTO projet = facade.findProjetById( idProjet );
+        request.setAttribute( ATT_PROJET, projet );
+        request.setAttribute( ATT_NB_PROJETS, facade.recupererMesProjets( projet.getPorteur().getLogin() ).size() );
+        request.getRequestDispatcher( PAGE_AFFICHER_PROJET ).forward( request, response );
+    }
+
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+
+    }
+}

@@ -1,0 +1,38 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<c:choose>
+  	<c:when test="${not empty notifications}">	
+		<li class="dropdown">
+			<c:set var="nbNotif" scope="page" value="${fn:length(notifications)}"/>
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-envelope"></i> <span class="badge badge-notify">${nbNotif}</span> Notifications<b class="caret"></b></a>
+			<ul class="dropdown-menu">
+				<c:forEach items="${notifications}" var="notification">
+		        	<li>
+						<div class="col-md-3 widther notification">
+			    	    	<c:out value="${notification.notification}"/>
+			        	</div>
+		        	</li>
+		       	</c:forEach>
+		       	<li>
+			       	<form class="navbar-form col-md-3 widther" role="search" action="ViderNotifications" method="post" role="form">
+			       		<div class="input-group-btn">
+							<button value="simpleTitre" name="action" class="higher btn btn-primary btn-danger col-md-offset-4 col-md-4" type="submit" ><i class="glyphicon glyphicon-trash"></i> Vider</button>	
+						</div>
+					</form>
+				</li>
+		 	</ul>
+		</li>
+	</c:when> 
+	<c:otherwise>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-envelope"></i><span class="badge badge-notify">${nbNotif}</span> Notifications<b class="caret"></b></a>
+			<ul class="dropdown-menu">
+				<li>
+					<div class="col-md-3 widther">
+		    	    	<i>Aucune notification</i>
+		        	</div>
+	        	</li>
+		 	</ul>
+		</li>
+	</c:otherwise>
+</c:choose>  

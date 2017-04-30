@@ -1,0 +1,67 @@
+package dto;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import entities.Message;
+
+public class MessageDTO implements Comparable<MessageDTO> {
+	private int idMessage;
+	private Calendar dateMessage;
+	private String message;
+	private String emetteur;
+	
+	public MessageDTO(Message message){
+		this.idMessage=message.getIdMessage();
+		this.dateMessage=message.getDateMessage();
+		this.message = message.getMessage();
+		this.emetteur = message.getEmetteur().getLogin();
+		
+	}
+	
+	public int getIdMessage() {
+		return idMessage;
+	}
+	public void setIdMessage(int idMessage) {
+		this.idMessage = idMessage;
+	}
+	public Calendar getDateMessage() {
+		return dateMessage;
+	}
+	public void setDateMessage(Calendar dateMessage) {
+		this.dateMessage = dateMessage;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getEmetteur() {
+		return emetteur;
+	}
+
+	public void setEmetteur(String emetteur) {
+		this.emetteur = emetteur;
+	}
+
+	public String getDateHeureMessage() {
+		SimpleDateFormat formater = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy");
+		String dateHeure = formater.format(dateMessage.getTime());
+		String date = dateHeure.substring(9);
+		String heure = dateHeure.substring(0, 8);
+		return heure + " le " + date;
+	}
+
+	@Override
+	public int compareTo(MessageDTO o) {
+		return this.dateMessage.compareTo(o.getDateMessage());
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		MessageDTO message = (MessageDTO) obj;
+		return message.getIdMessage() == this.idMessage;
+	}
+}

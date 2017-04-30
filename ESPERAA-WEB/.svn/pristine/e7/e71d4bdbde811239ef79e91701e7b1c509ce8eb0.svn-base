@@ -1,0 +1,77 @@
+package servlets.financeurPorteur;
+
+import java.io.IOException;
+
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import facade.IFacadeCommune;
+import facade.IFinanceurPorteurFacade;
+
+/**
+ * Servlet implementation class PageAccueilEtRecherche
+ */
+@WebServlet( "/Membre/Accueil" )
+public class AccueilServlet extends HttpServlet {
+    private static final long       serialVersionUID         = 1L;
+
+    private static final String     PAGE_ACCUEIL             = "/WEB-INF/financeurPorteur/pageAccueil.jsp";
+
+    private static final String     ATT_LIST_PROJET          = "listeProjets";
+    private static final String     ATT_LIST_PROJET_EN_AVANT = "listeEnAvant";
+
+    private static final String     ATT_TAG_POP              = "tagsPop";
+    private static final String     ATT_CATEGORIE_POP        = "categoriesPop";
+
+    @EJB
+    private IFacadeCommune          facadeCommune;
+
+    @EJB
+    private IFinanceurPorteurFacade facadeMembre;
+
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public AccueilServlet() {
+        super();
+    }
+
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+     *      response)
+     */
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        request.setAttribute( ATT_LIST_PROJET, facadeCommune.recupererTousLesProjets() );
+        dispatchPage( request, response );
+    }
+
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+     *      response)
+     */
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        dispatchPage( request, response );
+    }
+
+    /**
+     * Affichage de la jsp avec chargement des donn�es
+     * 
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
+    private void dispatchPage( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        request.setAttribute( ATT_TAG_POP, facadeCommune.listeTagPopulaire( 3 ) );
+        request.setAttribute( ATT_CATEGORIE_POP, facadeCommune.listeCategoriePopulaire( 3 ) );
+        request.setAttribute( ATT_LIST_PROJET_EN_AVANT, facadeCommune.recupererProjetsEnAvant() );
+        request.getRequestDispatcher( PAGE_ACCUEIL ).forward( request, response );
+    }
+}

@@ -1,0 +1,49 @@
+package servlets.financeurPorteur.gestionProjets;
+
+import java.io.IOException;
+
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import dto.ProjetDTO;
+import facade.IFacadeCommune;
+
+/**
+ * Servlet implementation class AfficherProjet
+ */
+@WebServlet( "/Membre/AfficherProjet" )
+public class AfficherProjetServlet extends HttpServlet {
+    private static final long   serialVersionUID     = 1L;
+
+    private static final String PAGE_AFFICHER_PROJET = "/WEB-INF/financeurPorteur/pageAfficherProjet.jsp";
+
+    private static final String ATT_ID_PROJET        = "idProjet";
+    private static final String ATT_PROJET           = "projet";
+    private static final String ATT_NB_PROJETS       = "nbProjets";
+
+    private int                 idProjet;
+
+    @EJB
+    private IFacadeCommune      facadeCommune;
+
+    public AfficherProjetServlet() {
+        super();
+    }
+
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+            IOException {
+        idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
+        ProjetDTO projet = facadeCommune.findProjetDTOById( idProjet );
+        request.setAttribute( ATT_NB_PROJETS, facadeCommune.recupererMesProjets(projet.getPorteur().getLogin()).size());
+        request.setAttribute( ATT_PROJET, projet );
+        request.getRequestDispatcher( PAGE_AFFICHER_PROJET ).forward( request, response );
+    }
+
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+
+    }
+}

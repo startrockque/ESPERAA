@@ -1,0 +1,27 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>Tous les membres</title>
+	<link href="../css/style.css" rel="stylesheet" type="text/css">
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+
+	<c:import url="commun/bar_nav.jsp"/>
+	
+	<div class="container">
+       	<div class="row">
+			<c:forEach var="membre" items="${listMembres}">
+				<c:url value="/Admin/AfficherProfil" var="afficherProfil"> 
+					<c:param name="loginFinanceur" value="${membre.login}"/>
+				</c:url>
+				<a href="<c:out value="${afficherProfil}" />"> <c:out value="${membre.login}" /> </a>
+			</c:forEach>
+		</div>
+	</div>
+</body>
+</html>

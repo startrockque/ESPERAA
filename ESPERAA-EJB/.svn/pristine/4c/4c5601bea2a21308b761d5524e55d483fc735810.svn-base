@@ -1,0 +1,44 @@
+package dto;
+
+import entities.Aime;
+
+public class AimeDTO {
+
+	private int idAime;
+	private FinanceurPorteurDTO financeur;
+	private TousLesProjetsDTO projet;
+	
+	public AimeDTO(Aime aime){
+		this.idAime = aime.getIdAime();
+		this.financeur = new FinanceurPorteurDTO(aime.getFinanceur());
+		this.projet = new TousLesProjetsDTO(aime.getProjet());
+	}
+
+	public int getIdAime() {
+		return idAime;
+	}
+
+	public void setIdAime(int idAime) {
+		this.idAime = idAime;
+	}
+
+	public FinanceurPorteurDTO getFinanceur() {
+		return financeur;
+	}
+
+	public void setFinanceur(FinanceurPorteurDTO financeur) {
+		this.financeur = financeur;
+	}
+
+	public TousLesProjetsDTO getProjet() {
+		return projet;
+	}
+
+	public void setProjet(TousLesProjetsDTO projet) {
+		this.projet = projet;
+	}
+
+	
+	
+	
+}

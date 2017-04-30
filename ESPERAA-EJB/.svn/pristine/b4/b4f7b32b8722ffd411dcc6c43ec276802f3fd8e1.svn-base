@@ -1,0 +1,83 @@
+package dao;
+
+import java.util.List;
+
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
+import entities.FinanceurPorteur;
+
+@Stateless
+public class FinanceurDAO {
+	
+	@PersistenceContext( unitName = "monUnite" )
+	private EntityManager em;
+
+	/**
+	 * Creer un FinanceurPorteur en BDD
+	 * @param obj FinanceurPorteur entity
+	 * @throws DAOException 
+	 */
+	public void create(FinanceurPorteur obj) throws DAOException {
+		try {
+            em.persist( obj );
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	/**
+	 * Supprimer un FinanceurPorteur en BDD
+	 * @param obj FinanceurPorteur entity
+	 * @throws DAOException
+	 */
+	public void delete(FinanceurPorteur obj) throws DAOException {
+		try {
+            em.remove( em.merge( obj ) );
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	/**
+	 * Trouver un FinanceurPorteur par son nom
+	 * @param nom nom du FinanceurPorteur
+	 * @return le FinanceurPorteur
+	 * @throws DAOException
+	 */
+	public FinanceurPorteur findByLogin(String nom) throws DAOException {
+		try {
+            return em.find( FinanceurPorteur.class, nom );
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+	
+	/**
+	 * Recuperer tous les FinanceurPorteur de la BDD
+	 * @return une liste contenant tous les FinanceurPorteur
+	 * @throws DAOException
+	 */
+	public List<FinanceurPorteur> findAll() throws DAOException {
+		try {
+            TypedQuery<FinanceurPorteur> query = em.createQuery( "SELECT c FROM FinanceurPorteur c ORDER BY c.login", FinanceurPorteur.class );
+            return query.getResultList();
+        } catch ( Exception e ) {
+            throw new DAOException( e );
+        }
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<String> findAllLogins() throws DAOException {
+		try {
+			Query query = em.createQuery("Select f.login FROM FinanceurPorteur f ORDER BY f.login");
+			return query.getResultList();
+		} catch (Exception e) {
+			throw new DAOException(e);
+		}
+	}	
+}
+
