@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import servlets.financeurPorteur.forms.FormValidationException;
 import servlets.utilitaire.ImageUtilitaire;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 /**
  * Servlet implementation class Inscription
@@ -42,7 +42,7 @@ public class InscriptionServlet extends HttpServlet {
     private static final String     CHAMP_IMAGE            = "imageMembre";
 
     @EJB
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
 
     /**
      * @see HttpServlet#HttpServlet()

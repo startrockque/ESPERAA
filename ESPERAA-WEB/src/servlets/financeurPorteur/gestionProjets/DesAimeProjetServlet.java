@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.FinanceurPorteurDTO;
+import dto.DonateurDTO;
 import facade.IFacadeCommune;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 /**
  * Servlet implementation class DesAimeProjetServlet
@@ -25,7 +25,7 @@ public class DesAimeProjetServlet extends HttpServlet {
     @EJB
     private IFacadeCommune          facadeCommune;
     @EJB
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
 
     public DesAimeProjetServlet() {
         super();
@@ -38,7 +38,7 @@ public class DesAimeProjetServlet extends HttpServlet {
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
         int idProjet = Integer.parseInt( request.getParameter( "idProjet" ) );
-        String loginFinanceur = ( (FinanceurPorteurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE ) )
+        String loginFinanceur = ( (DonateurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE ) )
                 .getLogin();
         facadeMembre.nePlusAimerProjet( idProjet, loginFinanceur );
         request.getSession().setAttribute( ATT_SESSION_MEMBRE, facadeCommune.findFinanceurDTOByLogin( loginFinanceur ) );

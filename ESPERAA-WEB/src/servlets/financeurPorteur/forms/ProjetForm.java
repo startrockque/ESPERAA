@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import servlets.utilitaire.ImageUtilitaire;
 import dto.TrancheDTO;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 public class ProjetForm {
 
@@ -38,9 +38,9 @@ public class ProjetForm {
 
     private List<TrancheDTO>        trancheDtoList;
 
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
 
-    public ProjetForm( IFinanceurPorteurFacade facadeMembre ) {
+    public ProjetForm( IDonateurFacade facadeMembre ) {
         this.facadeMembre = facadeMembre;
         erreursProjet = new HashMap<String, String>();
         erreursTranche = new HashMap<String, String>();

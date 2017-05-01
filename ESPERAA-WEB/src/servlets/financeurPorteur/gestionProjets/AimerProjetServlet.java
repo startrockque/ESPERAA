@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.FinanceurPorteurDTO;
+import dto.DonateurDTO;
 import facade.IFacadeCommune;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 /**
  * Servlet implementation class AimerProjetServlet
@@ -27,7 +27,7 @@ public class AimerProjetServlet extends HttpServlet {
     @EJB
     private IFacadeCommune          facadeCommune;
     @EJB
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -52,7 +52,7 @@ public class AimerProjetServlet extends HttpServlet {
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
         idProjet = Integer.parseInt( request.getParameter( "idProjet" ) );
-        FinanceurPorteurDTO membre = (FinanceurPorteurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
+        DonateurDTO membre = (DonateurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
         facadeMembre.aimerProjet( idProjet, membre.getLogin() );
         request.getSession().setAttribute( ATT_SESSION_MEMBRE,
                 facadeCommune.findFinanceurDTOByLogin( membre.getLogin() ) );

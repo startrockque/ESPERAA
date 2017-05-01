@@ -20,10 +20,9 @@ public class DashboardServlet extends HttpServlet {
 
     private static final String   PAGE_AFFICHER_DASHBOARD = "/WEB-INF/admin/pageTableauDeBord.jsp";
 
-    private static final String   NB_PROJETS              = "nbProjets";
+    private static final String   NB_CHEVAUX              = "nbChevaux";
     private static final String   NB_CATEGORIES           = "nbCategories";
     private static final String   NB_MEMBRES              = "nbMembres";
-    private static final String   NB_AIMES                = "nbAimes";
     private static final String   NB_MESSAGES             = "nbMessages";
     private static final String   NB_INVESTISSEMENTS      = "nbInvestissements";
     private static final String   NB_TAGS                 = "nbTags";
@@ -46,12 +45,11 @@ public class DashboardServlet extends HttpServlet {
      */
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
-        request.setAttribute( NB_PROJETS, facade.recupererNbProjets() );
+        request.setAttribute( NB_CHEVAUX, facade.recupererNbChevaux() );
         request.setAttribute( NB_CATEGORIES, facade.recupererNbCategories() );
         request.setAttribute( NB_MEMBRES, facade.recupererNbMembres() );
-        request.setAttribute( NB_AIMES, facade.recupererNbAimes() );
         request.setAttribute( NB_MESSAGES, facade.recupererNbMessages() );
-        request.setAttribute( NB_INVESTISSEMENTS, facade.recupererNbInvestissements() );
+        request.setAttribute( NB_INVESTISSEMENTS, facade.recupererTotalInvestissements() );
         request.setAttribute( NB_TAGS, facade.recupererNbTags() );
         request.getRequestDispatcher( PAGE_AFFICHER_DASHBOARD ).forward( request, response );
     }

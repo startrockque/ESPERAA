@@ -15,12 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 import dao.AdminDAO;
 import dao.CategorieDao;
 import dao.DAOException;
-import dao.FinanceurDAO;
-import dao.ProjetDAO;
+import dao.DonateurDAO;
+import dao.ChevalDAO;
 import dao.TagDAO;
 import entities.Admin;
 import entities.Categorie;
-import entities.FinanceurPorteur;
+import entities.Donateur;
 import entities.Projet;
 import entities.Tag;
 import entities.Tranche;
@@ -35,13 +35,13 @@ public class JeuxDeDonnees extends HttpServlet {
     private static final String PAGE_CONNEXION   = "/WEB-INF/pageConnexion.jsp";
 
     @EJB
-    private ProjetDAO           projetDao;
+    private ChevalDAO           projetDao;
 
     @EJB
     private CategorieDao        categorieDao;
 
     @EJB
-    private FinanceurDAO        financeurPorteurDao;
+    private DonateurDAO        financeurPorteurDao;
 
     @EJB
     private AdminDAO            adminDao;
@@ -81,7 +81,7 @@ public class JeuxDeDonnees extends HttpServlet {
         fini.add(Calendar.MONTH, -1);
         for ( int i = 1; i <= 11; i++ ) {
             Projet projet = new Projet();
-            FinanceurPorteur financeurPorteur = new FinanceurPorteur();
+            Donateur financeurPorteur = new Donateur();
             Admin admin = new Admin();
             Categorie categorie = new Categorie();
             Tag tag = new Tag();

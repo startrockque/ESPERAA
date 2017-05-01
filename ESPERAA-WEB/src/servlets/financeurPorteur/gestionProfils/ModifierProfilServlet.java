@@ -13,9 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import servlets.financeurPorteur.forms.FormValidationException;
 import servlets.utilitaire.ImageUtilitaire;
-import dto.FinanceurPorteurDTO;
+import dto.DonateurDTO;
 import facade.IFacadeCommune;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 @WebServlet( urlPatterns = { "/Membre/ModifierProfil" }, initParams = @WebInitParam( name = "chemin", value = "../images/" ) )
 @MultipartConfig( maxFileSize = 2 * 1024 * 1024, maxRequestSize = 10 * 1024 * 1024, fileSizeThreshold = 1024 * 1024 )
@@ -42,9 +42,9 @@ public class ModifierProfilServlet extends HttpServlet {
     @EJB
     private IFacadeCommune          facade;
     @EJB
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
 
-    private FinanceurPorteurDTO     financeurPorteurDTO;
+    private DonateurDTO     financeurPorteurDTO;
 
     public ModifierProfilServlet() {
         super();
@@ -53,7 +53,7 @@ public class ModifierProfilServlet extends HttpServlet {
 
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
-        financeurPorteurDTO = (FinanceurPorteurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
+        financeurPorteurDTO = (DonateurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
         request.setAttribute( ATT_SESSION_MEMBRE, financeurPorteurDTO );
         request.getRequestDispatcher( PAGE_MODIFIER_PROFIL ).forward( request, response );
     }

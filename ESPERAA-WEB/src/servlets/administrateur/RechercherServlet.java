@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.TousLesProjetsDTO;
+import dto.TousLesChevauxDTO;
 import facade.IFacadeCommune;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 /**
  * Servlet implementation class RechercherParTag
@@ -24,21 +24,19 @@ public class RechercherServlet extends HttpServlet {
 
     private static final String     PAGE_ACCUEIL                      = "/WEB-INF/admin/pageAccueil.jsp";
 
-    private static final String     CHAMP_TITRE                       = "titreProjet";
+    private static final String     CHAMP_NOM                         = "nomCheval";
     private static final String     CHAMP_CATEGORIE                   = "categorie";
-    private static final String     CHAMP_LOGIN_PORTEUR               = "nomPorteur";
     private static final String     CHAMP_CHECK_BOX_RECHERCHE         = "recherche";
 
-    private static final String     CHECK_BOX_TITRE                   = "Titre";
+    private static final String     CHECK_BOX_NOM                     = "Nom";
     private static final String     CHECK_BOX_CATEGORIE               = "Categorie";
 
-    private static final String     ATT_LIST_PROJET                   = "listeProjets";
-    private static final String     ATT_AUTO_COMPLETION_PROJET        = "autoCompletionProjet";
-    private static final String     ATT_LIST_PROJET_TAG               = "listeTag";
-    private static final String     ATT_LIST_PROJET_EN_AVANT          = "listeEnAvant";
-    private static final String     ATT_LIST_PROJET_CATEGORIE         = "listeCategories";
-    private static final String     ATT_AUTO_COMPLETION_PORTEUR       = "listePorteurs";
-    private static final String     ATT_TAG_PROJET                    = "tagProjet";
+    private static final String     ATT_LIST_CHEVAUX                  = "listeChevaux";
+    private static final String     ATT_AUTO_COMPLETION_CHEVAL        = "autoCompletionCheval";
+    private static final String     ATT_LIST_CHEVAL_TAG               = "listeTag";
+    private static final String     ATT_LIST_CHEVAL_EN_AVANT          = "listeEnAvant";
+    private static final String     ATT_LIST_CHEVAL_CATEGORIE         = "listeCategories";
+    private static final String     ATT_TAG_CHEVAL                    = "tagCheval";
     private static final String     ATT_ACTION                        = "action";
     private static final String     ATT_NUMERO_PAGE                   = "numeroPage";
     private static final String     ATT_NB_PAGE                       = "nbPage";
@@ -47,20 +45,18 @@ public class RechercherServlet extends HttpServlet {
 
     private static final String     ACTION_RECHERCHE_SIMPLE_TAG       = "simpleTag";
     private static final String     ACTION_RECHERCHE_SIMPLE_CATEGORIE = "simpleCat";
-    private static final String     ACTION_RECHERCHE_SIMPLE_PROJET    = "simpleTitre";
-    private static final String     ACTION_RECHERCHE_SIMPLE_LOGIN     = "simpleName";
-    private static final String     ACTION_PROJET_PLUS_FINANCES       = "projetsPlusFinances";
-    private static final String     ACTION_PROJET_PRESQUE_FINANCES    = "projetsPresqueFinances";
-    private static final String     ACTION_PROJET_PLUS_AIMES          = "projetsAimes";
+    private static final String     ACTION_RECHERCHE_SIMPLE_CHEVAL    = "simpleTitre";
+    private static final String     ACTION_CHEVAL_PLUS_FINANCES       = "chevauxPlusFinances";
+    private static final String     ACTION_CHEVAL_PRESQUE_FINANCES    = "chevauxPresqueFinances";
 
-    private static final int        CONST_NB_PROJET_PAR_PAGE          = 9;
+    private static final int        CONST_NB_CHEVAL_PAR_PAGE          = 9;
 
     private int                     numeroPageCourante;
 
     @EJB
     private IFacadeCommune          facadeCommune;
     @EJB
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
 
     public RechercherServlet() {
         super();
@@ -71,20 +67,17 @@ public class RechercherServlet extends HttpServlet {
         String btn = request.getParameter( ATT_ACTION );
         if ( btn != null ) {
             switch ( btn ) {
-            case ACTION_PROJET_PLUS_AIMES:
-                chercherProjetPlusAimes( request, response );
-                break;
             case ACTION_RECHERCHE_SIMPLE_CATEGORIE:
                 chercherParCategorie( request, response );
                 break;
             case ACTION_RECHERCHE_SIMPLE_TAG:
                 chercherParTag( request, response );
                 break;
-            case ACTION_PROJET_PLUS_FINANCES:
-                chercherProjetPlusFinances( request, response );
+            case ACTION_CHEVAL_PLUS_FINANCES:
+                chercherChevalPlusFinances( request, response );
                 break;
-            case ACTION_PROJET_PRESQUE_FINANCES:
-                chercherProjetPresqueFinances( request, response );
+            case ACTION_CHEVAL_PRESQUE_FINANCES:
+                chercherChevalPresqueFinances( request, response );
                 break;
             default:
                 break;
@@ -102,14 +95,11 @@ public class RechercherServlet extends HttpServlet {
             String btn = request.getParameter( ATT_ACTION );
             if ( btn != null ) {
                 switch ( btn ) {
-                case ACTION_RECHERCHE_SIMPLE_PROJET:
-                    chercherParTitre( request, response );
+                case ACTION_RECHERCHE_SIMPLE_CHEVAL:
+                    chercherParNom( request, response );
                     break;
                 case ACTION_RECHERCHE_SIMPLE_CATEGORIE:
                     chercherParCategorie( request, response );
-                    break;
-                case ACTION_RECHERCHE_SIMPLE_LOGIN:
-                    chercherParPorteur( request, response );
                     break;
                 case ACTION_RECHERCHE_SIMPLE_TAG:
                     chercherParTag( request, response );
@@ -119,35 +109,27 @@ public class RechercherServlet extends HttpServlet {
                 }
             }
         }
-        // Recherche croisï¿½e
+        // Recherche croisée
         else {
             /*
-             * Les cas sont : - Titre - Categorie - Nom - Titre & Catï¿½gorie -
-             * Titre & Nom - Catï¿½gorie & Nom - Titre & Catï¿½gorie & Nom
+             * Les cas sont : - Nom - Categorie - Nom & Catégorie
              */
             switch ( checkedIds.length ) {
             case 1:
-                if ( checkedIds[0].equals( CHECK_BOX_TITRE ) ) {
-                    chercherParTitre( request, response );
+                if ( checkedIds[0].equals( CHECK_BOX_NOM ) ) {
+                    chercherParNom( request, response );
                 } else if ( checkedIds[0].equals( CHECK_BOX_CATEGORIE ) ) {
                     chercherParCategorie( request, response );
-                } else {
-                    chercherParPorteur( request, response );
                 }
                 break;
             case 2:
-                if ( checkedIds[0].equals( CHECK_BOX_TITRE ) ) {
+                if ( checkedIds[0].equals( CHECK_BOX_NOM ) ) {
                     if ( checkedIds[1].equals( CHECK_BOX_CATEGORIE ) ) {
-                        chercherParTitreCategorie( request, response );
-                    } else {
-                        chercherParTitreNom( request, response );
+                        chercherParNomCategorie( request, response );
                     }
                 } else {
-                    chercherParCategorieNom( request, response );
+                	chercherParNomCategorie( request, response );
                 }
-                break;
-            case 3:
-                chercherParTitreCategorieNom( request, response );
                 break;
             default:
             }
@@ -163,23 +145,23 @@ public class RechercherServlet extends HttpServlet {
      * @throws ServletException
      * @throws IOException
      */
-    private void chercherParTitre( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
+    private void chercherParNom( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
-        String titreProjet = request.getParameter( CHAMP_TITRE );
+        String nomCheval = request.getParameter( CHAMP_NOM );
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTitre( titreProjet );
+        List<TousLesChevauxDTO> listChevaux = facadeCommune.rechercherParNom( nomCheval );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+            request.setAttribute( ATT_LIST_CHEVAUX, recupererChevalPage( listChevaux, numeroPageCourante, request ) );
         } else {
             numeroPageCourante = Integer.parseInt( numeroPageString );
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+            request.setAttribute( ATT_LIST_CHEVAUX, recupererChevalPage( listChevaux, numeroPageCourante, request ) );
         }
         request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
     }
 
     /**
-     * Appel de la recherche pas catï¿½gorie
+     * Appel de la recherche pas catégorie
      * 
      * @param request
      * @param response
@@ -190,36 +172,17 @@ public class RechercherServlet extends HttpServlet {
             throws ServletException, IOException {
         String categorie = request.getParameter( CHAMP_CATEGORIE );
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParCatgeorie( categorie );
+        List<TousLesChevauxDTO> listChevaux = facadeCommune.rechercherParCategorie( categorie );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+            request.setAttribute( ATT_LIST_CHEVAUX, recupererChevalPage( listChevaux, numeroPageCourante, request ) );
         } else {
             numeroPageCourante = Integer.parseInt( numeroPageString );
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+            request.setAttribute( ATT_LIST_CHEVAUX, recupererChevalPage( listChevaux, numeroPageCourante, request ) );
         }
         request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
     }
 
-    /**
-     * Appel de la recherche par porteur
-     * 
-     * @param request
-     * @param response
-     */
-    private void chercherParPorteur( HttpServletRequest request, HttpServletResponse response ) {
-        String porteur = request.getParameter( CHAMP_LOGIN_PORTEUR );
-        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParPorteur( porteur );
-        if ( numeroPageString == null ) {
-            numeroPageCourante = 1;
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
-        } else {
-            numeroPageCourante = Integer.parseInt( numeroPageString );
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
-        }
-        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
-    }
 
     /**
      * Appel de la recherche par tag
@@ -228,146 +191,68 @@ public class RechercherServlet extends HttpServlet {
      * @param response
      */
     private void chercherParTag( HttpServletRequest request, HttpServletResponse response ) {
-        String tags = request.getParameter( ATT_TAG_PROJET );
+        String tags = request.getParameter( ATT_TAG_CHEVAL );
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTag( tags );
+        List<TousLesChevauxDTO> listChevaux = facadeCommune.rechercherParTag( tags );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+            request.setAttribute( ATT_LIST_CHEVAUX, recupererChevalPage( listChevaux, numeroPageCourante, request ) );
         } else {
             numeroPageCourante = Integer.parseInt( numeroPageString );
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+            request.setAttribute( ATT_LIST_CHEVAUX, recupererChevalPage( listChevaux, numeroPageCourante, request ) );
         }
         request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
     }
 
-    private void chercherProjetPlusFinances( HttpServletRequest request, HttpServletResponse response ) {
+    private void chercherChevalPlusFinances( HttpServletRequest request, HttpServletResponse response ) {
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.recupererProjetsPlusFinances( 9 );
+        List<TousLesChevauxDTO> listChevaux = facadeCommune.recupererChevauxPlusFinances( 9 );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+            request.setAttribute( ATT_LIST_CHEVAUX, recupererChevalPage( listChevaux, numeroPageCourante, request ) );
         } else {
             numeroPageCourante = Integer.parseInt( numeroPageString );
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+            request.setAttribute( ATT_LIST_CHEVAUX, recupererChevalPage( listChevaux, numeroPageCourante, request ) );
         }
         request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
     }
 
-    private void chercherProjetPlusAimes( HttpServletRequest request, HttpServletResponse response ) {
+    private void chercherChevalPresqueFinances( HttpServletRequest request, HttpServletResponse response ) {
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.recupererProjetsPlusAimes( 9 );
+        List<TousLesChevauxDTO> listChevaux = facadeCommune.recupererChevauxPresqueFinances( 9 );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+            request.setAttribute( ATT_LIST_CHEVAUX, recupererChevalPage( listChevaux, numeroPageCourante, request ) );
         } else {
             numeroPageCourante = Integer.parseInt( numeroPageString );
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
-        }
-        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
-    }
-
-    private void chercherProjetPresqueFinances( HttpServletRequest request, HttpServletResponse response ) {
-        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.recupererProjetsPresqueFinances( 9 );
-        if ( numeroPageString == null ) {
-            numeroPageCourante = 1;
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
-        } else {
-            numeroPageCourante = Integer.parseInt( numeroPageString );
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+            request.setAttribute( ATT_LIST_CHEVAUX, recupererChevalPage( listChevaux, numeroPageCourante, request ) );
         }
         request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
     }
 
     /**
-     * Appel de la fonction de techerche par titre et catï¿½gorie
+     * Appel de la fonction de recherche par nom et catégorie
      * 
      * @param request
      * @param response
      */
-    private void chercherParTitreCategorie( HttpServletRequest request, HttpServletResponse response ) {
-        String titreProjet = request.getParameter( CHAMP_TITRE );
+    private void chercherParNomCategorie( HttpServletRequest request, HttpServletResponse response ) {
+        String nomCheval = request.getParameter( CHAMP_NOM );
         String categorie = request.getParameter( CHAMP_CATEGORIE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTitreCatgeorie( titreProjet, categorie );
+        List<TousLesChevauxDTO> listChevaux = facadeCommune.rechercherParNomCategorie( nomCheval, categorie );
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+            request.setAttribute( ATT_LIST_CHEVAUX, recupererChevalPage( listChevaux, numeroPageCourante, request ) );
         } else {
             numeroPageCourante = Integer.parseInt( numeroPageString );
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
+            request.setAttribute( ATT_LIST_CHEVAUX, recupererChevalPage( listChevaux, numeroPageCourante, request ) );
         }
         request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
     }
 
     /**
-     * Appel de la fonction de recherce par titre et par porteur
-     * 
-     * @param request
-     * @param response
-     */
-    private void chercherParTitreNom( HttpServletRequest request, HttpServletResponse response ) {
-        String titreProjet = request.getParameter( CHAMP_TITRE );
-        String nomPorteur = request.getParameter( CHAMP_LOGIN_PORTEUR );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTitreNom( titreProjet, nomPorteur );
-        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        if ( numeroPageString == null ) {
-            numeroPageCourante = 1;
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
-        } else {
-            numeroPageCourante = Integer.parseInt( numeroPageString );
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
-        }
-        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
-    }
-
-    /**
-     * Appel de la fonction de recherche par catï¿½gorie et par porteur
-     * 
-     * @param request
-     * @param response
-     */
-    private void chercherParCategorieNom( HttpServletRequest request, HttpServletResponse response ) {
-        String categorie = request.getParameter( CHAMP_CATEGORIE );
-        String nomPorteur = request.getParameter( CHAMP_LOGIN_PORTEUR );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParCatgeorieNom( categorie, nomPorteur );
-        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        if ( numeroPageString == null ) {
-            numeroPageCourante = 1;
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
-        } else {
-            numeroPageCourante = Integer.parseInt( numeroPageString );
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
-        }
-        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
-    }
-
-    /**
-     * Appel de la fonction de recherche avec 3 paramï¿½tres
-     * 
-     * @param request
-     * @param response
-     */
-    private void chercherParTitreCategorieNom( HttpServletRequest request, HttpServletResponse response ) {
-        String titreProjet = request.getParameter( CHAMP_TITRE );
-        String categorie = request.getParameter( CHAMP_CATEGORIE );
-        String nomPorteur = request.getParameter( CHAMP_LOGIN_PORTEUR );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTitreCatgeorieNom( titreProjet, categorie,
-                nomPorteur );
-        String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        if ( numeroPageString == null ) {
-            numeroPageCourante = 1;
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
-        } else {
-            numeroPageCourante = Integer.parseInt( numeroPageString );
-            request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
-        }
-        request.setAttribute( ATT_NUMERO_PAGE, numeroPageCourante );
-    }
-
-    /**
-     * Affichage de la jsp avec chargement des donnï¿½es
+     * Affichage de la jsp avec chargement des données
      * 
      * @param request
      * @param response
@@ -378,35 +263,34 @@ public class RechercherServlet extends HttpServlet {
             IOException {
         request.setAttribute( ATT_TAG_POP, facadeCommune.listeTagPopulaire( 3 ) );
         request.setAttribute( ATT_CATEGORIE_POP, facadeCommune.listeCategoriePopulaire( 3 ) );
-        request.setAttribute( ATT_AUTO_COMPLETION_PROJET, facadeCommune.recupererTousLesTitresDesProjets() );
-        request.setAttribute( ATT_LIST_PROJET_TAG, facadeCommune.recupererTousLesTagName() );
-        request.setAttribute( ATT_LIST_PROJET_EN_AVANT, facadeCommune.recupererProjetsEnAvant() );
-        request.setAttribute( ATT_LIST_PROJET_CATEGORIE, facadeCommune.getAllCategoriesNames() );
-        request.setAttribute( ATT_AUTO_COMPLETION_PORTEUR, facadeCommune.recupererTousLesNomsDeFinanceurs() );
+        request.setAttribute( ATT_AUTO_COMPLETION_CHEVAL, facadeCommune.recupererTousLesNomsDesChevaux() );
+        request.setAttribute( ATT_LIST_CHEVAL_TAG, facadeCommune.recupererTousLesTagName() );
+        request.setAttribute( ATT_LIST_CHEVAL_EN_AVANT, facadeCommune.recupererChevauxEnAvant() );
+        request.setAttribute( ATT_LIST_CHEVAL_CATEGORIE, facadeCommune.getAllCategoriesNames() );
         request.getRequestDispatcher( PAGE_ACCUEIL ).forward( request, response );
     }
 
-    private List<TousLesProjetsDTO> recupererProjetPage( List<TousLesProjetsDTO> projetAllList, int numeroPage,
+    private List<TousLesChevauxDTO> recupererChevalPage( List<TousLesChevauxDTO> chevalAllList, int numeroPage,
             HttpServletRequest request ) {
         int indexFin = 0;
-        int indexDeb = ( numeroPage - 1 ) * CONST_NB_PROJET_PAR_PAGE;
+        int indexDeb = ( numeroPage - 1 ) * CONST_NB_CHEVAL_PAR_PAGE;
 
-        List<TousLesProjetsDTO> projetPageList = new ArrayList<TousLesProjetsDTO>();
-        if ( indexDeb + CONST_NB_PROJET_PAR_PAGE > projetAllList.size() ) {
-            indexFin = projetAllList.size();
+        List<TousLesChevauxDTO> chevalPageList = new ArrayList<TousLesChevauxDTO>();
+        if ( indexDeb + CONST_NB_CHEVAL_PAR_PAGE > chevalAllList.size() ) {
+            indexFin = chevalAllList.size();
         } else {
-            indexFin = indexDeb + CONST_NB_PROJET_PAR_PAGE;
+            indexFin = indexDeb + CONST_NB_CHEVAL_PAR_PAGE;
         }
         int nbPage = 0;
-        for ( int i = 0; i < projetAllList.size(); i = i + CONST_NB_PROJET_PAR_PAGE ) {
+        for ( int i = 0; i < chevalAllList.size(); i = i + CONST_NB_CHEVAL_PAR_PAGE ) {
             nbPage++;
         }
 
         request.setAttribute( ATT_NB_PAGE, nbPage );
         for ( int i = indexDeb; i < indexFin; i++ ) {
-            projetPageList.add( projetAllList.get( i ) );
+            chevalPageList.add( chevalAllList.get( i ) );
         }
 
-        return projetPageList;
+        return chevalPageList;
     }
 }

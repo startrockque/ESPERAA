@@ -14,9 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import servlets.financeurPorteur.forms.ProjetForm;
-import dto.ProjetDTO;
+import dto.ChevalDTO;
 import facade.IFacadeCommune;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 /**
  * Servlet implementation class ModifProjetServlet
@@ -56,7 +56,7 @@ public class ModifierProjetServlet extends HttpServlet {
     private int                     idProjet;
 
     @EJB
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
     @EJB
     private IFacadeCommune          facadeCommune;
 
@@ -74,7 +74,7 @@ public class ModifierProjetServlet extends HttpServlet {
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
         idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
-        ProjetDTO projetDto = facadeCommune.findProjetDTOById( idProjet );
+        ChevalDTO projetDto = facadeCommune.findProjetDTOById( idProjet );
         setAttribute( projetDto, request );
         form = new ProjetForm( facadeMembre );
         form.setTrancheDtoList( projetDto.getTrancheList() );
@@ -140,7 +140,7 @@ public class ModifierProjetServlet extends HttpServlet {
         request.getRequestDispatcher( PAGE_MODIFIER_PROJET ).forward( request, response );
     }
 
-    private void setAttribute( ProjetDTO projetDto, HttpServletRequest request ) {
+    private void setAttribute( ChevalDTO projetDto, HttpServletRequest request ) {
         request.setAttribute( CHAMP_TITRE, projetDto.getTitreProjet() );
         request.setAttribute( CHAMP_DESCRIPTION, projetDto.getDescription() );
         request.setAttribute( CHAMP_BUT, projetDto.getButArgent() );

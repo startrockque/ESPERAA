@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.FinanceurPorteurDTO;
+import dto.DonateurDTO;
 import facade.IFacadeCommune;
 
 /**
@@ -53,7 +53,7 @@ public class EnvoyerMessageServlet extends HttpServlet {
         String contenuMessage = request.getParameter( CHAMP_CONTENU_MESSAGE );
         int idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
         if ( !contenuMessage.trim().equals( "" ) ) {
-            FinanceurPorteurDTO membre = (FinanceurPorteurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
+            DonateurDTO membre = (DonateurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
             String loginEmetteur = membre.getLogin();
             facadeCommune.envoyerMessage( loginEmetteur, idProjet, contenuMessage );
         }

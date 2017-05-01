@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.FinanceurPorteurDTO;
+import dto.DonateurDTO;
 import facade.IFacadeCommune;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 /**
  * Servlet implementation class AlimenterPortefeuilleServlet
@@ -27,7 +27,7 @@ public class AlimenterPortefeuilleServlet extends HttpServlet {
     private static final String     CHAMP_MONTANT_A_CREDITER     = "montant";
 
     @EJB
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
     @EJB
     private IFacadeCommune          facadeCommune;
 
@@ -53,7 +53,7 @@ public class AlimenterPortefeuilleServlet extends HttpServlet {
      */
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
-        FinanceurPorteurDTO membreCourant = (FinanceurPorteurDTO) request.getSession()
+        DonateurDTO membreCourant = (DonateurDTO) request.getSession()
                 .getAttribute( ATT_SESSION_MEMBRE );
         String montantDemandeString = request.getParameter( CHAMP_MONTANT_A_CREDITER ).trim();
         if ( !montantDemandeString.isEmpty() ) {

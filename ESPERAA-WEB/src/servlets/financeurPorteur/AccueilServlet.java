@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.TousLesProjetsDTO;
+import dto.TousLesChevauxDTO;
 import facade.IFacadeCommune;
 
 /**
@@ -54,7 +54,7 @@ public class AccueilServlet extends HttpServlet {
             IOException {
         numeroPageCourante = 1;
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> projetAllList = facadeCommune.recupererTousLesProjetsEnCours();
+        List<TousLesChevauxDTO> projetAllList = facadeCommune.recupererTousLesProjetsEnCours();
         if ( numeroPageString == null ) {
             request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( projetAllList, numeroPageCourante, request ) );
         } else {
@@ -90,12 +90,12 @@ public class AccueilServlet extends HttpServlet {
         request.getRequestDispatcher( PAGE_ACCUEIL ).forward( request, response );
     }
 
-    private List<TousLesProjetsDTO> recupererProjetPage( List<TousLesProjetsDTO> projetAllList, int numeroPage,
+    private List<TousLesChevauxDTO> recupererProjetPage( List<TousLesChevauxDTO> projetAllList, int numeroPage,
             HttpServletRequest request ) {
         int indexFin = 0;
         int indexDeb = ( numeroPage - 1 ) * CONST_NB_PROJET_PAR_PAGE;
 
-        List<TousLesProjetsDTO> projetPageList = new ArrayList<TousLesProjetsDTO>();
+        List<TousLesChevauxDTO> projetPageList = new ArrayList<TousLesChevauxDTO>();
         if ( indexDeb + CONST_NB_PROJET_PAR_PAGE > projetAllList.size() ) {
             indexFin = projetAllList.size();
         } else {

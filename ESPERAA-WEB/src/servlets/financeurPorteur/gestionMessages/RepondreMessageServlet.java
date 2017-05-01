@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.FinanceurPorteurDTO;
+import dto.DonateurDTO;
 import facade.IFacadeCommune;
 
 /**
@@ -54,7 +54,7 @@ public class RepondreMessageServlet extends HttpServlet {
         String contenuReponse = request.getParameter( CHAMP_CONTENU_REPONSE );
         int idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
         if ( !contenuReponse.trim().equals( "" ) ) {
-            FinanceurPorteurDTO membre = (FinanceurPorteurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
+            DonateurDTO membre = (DonateurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
             int idConversation = Integer.parseInt( request.getParameter( ATT_ID_CONVERSATION ) );
             facadeCommune.repondreMessage( membre.getLogin(), idConversation, contenuReponse );
         }

@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dto.AUtilisateurDTO;
-import dto.FinanceurPorteurDTO;
+import dto.DonateurDTO;
 import facade.IFacadeCommune;
 
 /**
@@ -53,7 +53,7 @@ public class ConnexionServlet extends HttpServlet {
             request.setAttribute( ATT_ERREUR, "Login ou mot de passe incorrect" );
             request.getRequestDispatcher( PAGE_CONNEXION ).forward( request, response );
         } else {
-            if ( user instanceof FinanceurPorteurDTO ) {
+            if ( user instanceof DonateurDTO ) {
                 request.getSession().setAttribute( ATT_SESSION_ADMIN, null );
                 request.getSession().setAttribute( ATT_SESSION_MEMBRE, user );
                 response.sendRedirect( REDIRECT_ACCUEIL_FINANCEUR );

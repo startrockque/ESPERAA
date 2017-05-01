@@ -19,9 +19,9 @@ import facade.IFacadeCommune;
 public class EnvoyerMessageServlet extends HttpServlet {
     private static final long   serialVersionUID         = 1L;
 
-    private static final String REDIRECT_AFFICHER_PROJET = "/ESPERAA-WEB/Admin/AfficherProjet";
+    private static final String REDIRECT_AFFICHER_CHEVAL = "/ESPERAA-WEB/Admin/AfficherCheval";
 
-    private static final String ATT_ID_PROJET            = "idProjet";
+    private static final String ATT_ID_CHEVAL            = "idCheval";
     private static final String ATT_SESSION_MEMBRE       = "admin";
 
     private static final String CHAMP_CONTENU_MESSAGE    = "contenuMessage";
@@ -54,13 +54,13 @@ public class EnvoyerMessageServlet extends HttpServlet {
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
         String contenuMessage = request.getParameter( CHAMP_CONTENU_MESSAGE );
-        int idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
+        int idCheval = Integer.parseInt( request.getParameter( ATT_ID_CHEVAL ) );
         if ( !contenuMessage.trim().equals( "" ) ) {
             AdminDTO admin = (AdminDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
             String loginEmetteur = admin.getLogin();
-            facadeCommune.envoyerMessage( loginEmetteur, idProjet, contenuMessage );
+            facadeCommune.envoyerMessage( loginEmetteur, idCheval, contenuMessage );
         }
-        response.sendRedirect( REDIRECT_AFFICHER_PROJET + "?" + ATT_ID_PROJET + "=" + idProjet );
+        response.sendRedirect( REDIRECT_AFFICHER_CHEVAL + "?" + ATT_ID_CHEVAL + "=" + idCheval );
     }
 
 }

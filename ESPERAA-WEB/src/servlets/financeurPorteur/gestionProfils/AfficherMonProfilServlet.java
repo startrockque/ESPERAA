@@ -10,11 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.FinanceurPorteurDTO;
+import dto.DonateurDTO;
 import dto.InvestissementDTO;
-import dto.TousLesProjetsDTO;
+import dto.TousLesChevauxDTO;
 import facade.IFacadeCommune;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 /**
  * Servlet implementation class AfficherMonProfilServlet
@@ -31,7 +31,7 @@ public class AfficherMonProfilServlet extends HttpServlet {
     private static final String     ATT_NB_PROJETS          = "nbProjets";
 
     @EJB
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
     @EJB
     private IFacadeCommune          facadeCommune;
 
@@ -41,9 +41,9 @@ public class AfficherMonProfilServlet extends HttpServlet {
 
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
-        FinanceurPorteurDTO membreCourant = (FinanceurPorteurDTO) request.getSession()
+        DonateurDTO membreCourant = (DonateurDTO) request.getSession()
                 .getAttribute( ATT_SESSION_MEMBRE );
-        List<TousLesProjetsDTO> mesProjets = facadeCommune.recupererMesProjets( membreCourant.getLogin() );
+        List<TousLesChevauxDTO> mesProjets = facadeCommune.recupererMesProjets( membreCourant.getLogin() );
         List<InvestissementDTO> mesInvestissements = facadeMembre.recupererInvesissementParFinanceur( membreCourant
                 .getLogin() );
         request.setAttribute( ATT_NB_PROJETS, facadeCommune.recupererMesProjets( membreCourant.getLogin() ).size() );

@@ -9,10 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.FinanceurPorteurDTO;
-import dto.ProjetDTO;
+import dto.DonateurDTO;
+import dto.ChevalDTO;
 import facade.IFacadeCommune;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 /**
  * Servlet implementation class FinancerProjetServlet
@@ -36,7 +36,7 @@ public class FinancerProjetServlet extends HttpServlet {
     @EJB
     private IFacadeCommune          facadeCommune;
     @EJB
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -60,7 +60,7 @@ public class FinancerProjetServlet extends HttpServlet {
      */
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
-        FinanceurPorteurDTO membre = (FinanceurPorteurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
+        DonateurDTO membre = (DonateurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
         int idProjetAFinancer = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
         String montantIvestString = request.getParameter( CHAMP_MONTANT ).trim();
         request.setAttribute( ATT_ID_PROJET, idProjetAFinancer );
@@ -71,7 +71,7 @@ public class FinancerProjetServlet extends HttpServlet {
         if ( montantIvest > CONST_SOMME_MINIMUM_A_INVESTIR ) {
             String nomFinanceur = membre.getLogin();
             if ( montantIvest <= membre.getMontantAInvestir() ) {
-                ProjetDTO projet = facadeCommune.findProjetDTOById( idProjetAFinancer );
+                ChevalDTO projet = facadeCommune.findProjetDTOById( idProjetAFinancer );
                 if ( projet.getMontantInvesti() < Integer.MAX_VALUE ) {
                     if ( projet.getMontantInvesti() + montantIvest < 0 ) {
                         montantIvest = Integer.MAX_VALUE - projet.getMontantInvesti();
@@ -91,7 +91,7 @@ public class FinancerProjetServlet extends HttpServlet {
         } else {
             request.setAttribute( ATT_ERREUR, "Veuillez entrer une somme supérieure à  0." );
         }
-        ProjetDTO projet = facadeCommune.findProjetDTOById( idProjetAFinancer );
+        ChevalDTO projet = facadeCommune.findProjetDTOById( idProjetAFinancer );
         request.setAttribute( ATT_PROJET, projet );
         request.getRequestDispatcher( PAGE_AFFICHER_PROJET ).forward( request, response );
     }

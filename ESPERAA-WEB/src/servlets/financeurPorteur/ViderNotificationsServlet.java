@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.FinanceurPorteurDTO;
+import dto.DonateurDTO;
 import facade.IFacadeCommune;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 /**
  * Servlet implementation class ViderNotificationsServlet
@@ -25,7 +25,7 @@ public class ViderNotificationsServlet extends HttpServlet {
     private static final String     ATT_SESSION_MEMBRE = "financeur";
 
     @EJB
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
     @EJB
     private IFacadeCommune          facadeCommune;
 
@@ -35,7 +35,7 @@ public class ViderNotificationsServlet extends HttpServlet {
 
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
-        FinanceurPorteurDTO fPorteur = (FinanceurPorteurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
+        DonateurDTO fPorteur = (DonateurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
         facadeMembre.viderNotification( fPorteur.getLogin() );
         request.getSession().setAttribute( ATT_SESSION_MEMBRE,
                 facadeCommune.findFinanceurDTOByLogin( fPorteur.getLogin() ) );

@@ -18,12 +18,12 @@ import facade.IFacadeCommune;
 public class SupprimerMessageServlet extends HttpServlet {
     private static final long   serialVersionUID     = 1L;
 
-    private static final String PAGE_AFFICHER_PROJET = "/WEB-INF/financeurPorteur/pageAfficherProjet.jsp";
+    private static final String PAGE_AFFICHER_CHEVAL = "/WEB-INF/financeurPorteur/pageAfficherCheval.jsp";
 
-    private static final String ATT_ID_PROJET        = "idProjet";
+    private static final String ATT_ID_CHEVAL        = "idCheval";
     private static final String ATT_ID_CONVERSATION  = "idConversation";
     private static final String ATT_ID_MESSAGE       = "idMessage";
-    private static final String ATT_PROJET           = "projet";
+    private static final String ATT_CHEVAL           = "cheval";
 
     @EJB
     private IFacadeCommune      facadeCommune;
@@ -46,12 +46,12 @@ public class SupprimerMessageServlet extends HttpServlet {
      */
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
-        int idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
+        int idCheval = Integer.parseInt( request.getParameter( ATT_ID_CHEVAL ) );
         int idConversation = Integer.parseInt( request.getParameter( ATT_ID_CONVERSATION ) );
         int idMessage = Integer.parseInt( request.getParameter( ATT_ID_MESSAGE ) );
-        facadeCommune.supprimerMessage( idMessage, idConversation, idProjet, false );
-        request.setAttribute( ATT_PROJET, facadeCommune.findProjetDTOById( idProjet ) );
-        request.getRequestDispatcher( PAGE_AFFICHER_PROJET ).forward( request, response );
+        facadeCommune.supprimerMessage( idMessage, idConversation, idCheval, false );
+        request.setAttribute( ATT_CHEVAL, facadeCommune.findChevalDTOById( idCheval ) );
+        request.getRequestDispatcher( PAGE_AFFICHER_CHEVAL ).forward( request, response );
     }
 
 }

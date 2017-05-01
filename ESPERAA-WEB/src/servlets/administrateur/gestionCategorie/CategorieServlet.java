@@ -58,7 +58,7 @@ public class CategorieServlet extends HttpServlet {
             IOException {
         String titreCategorie = request.getParameter( CHAMP_TITRE_CATEGORIE );
         if ( facadeAdmin.verifierCategorie( titreCategorie ) ) {
-            request.setAttribute( ATT_ERREUR, "Ce nom de catégorie existe déjà " );
+            request.setAttribute( ATT_ERREUR, "Cette catégorie existe déjà " );
         }
         else {
             facadeAdmin.creerCategorie( titreCategorie );

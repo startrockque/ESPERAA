@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.TousLesProjetsDTO;
+import dto.TousLesChevauxDTO;
 import facade.IFacadeCommune;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 /**
  * Servlet implementation class RechercherParTag
@@ -60,7 +60,7 @@ public class RechercherServlet extends HttpServlet {
     @EJB
     private IFacadeCommune          facadeCommune;
     @EJB
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
 
     public RechercherServlet() {
         super();
@@ -167,7 +167,7 @@ public class RechercherServlet extends HttpServlet {
             IOException {
         String titreProjet = request.getParameter( CHAMP_TITRE );
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTitre( titreProjet );
+        List<TousLesChevauxDTO> listProjet = facadeCommune.rechercherParTitre( titreProjet );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
             request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
@@ -190,7 +190,7 @@ public class RechercherServlet extends HttpServlet {
             throws ServletException, IOException {
         String categorie = request.getParameter( CHAMP_CATEGORIE );
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParCatgeorie( categorie );
+        List<TousLesChevauxDTO> listProjet = facadeCommune.rechercherParCatgeorie( categorie );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
             request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
@@ -210,7 +210,7 @@ public class RechercherServlet extends HttpServlet {
     private void chercherParPorteur( HttpServletRequest request, HttpServletResponse response ) {
         String porteur = request.getParameter( CHAMP_LOGIN_PORTEUR );
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParPorteur( porteur );
+        List<TousLesChevauxDTO> listProjet = facadeCommune.rechercherParPorteur( porteur );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
             request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
@@ -230,7 +230,7 @@ public class RechercherServlet extends HttpServlet {
     private void chercherParTag( HttpServletRequest request, HttpServletResponse response ) {
         String tags = request.getParameter( ATT_TAG_PROJET );
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTag( tags );
+        List<TousLesChevauxDTO> listProjet = facadeCommune.rechercherParTag( tags );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
             request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
@@ -243,7 +243,7 @@ public class RechercherServlet extends HttpServlet {
 
     private void chercherProjetPlusFinances( HttpServletRequest request, HttpServletResponse response ) {
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.recupererProjetsPlusFinances( 9 );
+        List<TousLesChevauxDTO> listProjet = facadeCommune.recupererProjetsPlusFinances( 9 );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
             request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
@@ -256,7 +256,7 @@ public class RechercherServlet extends HttpServlet {
 
     private void chercherProjetPlusAimes( HttpServletRequest request, HttpServletResponse response ) {
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.recupererProjetsPlusAimes( 9 );
+        List<TousLesChevauxDTO> listProjet = facadeCommune.recupererProjetsPlusAimes( 9 );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
             request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
@@ -269,7 +269,7 @@ public class RechercherServlet extends HttpServlet {
 
     private void chercherProjetPresqueFinances( HttpServletRequest request, HttpServletResponse response ) {
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.recupererProjetsPresqueFinances( 9 );
+        List<TousLesChevauxDTO> listProjet = facadeCommune.recupererProjetsPresqueFinances( 9 );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
             request.setAttribute( ATT_LIST_PROJET, recupererProjetPage( listProjet, numeroPageCourante, request ) );
@@ -289,7 +289,7 @@ public class RechercherServlet extends HttpServlet {
     private void chercherParTitreCategorie( HttpServletRequest request, HttpServletResponse response ) {
         String titreProjet = request.getParameter( CHAMP_TITRE );
         String categorie = request.getParameter( CHAMP_CATEGORIE );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTitreCatgeorie( titreProjet, categorie );
+        List<TousLesChevauxDTO> listProjet = facadeCommune.rechercherParTitreCatgeorie( titreProjet, categorie );
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
@@ -310,7 +310,7 @@ public class RechercherServlet extends HttpServlet {
     private void chercherParTitreNom( HttpServletRequest request, HttpServletResponse response ) {
         String titreProjet = request.getParameter( CHAMP_TITRE );
         String nomPorteur = request.getParameter( CHAMP_LOGIN_PORTEUR );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTitreNom( titreProjet, nomPorteur );
+        List<TousLesChevauxDTO> listProjet = facadeCommune.rechercherParTitreNom( titreProjet, nomPorteur );
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
@@ -331,7 +331,7 @@ public class RechercherServlet extends HttpServlet {
     private void chercherParCategorieNom( HttpServletRequest request, HttpServletResponse response ) {
         String categorie = request.getParameter( CHAMP_CATEGORIE );
         String nomPorteur = request.getParameter( CHAMP_LOGIN_PORTEUR );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParCatgeorieNom( categorie, nomPorteur );
+        List<TousLesChevauxDTO> listProjet = facadeCommune.rechercherParCatgeorieNom( categorie, nomPorteur );
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
         if ( numeroPageString == null ) {
             numeroPageCourante = 1;
@@ -353,7 +353,7 @@ public class RechercherServlet extends HttpServlet {
         String titreProjet = request.getParameter( CHAMP_TITRE );
         String categorie = request.getParameter( CHAMP_CATEGORIE );
         String nomPorteur = request.getParameter( CHAMP_LOGIN_PORTEUR );
-        List<TousLesProjetsDTO> listProjet = facadeCommune.rechercherParTitreCatgeorieNom( titreProjet, categorie,
+        List<TousLesChevauxDTO> listProjet = facadeCommune.rechercherParTitreCatgeorieNom( titreProjet, categorie,
                 nomPorteur );
         String numeroPageString = request.getParameter( ATT_NUMERO_PAGE );
         if ( numeroPageString == null ) {
@@ -386,12 +386,12 @@ public class RechercherServlet extends HttpServlet {
         request.getRequestDispatcher( PAGE_ACCUEIL ).forward( request, response );
     }
 
-    private List<TousLesProjetsDTO> recupererProjetPage( List<TousLesProjetsDTO> projetAllList, int numeroPage,
+    private List<TousLesChevauxDTO> recupererProjetPage( List<TousLesChevauxDTO> projetAllList, int numeroPage,
             HttpServletRequest request ) {
         int indexFin = 0;
         int indexDeb = ( numeroPage - 1 ) * CONST_NB_PROJET_PAR_PAGE;
 
-        List<TousLesProjetsDTO> projetPageList = new ArrayList<TousLesProjetsDTO>();
+        List<TousLesChevauxDTO> projetPageList = new ArrayList<TousLesChevauxDTO>();
         if ( indexDeb + CONST_NB_PROJET_PAR_PAGE > projetAllList.size() ) {
             indexFin = projetAllList.size();
         } else {

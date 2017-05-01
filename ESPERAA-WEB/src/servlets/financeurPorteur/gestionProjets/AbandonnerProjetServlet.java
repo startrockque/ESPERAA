@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.ProjetDTO;
+import dto.ChevalDTO;
 import facade.IFacadeCommune;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 /**
  * Servlet implementation class AbandonnerProjetServlet
@@ -29,12 +29,12 @@ public class AbandonnerProjetServlet extends HttpServlet {
     private static final String     ATT_ID_PROJET                    = "idProjet";
     private static final String     ATT_PROJET                       = "projet";
 
-    private ProjetDTO               projet;
+    private ChevalDTO               projet;
     private int                     idProjet;
     @EJB
     private IFacadeCommune          facadeCommune;
     @EJB
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
 
     public AbandonnerProjetServlet() {
         super();

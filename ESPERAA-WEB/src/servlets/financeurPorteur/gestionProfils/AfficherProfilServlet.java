@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import dto.AdminDTO;
-import dto.FinanceurPorteurDTO;
-import dto.TousLesProjetsDTO;
+import dto.DonateurDTO;
+import dto.TousLesChevauxDTO;
 import facade.IFacadeCommune;
 
 /**
@@ -46,17 +46,17 @@ public class AfficherProfilServlet extends HttpServlet {
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
         login = request.getParameter( CHAMP_LOGIN_FINANCEUR );
-        FinanceurPorteurDTO membreSession = (FinanceurPorteurDTO) request.getSession()
+        DonateurDTO membreSession = (DonateurDTO) request.getSession()
                 .getAttribute( ATT_SESSION_MEMBRE );
         String loginMembreCourant = membreSession.getLogin();
         if ( loginMembreCourant.equals( login ) ) {
             response.sendRedirect( REDIRECT_MON_PROFIL );
         } else {
-            FinanceurPorteurDTO membreProfil = facadeCommune.findFinanceurDTOByLogin( login );
+            DonateurDTO membreProfil = facadeCommune.findFinanceurDTOByLogin( login );
 
             if ( membreProfil != null ) {
                 request.setAttribute( ATT_MEMBRE_PROFIL, membreProfil );
-                List<TousLesProjetsDTO> sesProjets = facadeCommune.recupererMesProjets( login );
+                List<TousLesChevauxDTO> sesProjets = facadeCommune.recupererMesProjets( login );
                 request.setAttribute( ATT_MES_PROJETS_LIST, sesProjets );
                 request.setAttribute( ATT_NB_PROJETS, facadeCommune.recupererMesProjets( membreProfil.getLogin() )
                         .size() );

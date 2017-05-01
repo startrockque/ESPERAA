@@ -14,9 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import servlets.financeurPorteur.forms.ProjetForm;
-import dto.FinanceurPorteurDTO;
+import dto.DonateurDTO;
 import facade.IFacadeCommune;
-import facade.IFinanceurPorteurFacade;
+import facade.IDonateurFacade;
 
 /**
  * Servlet implementation class AjoutProjetServlet
@@ -57,7 +57,7 @@ public class AjoutProjetServlet extends HttpServlet {
     private ProjetForm              form;
 
     @EJB
-    private IFinanceurPorteurFacade facadeMembre;
+    private IDonateurFacade facadeMembre;
     @EJB
     private IFacadeCommune          facadeCommune;
 
@@ -104,7 +104,7 @@ public class AjoutProjetServlet extends HttpServlet {
     private void ajoutProjet( HttpServletRequest request, HttpServletResponse response ) throws IOException,
             ServletException {
         form.verificationProjet( request );
-        String loginPorteur = ( (FinanceurPorteurDTO) request.getSession().getAttribute( ( ATT_SESSION_MEMBRE ) ) )
+        String loginPorteur = ( (DonateurDTO) request.getSession().getAttribute( ( ATT_SESSION_MEMBRE ) ) )
                 .getLogin();
         if ( form.getErreursProjet().isEmpty() ) {
             String titre = (String) request.getAttribute( CHAMP_TITRE );

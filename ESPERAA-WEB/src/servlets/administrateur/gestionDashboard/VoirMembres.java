@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.FinanceurPorteurMinDTO;
+import dto.DonateurMinDTO;
 import facade.IAdministrateurFacade;
 import facade.IFacadeCommune;
 
@@ -44,10 +44,7 @@ public class VoirMembres extends HttpServlet {
      */
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
-        List<FinanceurPorteurMinDTO> listMembres = facade.recupererTousLesMembres();
-        for ( FinanceurPorteurMinDTO financeur : listMembres ) {
-            financeur.setNbProjets( facadeCommune.recupererMesProjets( financeur.getLogin() ).size() );
-        }
+        List<DonateurMinDTO> listMembres = facade.recupererTousLesMembres();
         request.setAttribute( LIST_MEMBRES, listMembres );
         request.getRequestDispatcher( REDIRECT_VOIR_MEMBRES ).forward( request, response );
     }

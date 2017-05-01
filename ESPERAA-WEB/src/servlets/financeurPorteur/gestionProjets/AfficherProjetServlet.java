@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import dto.ProjetDTO;
+import dto.ChevalDTO;
 import facade.IFacadeCommune;
 
 /**
@@ -37,7 +37,7 @@ public class AfficherProjetServlet extends HttpServlet {
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
         idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
-        ProjetDTO projet = facadeCommune.findProjetDTOById( idProjet );
+        ChevalDTO projet = facadeCommune.findProjetDTOById( idProjet );
         request.setAttribute( ATT_NB_PROJETS, facadeCommune.recupererMesProjets( projet.getPorteur().getLogin() )
                 .size() );
         request.setAttribute( ATT_PROJET, projet );
