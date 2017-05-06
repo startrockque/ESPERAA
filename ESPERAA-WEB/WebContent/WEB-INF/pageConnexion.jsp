@@ -21,7 +21,7 @@
 	            </div>
             </c:if>
             <div class="account-wall">
-            	<h1 class="text-center login-title welcomeBubule">Bienvenu sur Bubule !</h1>
+            	<h1 class="text-center login-title welcomeBubule">Bienvenu sur le site d'ESPERAA !</h1>
 				<h2 class="text-center login-title">Je me connecte</h2>
                 <img class="profile-img" src="http://www.emeraude-app.fr/img/logo-ulule.png" alt="">
                 <form class="form-signin" action="Connexion" method="post">

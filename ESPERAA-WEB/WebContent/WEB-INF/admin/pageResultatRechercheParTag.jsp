@@ -10,7 +10,7 @@
 </head>
 <body>
 	<c:import url="commun/bar_nav.jsp"/>
-	<c:import url="affichages/afficherTousProjets.jsp"/>
+	<c:import url="affichages/afficherTousChevaux.jsp"/>
 	
 </body>
 </html>

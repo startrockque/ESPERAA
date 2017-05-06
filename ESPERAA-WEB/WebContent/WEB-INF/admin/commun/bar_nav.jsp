@@ -28,11 +28,11 @@
 						<form class="navbar-form col-md-3 widther" role="search"
 							action="Rechercher" method="post" role="form">
 							<div class="input-group">
-								<input list="titres" name="titreProjet" class="form-control"
-									placeholder="Titre du projet">
-								<datalist id="titres">
-									<c:forEach items="${autoCompletionProjet}" var="pro">
-										<option value="${pro}"></option>
+								<input list="noms" name="nomCheval" class="form-control"
+									placeholder="Nom du cheval">
+								<datalist id="noms">
+									<c:forEach items="${autoCompletionChevaux}" var="che">
+										<option value="${che}"></option>
 									</c:forEach>
 								</datalist>
 								<div class="input-group-btn">
@@ -65,29 +65,9 @@
 					</li>
 					<li>
 						<form class="navbar-form col-md-3 widther" role="search"
-							action="Rechercher" method="post" role="form">
-							<div class="input-group">
-								<input list="porteurs" name="nomPorteur" class="form-control"
-									placeholder="Nom du porteur">
-								<datalist id="porteurs">
-									<c:forEach items="${listePorteurs}" var="por">
-										<option value="${por}"></option>
-									</c:forEach>
-								</datalist>
-								<div class="input-group-btn">
-									<button value="simpleName" name="action"
-										class="higher btn btn-primary btn-primary" type="submit">
-										<i class="glyphicon glyphicon-search"></i>
-									</button>
-								</div>
-							</div>
-						</form>
-					</li>
-					<li>
-						<form class="navbar-form col-md-3 widther" role="search"
 							action="Rechercher" method="post">
 							<div class="input-group">
-								<input list="tags" type="text" name="tagProjet"
+								<input list="tags" type="text" name="tagCheval"
 									class="form-control" placeholder="Recherche par tag">
 								<datalist id="tags">
 									<c:forEach items="${listeTag}" var="tag">

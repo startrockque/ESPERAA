@@ -21,7 +21,7 @@ public class SupprimerChevalServlet extends HttpServlet {
     private static final long     serialVersionUID               	  = 1L;
     private static final String   PAGE_SUPPRIMER_CHEVAL            	  = "/WEB-INF/admin/pageConfirmerSuppressionCheval.jsp";
     private static final String   PAGE_CONFIRMATION_SUPRESSION_CHEVAL = "/WEB-INF/admin/pageConfirmationSuppressionCheval.jsp";
-    private static final String   CHAMP_SUPPRIMER                  	  = "supprimer";
+    private static final String   CHAMP_CONFIRMER                  	  = "confirmer";
     private static final String   CHAMP_VERIFICATION_SUPPRIMER        = "verificationSupprimer";
 
     private static final String   ATT_ID_CHEVAL                    	  = "idCheval";
@@ -66,7 +66,7 @@ public class SupprimerChevalServlet extends HttpServlet {
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
         String verificationCloturer = request.getParameter( CHAMP_VERIFICATION_SUPPRIMER );
-        if ( verificationCloturer.equals( CHAMP_SUPPRIMER ) ) {
+        if ( verificationCloturer.equals( CHAMP_CONFIRMER ) ) {
             facadeAdmin.supprimerCheval( idCheval );
             idCheval = -1;
             cheval = null;

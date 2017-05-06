@@ -19,11 +19,11 @@ import facade.IFacadeCommune;
 public class RepondreMessageServlet extends HttpServlet {
     private static final long   serialVersionUID         = 1L;
 
-    private static final String REDIRECT_AFFICHER_PROJET = "/ESPERAA-WEB/Membre/AfficherProjet";
+    private static final String REDIRECT_AFFICHER_CHEVAL = "/ESPERAA-WEB/Membre/AfficherCheval";
 
     private static final String ATT_SESSION_MEMBRE       = "financeur";
     private static final String ATT_ID_CONVERSATION      = "idConversation";
-    private static final String ATT_ID_PROJET            = "idProjet";
+    private static final String ATT_ID_CHEVAL            = "idCheval";
     private static final String CHAMP_CONTENU_REPONSE    = "contenuReponse";
 
     @EJB
@@ -52,13 +52,13 @@ public class RepondreMessageServlet extends HttpServlet {
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
         String contenuReponse = request.getParameter( CHAMP_CONTENU_REPONSE );
-        int idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
+        int idCheval = Integer.parseInt( request.getParameter( ATT_ID_CHEVAL ) );
         if ( !contenuReponse.trim().equals( "" ) ) {
             DonateurDTO membre = (DonateurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
             int idConversation = Integer.parseInt( request.getParameter( ATT_ID_CONVERSATION ) );
             facadeCommune.repondreMessage( membre.getLogin(), idConversation, contenuReponse );
         }
-        response.sendRedirect( REDIRECT_AFFICHER_PROJET + "?" + ATT_ID_PROJET + "=" + idProjet );
+        response.sendRedirect( REDIRECT_AFFICHER_CHEVAL + "?" + ATT_ID_CHEVAL + "=" + idCheval );
     }
 
 }

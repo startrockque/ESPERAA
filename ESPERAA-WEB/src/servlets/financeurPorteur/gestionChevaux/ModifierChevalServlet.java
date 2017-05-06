@@ -1,8 +1,6 @@
-package servlets.financeurPorteur.gestionProjets;
+package servlets.financeurPorteur.gestionChevaux;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -13,21 +11,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import servlets.financeurPorteur.forms.ProjetForm;
 import dto.ChevalDTO;
-import facade.IFacadeCommune;
+import facade.IAdministrateurFacade;
 import facade.IDonateurFacade;
+import facade.IFacadeCommune;
+import servlets.financeurPorteur.forms.ChevalForm;
 
 /**
- * Servlet implementation class ModifProjetServlet
+ * Servlet implementation class ModifChevalServlet
  */
-@WebServlet( urlPatterns = { "/Membre/ModifProjet" }, initParams = @WebInitParam( name = "chemin", value = "../images/" ) )
+@WebServlet( urlPatterns = { "/Membre/ModifCheval" }, initParams = @WebInitParam( name = "chemin", value = "../images/" ) )
 @MultipartConfig( maxFileSize = 2 * 1024 * 1024, maxRequestSize = 10 * 1024 * 1024, fileSizeThreshold = 1024 * 1024 )
-public class ModifierProjetServlet extends HttpServlet {
+public class ModifierChevalServlet extends HttpServlet {
     private static final long       serialVersionUID       = 1L;
 
-    private static final String     PAGE_MODIFIER_PROJET   = "/WEB-INF/financeurPorteur/pageModifierProjet.jsp";
-    private static final String     REDIRECT_MES_PROJETS   = "MonProfil";
+    private static final String     PAGE_MODIFIER_CHEVAL   = "/WEB-INF/financeurPorteur/pageModifierCheval.jsp";
+    private static final String     REDIRECT_MES_CHEVAUX   = "MonProfil";
 
     private static final String     CHEMIN                 = "chemin";
 
@@ -42,28 +41,28 @@ public class ModifierProjetServlet extends HttpServlet {
     private static final String     CHAMP_MONTANT_TRANCHE  = "montantTranche";
 
     private static final String     ATT_LIST_CATEGORIE     = "categorieList";
-    private static final String     ATT_ID_PROJET          = "idProjet";
+    private static final String     ATT_ID_CHEVAL          = "idCheval";
     private static final String     ATT_TRANCHE_LIST       = "trancheList";
     private static final String     ATT_FORM               = "form";
-    private static final String     ATT_AJOURDHUI          = "aujourdhui";
-    private static final String     ATT_DATE_MAX           = "dateMax";
     private static final String     ATT_ACTION             = "action";
 
-    private static final String     ACTION_MODIFIER_PROJET = "Modifier le projet";
+    private static final String     ACTION_MODIFIER_CHEVAL = "Modifier le cheval";
     private static final String     ACTION_AJOUTER_TRANCHE = "Ajouter la tranche";
 
-    private ProjetForm              form;
-    private int                     idProjet;
+    private ChevalForm              form;
+    private int                     idCheval;
 
     @EJB
-    private IDonateurFacade facadeMembre;
+    private IDonateurFacade 		facadeMembre;
+    @EJB
+    private IAdministrateurFacade 	facadeAdmin;
     @EJB
     private IFacadeCommune          facadeCommune;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ModifierProjetServlet() {
+    public ModifierChevalServlet() {
         super();
     }
 
@@ -73,16 +72,15 @@ public class ModifierProjetServlet extends HttpServlet {
      */
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
-        idProjet = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
-        ChevalDTO projetDto = facadeCommune.findProjetDTOById( idProjet );
-        setAttribute( projetDto, request );
-        form = new ProjetForm( facadeMembre );
-        form.setTrancheDtoList( projetDto.getTrancheList() );
-        request.setAttribute( ATT_TRANCHE_LIST, projetDto.getTrancheList() );
+        idCheval = Integer.parseInt( request.getParameter( ATT_ID_CHEVAL ) );
+        ChevalDTO chevalDto = facadeCommune.findChevalDTOById( idCheval );
+        setAttribute( chevalDto, request );
+        form = new ChevalForm();
+        form.setTrancheDtoList( chevalDto.getTrancheList() );
+        request.setAttribute( ATT_TRANCHE_LIST, chevalDto.getTrancheList() );
         request.setAttribute( ATT_LIST_CATEGORIE, facadeCommune.findAllCategorieDto() );
         request.setAttribute( ATT_FORM, form );
-        calcDates( request );
-        request.getRequestDispatcher( PAGE_MODIFIER_PROJET ).forward( request, response );
+        request.getRequestDispatcher( PAGE_MODIFIER_CHEVAL ).forward( request, response );
     }
 
     /**
@@ -95,34 +93,33 @@ public class ModifierProjetServlet extends HttpServlet {
         request.setAttribute( ATT_FORM, form );
         String chemin = this.getServletConfig().getInitParameter( CHEMIN );
         form.setChemin( chemin );
-        calcDates( request );
         switch ( action ) {
         case ACTION_AJOUTER_TRANCHE:
             ajoutTranche( request, response );
             break;
-        case ACTION_MODIFIER_PROJET:
-            ajoutProjet( request, response );
+        case ACTION_MODIFIER_CHEVAL:
+            ajoutCheval( request, response );
             break;
         }
     }
 
-    private void ajoutProjet( HttpServletRequest request,
+    private void ajoutCheval( HttpServletRequest request,
             HttpServletResponse response ) throws IOException, ServletException {
-        form.verificationModifierProjet( request, idProjet );
-        if ( form.getErreursProjet().isEmpty() ) {
+        form.verificationModifierCheval( request, idCheval );
+        if ( form.getErreursCheval().isEmpty() ) {
             String titre = (String) request.getAttribute( CHAMP_TITRE );
             String description = (String) request.getAttribute( CHAMP_DESCRIPTION );
             String butArgent = (String) request.getAttribute( CHAMP_BUT );
             int montantDemande = Integer.parseInt( (String) request.getAttribute( CHAMP_MONTANT_DEMANDE ) );
             String titreCategorie = (String) request.getAttribute( CHAMP_CATEGORIE );
             String tagString = (String) request.getAttribute( CHAMP_TAG );
-            facadeMembre.modifierProjet( idProjet, titre, description, butArgent,
+            facadeAdmin.modifierCheval( idCheval, titre, description, butArgent,
                     montantDemande, titreCategorie, tagString, form.getTrancheList(), form.getImage() );
-            response.sendRedirect( REDIRECT_MES_PROJETS );
+            response.sendRedirect( REDIRECT_MES_CHEVAUX );
         } else {
             request.setAttribute( ATT_TRANCHE_LIST, form.getTrancheList() );
             request.setAttribute( ATT_LIST_CATEGORIE, facadeCommune.findAllCategorieDto() );
-            request.getRequestDispatcher( PAGE_MODIFIER_PROJET ).forward( request, response );
+            request.getRequestDispatcher( PAGE_MODIFIER_CHEVAL ).forward( request, response );
         }
     }
 
@@ -134,40 +131,22 @@ public class ModifierProjetServlet extends HttpServlet {
             int montant = Integer.parseInt( (String) request.getAttribute( CHAMP_MONTANT_TRANCHE ) );
             form.ajouterTranche( compensation, montant );
         }
-        form.verificationModifierProjet( request, idProjet );
+        form.verificationModifierCheval( request, idCheval );
         request.setAttribute( ATT_LIST_CATEGORIE, facadeCommune.findAllCategorieDto() );
         request.setAttribute( ATT_TRANCHE_LIST, form.getTrancheList() );
-        request.getRequestDispatcher( PAGE_MODIFIER_PROJET ).forward( request, response );
+        request.getRequestDispatcher( PAGE_MODIFIER_CHEVAL ).forward( request, response );
     }
 
-    private void setAttribute( ChevalDTO projetDto, HttpServletRequest request ) {
-        request.setAttribute( CHAMP_TITRE, projetDto.getTitreProjet() );
-        request.setAttribute( CHAMP_DESCRIPTION, projetDto.getDescription() );
-        request.setAttribute( CHAMP_BUT, projetDto.getButArgent() );
-        request.setAttribute( CHAMP_MONTANT_DEMANDE, projetDto.getMontantDemande() );
-        request.setAttribute( CHAMP_CATEGORIE, projetDto.getCategorie() );
+    private void setAttribute( ChevalDTO chevalDto, HttpServletRequest request ) {
+        request.setAttribute( CHAMP_TITRE, chevalDto.getTitreCheval() );
+        request.setAttribute( CHAMP_DESCRIPTION, chevalDto.getDescription() );
+        request.setAttribute( CHAMP_BUT, chevalDto.getButArgent() );
+        request.setAttribute( CHAMP_MONTANT_DEMANDE, chevalDto.getMontantDemande() );
+        request.setAttribute( CHAMP_CATEGORIE, chevalDto.getCategorie() );
         String tagString = "";
-        for ( String tagName : projetDto.getTagList() ) {
+        for ( String tagName : chevalDto.getTagList() ) {
             tagString = tagString + " " + tagName;
         }
         request.setAttribute( CHAMP_TAG, tagString );
     }
-
-    /**
-     * M�thode de calcul de la date actuelle et de la date max de fin de
-     * projet (+2 mois)
-     * 
-     * @param request
-     * @param response
-     */
-    private void calcDates( HttpServletRequest request ) {
-        Calendar aujourdhui = Calendar.getInstance();
-        Calendar dateMax = Calendar.getInstance();
-        dateMax.add( Calendar.MONTH, 2 );
-
-        SimpleDateFormat formater = new SimpleDateFormat( "yyyy-MM-dd" );
-        request.setAttribute( ATT_AJOURDHUI, formater.format( aujourdhui.getTime() ) );
-        request.setAttribute( ATT_DATE_MAX, formater.format( dateMax.getTime() ) );
-    }
-
 }

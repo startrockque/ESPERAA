@@ -24,8 +24,8 @@
             	<div class="col-lg-4 col-xs-6">
               		<div class="small-box bg-aqua">
                 		<div class="inner">
-                  			<h3><c:out value="${nbProjets}" /></h3>
-                  			<p>Projets</p>
+                  			<h3><c:out value="${nbChevaux}" /></h3>
+                  			<p>Chevaux</p>
                 		</div>
                 		<div class="icon">
                   			<i class="ion ion-settings"></i>
@@ -60,17 +60,6 @@
               		</div>
             	</div>
             
-            	<div class="col-lg-3 col-xs-6">
-            		<div class="small-box bg-red">
-                		<div class="inner">
-                  			<h3><c:out value="${nbAimes}" /></h3>
-                  			<p>Likes</p>
-                		</div>
-                		<div class="icon">
-                  			<i class="ion ion-thumbsup"></i>
-                		</div>
-              		</div>
-            	</div>
             	<div class="col-lg-3 col-xs-6">
             		<div class="small-box bg-teal">
                 		<div class="inner">

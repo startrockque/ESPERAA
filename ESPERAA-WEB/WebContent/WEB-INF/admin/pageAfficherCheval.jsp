@@ -4,7 +4,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>Détails du projet</title>
+	<title><c:out value="${cheval.nom}" /></title>
 	<link href="../css/style.css" rel="stylesheet" type="text/css">
     <link href="../css/projet.css" rel="stylesheet">
 	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
@@ -22,13 +22,13 @@
 			</div>
 			
 			<div class="col-md-7">
-				<c:import url="affichages/afficherProjet.jsp"/>
+				<c:import url="affichages/afficherCheval.jsp"/>
 				
-				<c:import url="affichages/afficherMessageProjet.jsp"/>
+				<c:import url="affichages/afficherMessageCheval.jsp"/>
 			</div>
 			
 			<div class="col-md-2">
-				<c:import url="affichages/afficherOptionsProjet.jsp"/>
+				<c:import url="affichages/afficherOptionsCheval.jsp"/>
 			</div>
 		</div>
 	</div>

@@ -14,7 +14,7 @@
 	      		<!-- 		TAG -->
 				<c:forEach var="tag" items="${tagsPop}">
 					<c:url value="/Admin/Rechercher" var="rechercherParTag"> 
-						<c:param name="tagProjet" value="${tag}"/>
+						<c:param name="tagCheval" value="${tag}"/>
 						<c:param name="action" value="simpleTag"/>
 					</c:url>
 					<a href="<c:out value="${rechercherParTag}" />"> #<c:out value="${tag}" /> </a><br /> 
@@ -34,23 +34,18 @@
 				<c:url value="/Admin/Rechercher" var="rechercherPlusFinances"> 
 					<c:param name="action" value="projetsPlusFinances"/>
 				</c:url>
-				<a href="<c:out value="${rechercherPlusFinances}" />"> Projets les plus financés </a><br /> 
+				<a href="<c:out value="${rechercherPlusFinances}" />"> Chevaux les plus aidés</a><br /> 
     		
 	      		<c:url value="/Admin/Rechercher" var="rechercherPresqueFinances"> 
 					<c:param name="action" value="projetsPresqueFinances"/>
 				</c:url>
 
-				<a href="<c:out value="${rechercherPresqueFinances}" />"> Projets presque finis financés </a><br /> 
+				<a href="<c:out value="${rechercherPresqueFinances}" />"> Chevaux presque financés </a><br /> 
 
 	      		<c:url value="/Admin/Rechercher" var="rechercherRecents"> 
 					<c:param name="action" value="projetsRecents"/>
 				</c:url>
-				<a href="<c:out value="${rechercherRecents}" />"> Projets récents </a><br />
-				
-				<c:url value="/Admin/Rechercher" var="rechercherAimes"> 
-					<c:param name="action" value="projetsAimes"/>
-				</c:url>
-				<a href="<c:out value="${rechercherAimes}" />"> Projets les plus aimés </a><br /> 
-	    	</div>
+				<a href="<c:out value="${rechercherRecents}" />"> Les plus récents </a><br />
+			</div>
 	  	</div>
 </fieldset>

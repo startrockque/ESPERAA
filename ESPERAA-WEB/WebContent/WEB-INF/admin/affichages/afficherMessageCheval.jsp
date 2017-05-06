@@ -4,13 +4,13 @@
 <div class="well">
     <div class="text-right">
         <form action=EnvoyerMessage method="post">
-       		<input type="hidden" name="idProjet" value="${projet.idProjet}" /> 
+       		<input type="hidden" name="idProjet" value="${cheval.idCheval}" /> 
 			<textarea name="contenuMessage" rows="3" placeholder="Entrez votre message ..." class="form-control lightMarginBottom" required></textarea>
 			<button name="act" value="Envoyer" class="btn btn-success"><i class="glyphicon glyphicon-send"></i> Envoyer</button>	
 		</form>
     </div>
     <hr>
-	<c:forEach var="conversation" items="${projet.conversationList}">
+	<c:forEach var="conversation" items="${cheval.conversationList}">
 		<c:set var="compteurMessage" scope="page" value="${0}"/>
 		<div class="box box-primary">
         	<div class="box-header with-border">
@@ -20,7 +20,7 @@
 					</c:if>
 					<c:if test="${conversation.emetteur != sessionScope.admin.login }">
 						<c:url value="/Admin/AfficherProfil" var="afficherProfil"> 
-							<c:param name="loginFinanceur" value="${conversation.emetteur}"/>
+							<c:param name="loginDonateur" value="${conversation.emetteur}"/>
 						</c:url>
 						<a href="<c:out value="${afficherProfil}" />"> <c:out value="${conversation.emetteur}" /> </a>
 					</c:if>
@@ -29,7 +29,7 @@
 		        	<form action="SupprimerMessage" method="post" id="formSupprimer">
 						<input type="hidden" name="idConversation" value="${conversation.idConversation}" />	
 						<input type="hidden" name="idMessage" value="${conversation.messageList[0].idMessage}" />
-						<input type="hidden" name="idProjet" value="${projet.idProjet}" />	
+						<input type="hidden" name="idCheval" value="${cheval.idCheval}" />	
 						<button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
 						<button name="act" value="Supprimer" class="btn btn-box-tool" ><i class="fa fa-times"></i></button>
 					</form>
@@ -49,11 +49,11 @@
 				        			<c:if test="${message.emetteur == sessionScope.admin.login }">
 				        			<div class="widget-user-image">
 								    	<c:choose>
-										    <c:when test="${empty financeur.image}">
+										    <c:when test="${empty donateur.image}">
 										        <img class="img-circle image-message" src="http://img.over-blog-kiwi.com/1/40/02/09/20150328/ob_0f8efc_frgreq.gif" alt="">
 										    </c:when>
 										    <c:otherwise>
-										        <img class="img-circle image-message" src="<c:url value="/images/${ financeur.image }"/>" alt="">
+										        <img class="img-circle image-message" src="<c:url value="/images/${ donateur.image }"/>" alt="">
 										    </c:otherwise>
 										</c:choose>
 										<strong>Vous</strong>, à : <c:out value="${message.dateHeureMessage}"/>
@@ -61,15 +61,15 @@
 									</c:if>
 									<c:if test="${message.emetteur != sessionScope.admin.login }">
 										<c:url value="/Admin/AfficherProfil" var="afficherProfil"> 
-											<c:param name="loginFinanceur" value="${message.emetteur}"/>
+											<c:param name="loginDonateur" value="${message.emetteur}"/>
 										</c:url>
 										<div class="widget-user-image">
 								    	<c:choose>
-										    <c:when test="${empty financeur.image}">
+										    <c:when test="${empty donateur.image}">
 										        <img class="img-circle image-message" src="http://img.over-blog-kiwi.com/1/40/02/09/20150328/ob_0f8efc_frgreq.gif" alt="">
 										    </c:when>
 										    <c:otherwise>
-										        <img class="img-circle image-message" src="<c:url value="/images/${ financeur.image }"/>" alt="">
+										        <img class="img-circle image-message" src="<c:url value="/images/${ donateur.image }"/>" alt="">
 										    </c:otherwise>
 										</c:choose>
 										<a href="<c:out value="${afficherProfil}" />"> <c:out value="${message.emetteur}" /> </a>, à : <c:out value="${message.dateHeureMessage}"/>
@@ -79,7 +79,7 @@
 					    	    		<form action="SupprimerMessage" method="post" id="formSupprimer">
 											<input type="hidden" name="idConversation" value="${conversation.idConversation}" />	
 											<input type="hidden" name="idMessage" value="${message.idMessage}" />
-											<input type="hidden" name="idProjet" value="${projet.idProjet}" />	
+											<input type="hidden" name="idCheval" value="${cheval.idCheval}" />	
 											<button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
 											<button name="act" value="Supprimer" class="btn btn-box-tool" ><i class="fa fa-times"></i></button>
 										</form>
@@ -97,7 +97,7 @@
 	    		<form action="RepondreMessage" method="post">
 					<label for="rep">Répondre à ce message  : </label><textarea name="contenuReponse" id="rep" placeholder="Entrez votre message ..." class="form-control lightMarginBottom" required></textarea>
 					<input type="hidden" name="idConversation" value="${conversation.idConversation}" />	
-					<input type="hidden" name="idProjet" value="${projet.idProjet}" />
+					<input type="hidden" name="idCheval" value="${cheval.idCheval}" />
 					<button name="act" value="Repondre" class="btn btn-primary btn-success"><i class="glyphicon glyphicon-share-alt"></i> Répondre</button>	
 				</form>
     		</div>

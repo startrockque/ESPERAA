@@ -1,9 +1,6 @@
 package servlets.financeurPorteur.forms;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,100 +9,89 @@ import javax.servlet.http.HttpServletRequest;
 
 import servlets.utilitaire.ImageUtilitaire;
 import dto.TrancheDTO;
-import facade.IDonateurFacade;
 
-public class ProjetForm {
+public class ChevalForm {
 
-    private static final String     CHAMP_TITRE            = "titre";
+    private static final String     CHAMP_NOM              = "nom";
     private static final String     CHAMP_DESCRIPTION      = "description";
     private static final String     CHAMP_BUT              = "butArgent";
     private static final String     CHAMP_MONTANT_DEMANDE  = "montantDemande";
     private static final String     CHAMP_CATEGORIE        = "titreCategorie";
     private static final String     CHAMP_TAG              = "tagText";
-    private static final String     CHAMP_DATE_FIN         = "dateFin";
-    private static final String     CHAMP_IMAGE            = "imageProjet";
+    private static final String     CHAMP_IMAGE            = "imageCheval";
 
     private static final String     CHAMP_COMPENSATION     = "compensation";
     private static final String     CHAMP_MONTANT_TRANCHE  = "montantTranche";
 
-    private static final String     EXTENSION_IMAGE_PROJET = "projets/";
+    private static final String     EXTENSION_IMAGE_CHEVAL = "chevaux/";
 
-    private Map<String, String>     erreursProjet;
+    private Map<String, String>     erreursCheval;
     private Map<String, String>     erreursTranche;
     private String                  resultatTranche;
     private String                  chemin;
-    private String                  imageProjet;
+    private String                  imageCheval;
 
     private List<TrancheDTO>        trancheDtoList;
 
-    private IDonateurFacade facadeMembre;
-
-    public ProjetForm( IDonateurFacade facadeMembre ) {
-        this.facadeMembre = facadeMembre;
-        erreursProjet = new HashMap<String, String>();
+    public ChevalForm() {
+        erreursCheval = new HashMap<String, String>();
         erreursTranche = new HashMap<String, String>();
     }
 
-    public void verificationProjet( HttpServletRequest request ) {
+    public void verificationCheval( HttpServletRequest request ) {
         resultatTranche = null;
-        erreursProjet = new HashMap<String, String>();
-        String titre = getValeurChamp( request, CHAMP_TITRE );
+        erreursCheval = new HashMap<String, String>();
+        String nom = getValeurChamp( request, CHAMP_NOM );
         String description = getValeurChamp( request, CHAMP_DESCRIPTION );
         String butArgent = getValeurChamp( request, CHAMP_BUT );
         String montantDemande = getValeurChamp( request, CHAMP_MONTANT_DEMANDE );
         String titreCategorie = getValeurChamp( request, CHAMP_CATEGORIE );
         String tagString = getValeurChamp( request, CHAMP_TAG );
-        String dateFin = getValeurChamp( request, CHAMP_DATE_FIN );
 
-        request.setAttribute( CHAMP_TITRE, titre );
+        request.setAttribute( CHAMP_NOM, nom );
         request.setAttribute( CHAMP_DESCRIPTION, description );
         request.setAttribute( CHAMP_BUT, butArgent );
         request.setAttribute( CHAMP_MONTANT_DEMANDE, montantDemande );
         request.setAttribute( CHAMP_CATEGORIE, titreCategorie );
         request.setAttribute( CHAMP_TAG, tagString );
-        request.setAttribute( CHAMP_DATE_FIN, dateFin );
 
-        traiterTitre( titre );
+        traiterNom( nom );
         traiterDescription( description );
         traiterButArgent( butArgent );
         traiterMontantDemande( montantDemande );
         traiterCategorie( titreCategorie );
-        traiterDateFin( dateFin );
         traiterImage( request );
         if ( trancheDtoList == null ) {
-            resultatTranche = "Le projet doit avoir au moins une tranche";
+            resultatTranche = "Le cheval doit avoir au moins un objectif";
         }
 
     }
 
-    public void verificationModifierProjet( HttpServletRequest request, int idProjet ) {
+    public void verificationModifierCheval( HttpServletRequest request, int idProjet ) {
         resultatTranche = null;
-        erreursProjet = new HashMap<String, String>();
-        String titre = getValeurChamp( request, CHAMP_TITRE );
+        erreursCheval = new HashMap<String, String>();
+        String titre = getValeurChamp( request, CHAMP_NOM );
         String description = getValeurChamp( request, CHAMP_DESCRIPTION );
         String butArgent = getValeurChamp( request, CHAMP_BUT );
         String montantDemande = getValeurChamp( request, CHAMP_MONTANT_DEMANDE );
         String titreCategorie = getValeurChamp( request, CHAMP_CATEGORIE );
         String tagString = getValeurChamp( request, CHAMP_TAG );
-        String dateFin = getValeurChamp( request, CHAMP_DATE_FIN );
 
-        request.setAttribute( CHAMP_TITRE, titre );
+        request.setAttribute( CHAMP_NOM, titre );
         request.setAttribute( CHAMP_DESCRIPTION, description );
         request.setAttribute( CHAMP_BUT, butArgent );
         request.setAttribute( CHAMP_MONTANT_DEMANDE, montantDemande );
         request.setAttribute( CHAMP_CATEGORIE, titreCategorie );
         request.setAttribute( CHAMP_TAG, tagString );
-        request.setAttribute( CHAMP_DATE_FIN, dateFin );
 
-        traiterTitre( titre, idProjet );
+        traiterNom( titre, idProjet );
         traiterDescription( description );
         traiterButArgent( butArgent );
         traiterMontantDemande( montantDemande );
         traiterCategorie( titreCategorie );
-        traiterDateFin( dateFin );
         traiterImage( request );
         if ( trancheDtoList == null ) {
-            resultatTranche = "Le projet doit avoir au moins une tranche";
+            resultatTranche = "Le cheval doit avoir au moins un objectif";
         }
     }
 
@@ -123,51 +109,45 @@ public class ProjetForm {
     }
 
     private void traiterImage( HttpServletRequest request ) {
-        imageProjet = null;
+        imageCheval = null;
         try {
-            imageProjet = ImageUtilitaire.validationImage( request, CHAMP_IMAGE, chemin, EXTENSION_IMAGE_PROJET );
+            imageCheval = ImageUtilitaire.validationImage( request, CHAMP_IMAGE, chemin, EXTENSION_IMAGE_CHEVAL );
         } catch ( FormValidationException e ) {
-            setErreurProjet( CHAMP_IMAGE, e.getMessage() );
+            setErreurCheval( CHAMP_IMAGE, e.getMessage() );
         }
     }
 
-    private void traiterTitre( String titre, int idProjet ) {
+    private void traiterNom( String titre, int idProjet ) {
         if ( titre != null && !titre.isEmpty() ) {
-            if ( !facadeMembre.verifierTitreProjet( titre, idProjet ) ) {
-                setErreurProjet( CHAMP_TITRE, "Ce titre est déjà utilisé pour un autre projet" );
-            }
         } else {
-            setErreurProjet( CHAMP_TITRE, "Le champ titre est obligatoire" );
+            setErreurCheval( CHAMP_NOM, "Le champ nom est obligatoire" );
         }
     }
 
-    private void traiterTitre( String titre ) {
+    private void traiterNom( String titre ) {
         if ( titre != null && !titre.isEmpty() ) {
-            if ( !facadeMembre.verifierTitreProjet( titre ) ) {
-                setErreurProjet( CHAMP_TITRE, "Ce titre est déjà utilisé pour un autre projet" );
-            }
         } else {
-            setErreurProjet( CHAMP_TITRE, "Le champ titre est obligatoire" );
+            setErreurCheval( CHAMP_NOM, "Le champ nom est obligatoire" );
         }
     }
 
     private void traiterDescription( String description ) {
         if ( description != null && !description.isEmpty() ) {
             if ( description.length() < 10 ) {
-                setErreurProjet( CHAMP_DESCRIPTION, "La description du projet doit faire au moins 10 caractères" );
+                setErreurCheval( CHAMP_DESCRIPTION, "La description du cheval doit faire au moins 10 caractères" );
             }
         } else {
-            setErreurProjet( CHAMP_DESCRIPTION, "Le champ description est obligatoire" );
+            setErreurCheval( CHAMP_DESCRIPTION, "Le champ description est obligatoire" );
         }
     }
 
     private void traiterButArgent( String butArgent ) {
         if ( butArgent != null && !butArgent.isEmpty() ) {
             if ( butArgent.length() < 10 ) {
-                setErreurProjet( CHAMP_BUT, "Le but du projet doit faire au moins 10 caractères" );
+                setErreurCheval( CHAMP_BUT, "Le but du cheval doit faire au moins 10 caractères" );
             }
         } else {
-            setErreurProjet( CHAMP_BUT, "Le champ but argent est obligatoire" );
+            setErreurCheval( CHAMP_BUT, "Le champ but argent est obligatoire" );
         }
 
     }
@@ -177,37 +157,18 @@ public class ProjetForm {
             try {
                 Integer.parseInt( montantDemande );
             } catch ( Exception e ) {
-                setErreurProjet( CHAMP_MONTANT_DEMANDE, "Le champ ne doit pas comporté de lettre" );
+                setErreurCheval( CHAMP_MONTANT_DEMANDE, "Le champ ne doit pas comporté de lettre" );
             }
         } else {
-            setErreurProjet( CHAMP_MONTANT_DEMANDE, "Le champ montant demande est obligatoire" );
+            setErreurCheval( CHAMP_MONTANT_DEMANDE, "Le champ montant demande est obligatoire" );
         }
     }
 
     private void traiterCategorie( String titreCategorie ) {
         if ( titreCategorie == null ) {
-            erreursProjet.put( CHAMP_CATEGORIE, "Choississez une categorie pour votre projet" );
+            erreursCheval.put( CHAMP_CATEGORIE, "Choississez une categorie pour le cheval" );
         } else if ( titreCategorie.isEmpty() ) {
-            erreursProjet.put( CHAMP_CATEGORIE, "Choississez une categorie pour votre projet" );
-        }
-    }
-
-    private void traiterDateFin( String dateFin ) {
-        if ( dateFin != null ) {
-            Calendar aujourdhui = Calendar.getInstance();
-            Calendar dateMax = Calendar.getInstance();
-            dateMax.add( Calendar.MONTH, 2 );
-
-            SimpleDateFormat formater = new SimpleDateFormat( "yyyy-MM-dd" );
-            Calendar currentDate = Calendar.getInstance();
-            try {
-                currentDate.setTime( formater.parse( dateFin ) );
-                if ( currentDate.before( aujourdhui ) || currentDate.after( dateMax ) ) {
-                    setErreurProjet( CHAMP_DATE_FIN, "La date de fin ne peut pas dépasser les 2 mois" );
-                }
-            } catch ( ParseException pe ) {
-                setErreurProjet( CHAMP_DATE_FIN, "Un problème est survenu lors de la saisie de la date" );
-            }
+            erreursCheval.put( CHAMP_CATEGORIE, "Choississez une categorie pour le cheval" );
         }
     }
 
@@ -237,8 +198,8 @@ public class ProjetForm {
     /*
      * Ajoute un message correspondant au champ spécifié à la map des erreurs.
      */
-    private void setErreurProjet( String champ, String message ) {
-        erreursProjet.put( champ, message );
+    private void setErreurCheval( String champ, String message ) {
+        erreursCheval.put( champ, message );
     }
 
     /*
@@ -277,7 +238,7 @@ public class ProjetForm {
     }
 
     public String getImage() {
-        return imageProjet;
+        return imageCheval;
     }
 
     public List<TrancheDTO> getTrancheList() {
@@ -288,8 +249,8 @@ public class ProjetForm {
         return resultatTranche;
     }
 
-    public Map<String, String> getErreursProjet() {
-        return erreursProjet;
+    public Map<String, String> getErreursCheval() {
+        return erreursCheval;
     }
 
     public Map<String, String> getErreursTranche() {

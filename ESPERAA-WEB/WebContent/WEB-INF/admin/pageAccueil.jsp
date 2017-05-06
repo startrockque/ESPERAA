@@ -14,15 +14,15 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-3">
-				<c:import url="formulaires/formRechercherProjets.jsp"/>
-				<c:import url="affichages/listesPredefiniesProjets.jsp"/>
+				<c:import url="formulaires/formRechercherChevaux.jsp"/>
+				<c:import url="affichages/listesPredefiniesChevaux.jsp"/>
 			</div>
 			<div class="col-md-9">
 				<c:import url="affichages/afficherEnAvant.jsp"/>
 				<div class="row">
-					<p class="text-center">Liste des projets</p>
+					<p class="text-center">Liste des chevaux</p>
 					<c:import url="affichages/pagination.jsp"/>	
-					<c:import url="affichages/afficherTousProjets.jsp"/>
+					<c:import url="affichages/afficherTousChevaux.jsp"/>
 				</div>
 			</div>
 		</div>

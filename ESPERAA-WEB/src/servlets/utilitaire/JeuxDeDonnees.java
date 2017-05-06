@@ -21,7 +21,7 @@ import dao.TagDAO;
 import entities.Admin;
 import entities.Categorie;
 import entities.Donateur;
-import entities.Projet;
+import entities.Cheval;
 import entities.Tag;
 import entities.Tranche;
 
@@ -35,7 +35,7 @@ public class JeuxDeDonnees extends HttpServlet {
     private static final String PAGE_CONNEXION   = "/WEB-INF/pageConnexion.jsp";
 
     @EJB
-    private ChevalDAO           projetDao;
+    private ChevalDAO           chevalDao;
 
     @EJB
     private CategorieDao        categorieDao;
@@ -80,7 +80,7 @@ public class JeuxDeDonnees extends HttpServlet {
         Calendar fini = Calendar.getInstance();
         fini.add(Calendar.MONTH, -1);
         for ( int i = 1; i <= 11; i++ ) {
-            Projet projet = new Projet();
+            Cheval cheval = new Cheval();
             Donateur financeurPorteur = new Donateur();
             Admin admin = new Admin();
             Categorie categorie = new Categorie();
@@ -100,46 +100,40 @@ public class JeuxDeDonnees extends HttpServlet {
 
             categorie.setTitreCategorie( "categorie " + i );
 
-            projet.setTitreProjet( "titreProjet " + i );
-            projet.setButArgent( "butArgent " + i );
-            projet.setDescription( "description " + i );
-            projet.setDateCreation( Calendar.getInstance() );
-            if (i%5 == 0 ){
-            	projet.setDateFin( fini );
-            } else {
-            	projet.setDateFin( cal );
-            }
-            projet.setMontantDemande( i * 1000 );
-            projet.setPorteur( financeurPorteur );
+            cheval.setNomCheval( "titreCheval " + i );
+            cheval.setButArgent( "butArgent " + i );
+            cheval.setDescription( "description " + i );
+            cheval.setDateCreation( Calendar.getInstance() );
+            cheval.setMontantDemande( i * 1000 );
 
             List<Tranche> trancheList = new ArrayList<Tranche>();
             Tranche trancheDepartTranche = new Tranche( "aucune compensation", 0 );
-            trancheDepartTranche.setProjet( projet );
+            trancheDepartTranche.setCheval( cheval );
             trancheList.add( trancheDepartTranche );
             for ( int j = 1; j <= 5; j++ ) {
                 Tranche tranche = new Tranche();
                 tranche.setCompensation( "compensation " + ( j ) );
                 tranche.setMontantTranche( j * 10 );
                 trancheList.add( tranche );
-                tranche.setProjet( projet );
+                tranche.setCheval( cheval );
             }
-            projet.setTrancheList( trancheList );
+            cheval.setTrancheList( trancheList );
 
             tag.setTag( "tag" + i );
-            tag.getProjeList().add( projet );
+            tag.getChevauxList().add( cheval );
             tag2.setTag( "tagliatelle" + i );
-            tag2.getProjeList().add( projet );
+            tag2.getChevauxList().add( cheval );
 
             if ( i % 3 == 0 ) {
-                projet.setEnAvant( true );
+                cheval.setEnAvant( true );
             }
 
             try {
                 financeurPorteurDao.create( financeurPorteur );
                 adminDao.create( admin );
                 categorieDao.create( categorie );
-                projet.setCategorie( categorie );
-                projetDao.create( projet );
+                cheval.setCategorie( categorie );
+                chevalDao.create( cheval );
                 tagDao.create( tag );
                 tagDao.create( tag2 );
             } catch ( DAOException e ) {

@@ -29,7 +29,7 @@ public class ModifierProfilServlet extends HttpServlet {
 
     private static final String     EXTENSION_IMAGE_MEMBRE = "profils/";
 
-    private static final String     ATT_SESSION_MEMBRE     = "financeur";
+    private static final String     ATT_SESSION_MEMBRE     = "donateur";
     private static final String     ATT_ERREUR             = "erreur";
 
     private static final String     CHAMP_NOM              = "nom";
@@ -40,11 +40,11 @@ public class ModifierProfilServlet extends HttpServlet {
     private static final String     CHAMP_NOUVEAU_MDP_CONF = "confirmation_password";
 
     @EJB
-    private IFacadeCommune          facade;
+    private IFacadeCommune  facade;
     @EJB
     private IDonateurFacade facadeMembre;
 
-    private DonateurDTO     financeurPorteurDTO;
+    private DonateurDTO     donateurDTO;
 
     public ModifierProfilServlet() {
         super();
@@ -53,8 +53,8 @@ public class ModifierProfilServlet extends HttpServlet {
 
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
-        financeurPorteurDTO = (DonateurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
-        request.setAttribute( ATT_SESSION_MEMBRE, financeurPorteurDTO );
+        donateurDTO = (DonateurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
+        request.setAttribute( ATT_SESSION_MEMBRE, donateurDTO );
         request.getRequestDispatcher( PAGE_MODIFIER_PROFIL ).forward( request, response );
     }
 
@@ -63,39 +63,39 @@ public class ModifierProfilServlet extends HttpServlet {
         String ancienMdp = request.getParameter( CHAMP_ANCIEN_MDP );
         String nvMdp = request.getParameter( CHAMP_NOUVEAU_MDP );
         String confirmedMdp = request.getParameter( CHAMP_NOUVEAU_MDP_CONF );
-        String loginFinanceur = financeurPorteurDTO.getLogin();
+        String loginDonateur = donateurDTO.getLogin();
         String chemin = this.getServletConfig().getInitParameter( CHEMIN );
         try {
             String image = ImageUtilitaire.validationImage( request, CHAMP_IMAGE, chemin, EXTENSION_IMAGE_MEMBRE );
-            if ( facadeMembre.verifierMdpFinanceur( loginFinanceur, ancienMdp ) ) {
+            if ( facadeMembre.verifierMdpDonateur( loginDonateur, ancienMdp ) ) {
                 if ( nvMdp.isEmpty() ) {
-                    financeurPorteurDTO.setEmail( request.getParameter( CHAMP_EMAIL ) );
-                    financeurPorteurDTO.setNom( request.getParameter( CHAMP_NOM ) );
+                    donateurDTO.setEmail( request.getParameter( CHAMP_EMAIL ) );
+                    donateurDTO.setNom( request.getParameter( CHAMP_NOM ) );
                     if (!image.isEmpty() ){
-                    	financeurPorteurDTO.setImage( image );
+                    	donateurDTO.setImage( image );
                     }
-                    facadeMembre.modifierFinanceurPorteur( financeurPorteurDTO );
-                    request.getSession().setAttribute( ATT_SESSION_MEMBRE, financeurPorteurDTO );
+                    facadeMembre.modifierDonateur( donateurDTO );
+                    request.getSession().setAttribute( ATT_SESSION_MEMBRE, donateurDTO );
                     response.sendRedirect( REDIRECT_MON_PROFIL );
                 } else {
                     if ( nvMdp.equals( confirmedMdp ) ) {
-                        financeurPorteurDTO.setEmail( request.getParameter( CHAMP_EMAIL ) );
-                        financeurPorteurDTO.setNom( request.getParameter( CHAMP_NOM ) );
-                        financeurPorteurDTO.setMdp( nvMdp );
+                        donateurDTO.setEmail( request.getParameter( CHAMP_EMAIL ) );
+                        donateurDTO.setNom( request.getParameter( CHAMP_NOM ) );
+                        donateurDTO.setMdp( nvMdp );
                         if (!image.isEmpty() ){
-                        	financeurPorteurDTO.setImage( image );
+                        	donateurDTO.setImage( image );
                         }
-                        facadeMembre.modifierFinanceurPorteur( financeurPorteurDTO );
-                        request.getSession().setAttribute( ATT_SESSION_MEMBRE, financeurPorteurDTO );
+                        facadeMembre.modifierDonateur( donateurDTO );
+                        request.getSession().setAttribute( ATT_SESSION_MEMBRE, donateurDTO );
                         response.sendRedirect( REDIRECT_MON_PROFIL );
                     } else {
-                        request.setAttribute( ATT_SESSION_MEMBRE, financeurPorteurDTO );
-                        request.setAttribute( ATT_ERREUR, "Les deux mots de passe ne sont pas égaux" );
+                        request.setAttribute( ATT_SESSION_MEMBRE, donateurDTO );
+                        request.setAttribute( ATT_ERREUR, "Les deux mots de passe ne sont pas identiques" );
                         request.getRequestDispatcher( PAGE_MODIFIER_PROFIL ).forward( request, response );
                     }
                 }
             } else {
-                request.setAttribute( ATT_SESSION_MEMBRE, financeurPorteurDTO );
+                request.setAttribute( ATT_SESSION_MEMBRE, donateurDTO );
                 request.setAttribute( ATT_ERREUR, "Erreur dans l'ancien mot de passe" );
                 request.getRequestDispatcher( PAGE_MODIFIER_PROFIL ).forward( request, response );
             }

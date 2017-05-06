@@ -2,7 +2,7 @@
 <p class="lead">Tranches</p>
       	<div class="list-group">	
 	<c:set var="cpt" value="0" scope="page"/>
-	<c:forEach var="tranche" items="${projet.trancheList}">
+	<c:forEach var="tranche" items="${cheval.trancheList}">
 		<c:if test="${cpt%2==0}">
 			<p class = "list-group-item greyBack">
 				Prix : <c:out value="${tranche.montantTranche}" /> <br/>	

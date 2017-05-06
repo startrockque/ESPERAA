@@ -33,7 +33,7 @@
 					</c:when>
 				</c:choose>
 					<c:url value="/Admin/AfficherProfil" var="afficherProfil"> 
-						<c:param name="loginFinanceur" value="${membre.login}"/>
+						<c:param name="loginDonateur" value="${membre.login}"/>
 					</c:url>
 				    <h3 class="widget-user-username"><a href="<c:out value="${afficherProfil}" />"> <c:out value="${membre.login}" /> </a></h3>
 				    <h5 class="widget-user-desc"><c:out value="${membre.email}"/></h5>
@@ -47,22 +47,6 @@
 					        <img class="img-circle" id="imgHigher" src="<c:url value="/images/${ membre.image }"/>" alt="">
 					    </c:otherwise>
 					</c:choose>
-			    </div>
-			    <div class="box-footer">
-			    	<div class="row">
-			        	<div class="col-sm-6 border-right">
-			            	<div class="description-block">
-			                	<h5 class="description-header"><c:out value="${membre.nbAime}" /></h5>
-			                    <span class="description-text">LIKES</span>
-			                </div>
-			            </div>
-			            <div class="col-sm-6">
-			            	<div class="description-block">
-			                	<h5 class="description-header"><c:out value="${membre.nbProjets}" /></h5>
-			                    <span class="description-text">PROJETS</span>
-			                </div>
-			            </div>
-			        </div>
 			    </div>
 		    </div>
 		</div>

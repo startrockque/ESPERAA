@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import dto.DonateurDTO;
 import dto.InvestissementDTO;
-import dto.TousLesChevauxDTO;
 import facade.IFacadeCommune;
 import facade.IDonateurFacade;
 
@@ -25,10 +24,8 @@ public class AfficherMonProfilServlet extends HttpServlet {
 
     private static final String     PAGE_AFFICHER_PROFIL    = "/WEB-INF/financeurPorteur/pageMonProfil.jsp";
 
-    private static final String     ATT_SESSION_MEMBRE      = "financeur";
+    private static final String     ATT_SESSION_MEMBRE      = "donateur";
     private static final String     ATT_INVESTISSEMENT_LIST = "investissements";
-    private static final String     ATT_MES_PROJETS_LIST    = "listeProjets";
-    private static final String     ATT_NB_PROJETS          = "nbProjets";
 
     @EJB
     private IDonateurFacade facadeMembre;
@@ -41,14 +38,9 @@ public class AfficherMonProfilServlet extends HttpServlet {
 
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
-        DonateurDTO membreCourant = (DonateurDTO) request.getSession()
-                .getAttribute( ATT_SESSION_MEMBRE );
-        List<TousLesChevauxDTO> mesProjets = facadeCommune.recupererMesProjets( membreCourant.getLogin() );
-        List<InvestissementDTO> mesInvestissements = facadeMembre.recupererInvesissementParFinanceur( membreCourant
-                .getLogin() );
-        request.setAttribute( ATT_NB_PROJETS, facadeCommune.recupererMesProjets( membreCourant.getLogin() ).size() );
+        DonateurDTO membreCourant = (DonateurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
+        List<InvestissementDTO> mesInvestissements = facadeMembre.recupererInvestissementParDonateur( membreCourant.getLogin() );
         request.setAttribute( ATT_INVESTISSEMENT_LIST, mesInvestissements );
-        request.setAttribute( ATT_MES_PROJETS_LIST, mesProjets );
         request.getRequestDispatcher( PAGE_AFFICHER_PROFIL ).forward( request, response );
     }
 

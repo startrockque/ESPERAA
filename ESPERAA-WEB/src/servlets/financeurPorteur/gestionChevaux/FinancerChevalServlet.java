@@ -1,4 +1,4 @@
-package servlets.financeurPorteur.gestionProjets;
+package servlets.financeurPorteur.gestionChevaux;
 
 import java.io.IOException;
 
@@ -15,19 +15,19 @@ import facade.IFacadeCommune;
 import facade.IDonateurFacade;
 
 /**
- * Servlet implementation class FinancerProjetServlet
+ * Servlet implementation class FinancerChevalServlet
  */
-@WebServlet( "/Membre/FinancerProjet" )
-public class FinancerProjetServlet extends HttpServlet {
+@WebServlet( "/Membre/FinancerCheval" )
+public class FinancerChevalServlet extends HttpServlet {
     private static final long       serialVersionUID               = 1L;
 
-    private static final String     PAGE_AFFICHER_PROJET           = "/WEB-INF/financeurPorteur/pageAfficherProjet.jsp";
+    private static final String     PAGE_AFFICHER_CHEVAL           = "/WEB-INF/financeurPorteur/pageAfficherCheval.jsp";
 
-    private static final String     ATT_SESSION_MEMBRE             = "financeur";
-    private static final String     ATT_ID_PROJET                  = "idProjet";
+    private static final String     ATT_SESSION_MEMBRE             = "donateur";
+    private static final String     ATT_ID_CHEVAL                  = "idCheval";
     private static final String     ATT_MESSAGE                    = "message";
     private static final String     ATT_ERREUR                     = "erreur";
-    private static final String     ATT_PROJET                     = "projet";
+    private static final String     ATT_CHEVAL                     = "cheval";
 
     private static final String     CHAMP_MONTANT                  = "montant";
 
@@ -41,7 +41,7 @@ public class FinancerProjetServlet extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public FinancerProjetServlet() {
+    public FinancerChevalServlet() {
         super();
     }
 
@@ -61,9 +61,9 @@ public class FinancerProjetServlet extends HttpServlet {
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
         DonateurDTO membre = (DonateurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
-        int idProjetAFinancer = Integer.parseInt( request.getParameter( ATT_ID_PROJET ) );
+        int idChevalAFinancer = Integer.parseInt( request.getParameter( ATT_ID_CHEVAL ) );
         String montantIvestString = request.getParameter( CHAMP_MONTANT ).trim();
-        request.setAttribute( ATT_ID_PROJET, idProjetAFinancer );
+        request.setAttribute( ATT_ID_CHEVAL, idChevalAFinancer );
         int montantIvest = 0;
         if ( !montantIvestString.isEmpty() ) {
             montantIvest = Integer.parseInt( montantIvestString );
@@ -71,18 +71,18 @@ public class FinancerProjetServlet extends HttpServlet {
         if ( montantIvest > CONST_SOMME_MINIMUM_A_INVESTIR ) {
             String nomFinanceur = membre.getLogin();
             if ( montantIvest <= membre.getMontantAInvestir() ) {
-                ChevalDTO projet = facadeCommune.findProjetDTOById( idProjetAFinancer );
+                ChevalDTO projet = facadeCommune.findChevalDTOById( idChevalAFinancer );
                 if ( projet.getMontantInvesti() < Integer.MAX_VALUE ) {
                     if ( projet.getMontantInvesti() + montantIvest < 0 ) {
                         montantIvest = Integer.MAX_VALUE - projet.getMontantInvesti();
                     }
-                    facadeMembre.financerProjet( nomFinanceur, idProjetAFinancer, montantIvest );
+                    facadeMembre.financerCheval( nomFinanceur, idChevalAFinancer, montantIvest );
                     request.getSession().setAttribute( ATT_SESSION_MEMBRE,
-                            facadeCommune.findFinanceurDTOByLogin( nomFinanceur ) );
-                    projet = facadeCommune.findProjetDTOById( idProjetAFinancer );
+                            facadeCommune.findDonateurDTOByLogin( nomFinanceur ) );
+                    projet = facadeCommune.findChevalDTOById( idChevalAFinancer );
                     request.setAttribute( ATT_MESSAGE, "Merci de votre aide " + membre.getLogin() );
                 } else {
-                    request.setAttribute( ATT_ERREUR, "Ce projet a atteint la somme de financement maximum." );
+                    request.setAttribute( ATT_ERREUR, "Ce cheval a atteint la somme de financement maximum." );
                 }
             } else {
                 request.setAttribute( ATT_ERREUR, "Vous ne disposez que de " + membre.getMontantAInvestir()
@@ -91,9 +91,9 @@ public class FinancerProjetServlet extends HttpServlet {
         } else {
             request.setAttribute( ATT_ERREUR, "Veuillez entrer une somme supérieure à  0." );
         }
-        ChevalDTO projet = facadeCommune.findProjetDTOById( idProjetAFinancer );
-        request.setAttribute( ATT_PROJET, projet );
-        request.getRequestDispatcher( PAGE_AFFICHER_PROJET ).forward( request, response );
+        ChevalDTO projet = facadeCommune.findChevalDTOById( idChevalAFinancer );
+        request.setAttribute( ATT_CHEVAL, projet );
+        request.getRequestDispatcher( PAGE_AFFICHER_CHEVAL ).forward( request, response );
     }
 
 }

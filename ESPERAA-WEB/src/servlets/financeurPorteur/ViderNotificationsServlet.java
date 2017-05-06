@@ -22,7 +22,7 @@ public class ViderNotificationsServlet extends HttpServlet {
 
     private static final String     REDIRECT_ACCUEIL   = "Accueil";
 
-    private static final String     ATT_SESSION_MEMBRE = "financeur";
+    private static final String     ATT_SESSION_MEMBRE = "donateur";
 
     @EJB
     private IDonateurFacade facadeMembre;
@@ -38,7 +38,7 @@ public class ViderNotificationsServlet extends HttpServlet {
         DonateurDTO fPorteur = (DonateurDTO) request.getSession().getAttribute( ATT_SESSION_MEMBRE );
         facadeMembre.viderNotification( fPorteur.getLogin() );
         request.getSession().setAttribute( ATT_SESSION_MEMBRE,
-                facadeCommune.findFinanceurDTOByLogin( fPorteur.getLogin() ) );
+                facadeCommune.findDonateurDTOByLogin( fPorteur.getLogin() ) );
         response.sendRedirect( REDIRECT_ACCUEIL );
     }
 
