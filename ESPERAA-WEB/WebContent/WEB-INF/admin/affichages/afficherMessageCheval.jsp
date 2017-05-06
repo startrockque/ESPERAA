@@ -4,7 +4,7 @@
 <div class="well">
     <div class="text-right">
         <form action=EnvoyerMessage method="post">
-       		<input type="hidden" name="idProjet" value="${cheval.idCheval}" /> 
+       		<input type="hidden" name="idCheval" value="${cheval.idCheval}" /> 
 			<textarea name="contenuMessage" rows="3" placeholder="Entrez votre message ..." class="form-control lightMarginBottom" required></textarea>
 			<button name="act" value="Envoyer" class="btn btn-success"><i class="glyphicon glyphicon-send"></i> Envoyer</button>	
 		</form>

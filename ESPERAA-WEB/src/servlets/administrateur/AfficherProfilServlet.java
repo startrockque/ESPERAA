@@ -21,7 +21,7 @@ public class AfficherProfilServlet extends HttpServlet {
     private static final long   serialVersionUID            = 1L;
 
     private static final String PAGE_AFFICHER_PROFIL_ADMIN  = "/WEB-INF/admin/pageAfficherProfilAdmin.jsp";
-    private static final String PAGE_AFFICHER_PROFIL_MEMBRE = "/WEB-INF/admin/pageAfficherDonateur.jsp";
+    private static final String PAGE_AFFICHER_PROFIL_MEMBRE = "/WEB-INF/admin/pageAfficherProfilDonateur.jsp";
 
     private static final String ATT_MEMBRE_PROFIL           = "donateur";
     private static final String ATT_ADMIN_PROFIL            = "admin";

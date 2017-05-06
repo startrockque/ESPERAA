@@ -36,8 +36,8 @@ public class AfficherChevalServlet extends HttpServlet {
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
         idCheval = Integer.parseInt( request.getParameter( ATT_ID_CHEVAL ) );
-        ChevalDTO projet = facadeCommune.findChevalDTOById( idCheval );
-        request.setAttribute( ATT_CHEVAL, projet );
+        ChevalDTO cheval = facadeCommune.findChevalDTOById( idCheval );
+        request.setAttribute( ATT_CHEVAL, cheval );
         request.getRequestDispatcher( PAGE_AFFICHER_CHEVAL ).forward( request, response );
     }
 

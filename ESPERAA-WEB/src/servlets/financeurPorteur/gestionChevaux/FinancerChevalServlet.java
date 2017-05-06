@@ -71,15 +71,15 @@ public class FinancerChevalServlet extends HttpServlet {
         if ( montantIvest > CONST_SOMME_MINIMUM_A_INVESTIR ) {
             String nomFinanceur = membre.getLogin();
             if ( montantIvest <= membre.getMontantAInvestir() ) {
-                ChevalDTO projet = facadeCommune.findChevalDTOById( idChevalAFinancer );
-                if ( projet.getMontantInvesti() < Integer.MAX_VALUE ) {
-                    if ( projet.getMontantInvesti() + montantIvest < 0 ) {
-                        montantIvest = Integer.MAX_VALUE - projet.getMontantInvesti();
+                ChevalDTO cheval = facadeCommune.findChevalDTOById( idChevalAFinancer );
+                if ( cheval.getMontantInvesti() < Integer.MAX_VALUE ) {
+                    if ( cheval.getMontantInvesti() + montantIvest < 0 ) {
+                        montantIvest = Integer.MAX_VALUE - cheval.getMontantInvesti();
                     }
                     facadeMembre.financerCheval( nomFinanceur, idChevalAFinancer, montantIvest );
                     request.getSession().setAttribute( ATT_SESSION_MEMBRE,
                             facadeCommune.findDonateurDTOByLogin( nomFinanceur ) );
-                    projet = facadeCommune.findChevalDTOById( idChevalAFinancer );
+                    cheval = facadeCommune.findChevalDTOById( idChevalAFinancer );
                     request.setAttribute( ATT_MESSAGE, "Merci de votre aide " + membre.getLogin() );
                 } else {
                     request.setAttribute( ATT_ERREUR, "Ce cheval a atteint la somme de financement maximum." );
@@ -91,8 +91,8 @@ public class FinancerChevalServlet extends HttpServlet {
         } else {
             request.setAttribute( ATT_ERREUR, "Veuillez entrer une somme supérieure à  0." );
         }
-        ChevalDTO projet = facadeCommune.findChevalDTOById( idChevalAFinancer );
-        request.setAttribute( ATT_CHEVAL, projet );
+        ChevalDTO cheval = facadeCommune.findChevalDTOById( idChevalAFinancer );
+        request.setAttribute( ATT_CHEVAL, cheval );
         request.getRequestDispatcher( PAGE_AFFICHER_CHEVAL ).forward( request, response );
     }
 

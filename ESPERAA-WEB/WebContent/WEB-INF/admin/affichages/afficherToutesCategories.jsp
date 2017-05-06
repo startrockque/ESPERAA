@@ -19,8 +19,7 @@ window.onload = function () {
 		{       
 			type: "pie",
 			showInLegend: false,
-// 			toolTipContent: "<a href='Rechercher?categorie=categorie10&action=simpleCat'> {legendText}</a>: <strong>{y} projets</strong>",
-			toolTipContent: "{legendText}: <strong>{y} projets</strong>",
+			toolTipContent: "{legendText}: <strong>{y} chevaux</strong>",
 			indexLabel: "{label}",
 			dataPoints: []
 		}
@@ -35,8 +34,8 @@ window.onload = function () {
 		for(var i=0;i<categories.length;i++){
 	        var obj = categories[i];
 	        var titre = obj.titreCategorie;
-	        var nbProjets = obj.nbProjets;
-           	chart.options.data[0].dataPoints.push({  y: nbProjets, legendText: titre, label: titre});
+	        var nbChevaux = obj.nbChevaux;
+           	chart.options.data[0].dataPoints.push({  y: nbChevaux, legendText: titre, label: titre});
 	    }
 		chart.render();
 

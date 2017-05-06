@@ -277,9 +277,9 @@ public class ChevalDAO {
     public List<Cheval> findAlmostFinancedHorses( int nbCheval ) throws DAOException {
         try {
             String sql =
-                    "SELECT IDPROJET FROM "
-                            + "(SELECT IDPROJET , MONTANTINVESTI  , (p.MONTANTINVESTI *10000 /p.MONTANTDEMANDE) as nb "
-                            + "FROM PROJET p "
+                    "SELECT IDCHEVAL FROM "
+                            + "(SELECT IDCHEVAL , MONTANTINVESTI  , (p.MONTANTINVESTI *10000 /p.MONTANTDEMANDE) as nb "
+                            + "FROM CHEVAL p "
                             + "WHERE p.MONTANTINVESTI *10000 /p.MONTANTDEMANDE < 10000 "
                             + "ORDER BY (nb) "
                             + "DESC LIMIT ?1)";
@@ -303,8 +303,8 @@ public class ChevalDAO {
     public List<Cheval> findMostFinancedHorses( int nbCheval ) throws DAOException {
         try {
             String sql =
-                    "SELECT IDPROJET FROM "
-                            + "(SELECT IDPROJET , MONTANTINVESTI  , (p.MONTANTINVESTI *10000 /p.MONTANTDEMANDE) as nb "
+                    "SELECT IDCHEVAL FROM "
+                            + "(SELECT IDCHEVAL , MONTANTINVESTI  , (p.MONTANTINVESTI *10000 /p.MONTANTDEMANDE) as nb "
                             + "FROM CHEVAL p "
                             + "ORDER BY (nb) "
                             + "DESC LIMIT ?1)";
@@ -381,7 +381,7 @@ public class ChevalDAO {
      */
     public int getSize() throws DAOException {
         try {
-            String sqlString = "SELECT COUNT(*) FROM PROJET";
+            String sqlString = "SELECT COUNT(*) FROM CHEVAL";
             Query query = em.createNativeQuery( sqlString );
             return ( (BigInteger) query.getResultList().get( 0 ) ).intValue();
         } catch ( Exception e ) {

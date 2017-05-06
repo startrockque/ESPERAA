@@ -126,6 +126,7 @@ public class JeuxDeDonnees extends HttpServlet {
 
             if ( i % 3 == 0 ) {
                 cheval.setEnAvant( true );
+                cheval.setMontantInvesti(cheval.getMontantDemande()/3);
             }
 
             try {

@@ -4,7 +4,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title><c:out value="${cheval.nom}" /></title>
+	<title><c:out value="${cheval.nomCheval}" /></title>
 	<link href="../css/style.css" rel="stylesheet" type="text/css">
     <link href="../css/projet.css" rel="stylesheet">
 	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">

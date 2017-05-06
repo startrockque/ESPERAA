@@ -15,12 +15,5 @@
 	<div class="col-md-4">
 		<c:import url="affichages/afficherMonProfil.jsp"/>
 	</div>
-	
-	<div class="col-md-8">
-		<fieldset class="searchForm">
-			<legend>Vos projets</legend>
-			<c:import url="affichages/afficherTousProjets.jsp"/>
-		</fieldset>
-	</div>
 </body>
 </html>

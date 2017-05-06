@@ -21,7 +21,7 @@
 		<form action="SupprimerCheval" method="post">
 			<label>Entrez "confirmer" pour confirmer le retrait.</label> <br/>
 			<input type=text required name="verificationSupprimer" size="10"/>
-			<input type="hidden" name="idProjet" value="${cheval.idCheval}">
+			<input type="hidden" name="idCheval" value="${cheval.idCheval}">
 			<input type="submit" name="act" value="Valider" class="btn btn-primary btn-danger" />
 		</form>			
 	</div>

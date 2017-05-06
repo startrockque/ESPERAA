@@ -138,7 +138,7 @@ public class ModifierChevalServlet extends HttpServlet {
     }
 
     private void setAttribute( ChevalDTO chevalDto, HttpServletRequest request ) {
-        request.setAttribute( CHAMP_TITRE, chevalDto.getTitreCheval() );
+        request.setAttribute( CHAMP_TITRE, chevalDto.getNomCheval() );
         request.setAttribute( CHAMP_DESCRIPTION, chevalDto.getDescription() );
         request.setAttribute( CHAMP_BUT, chevalDto.getButArgent() );
         request.setAttribute( CHAMP_MONTANT_DEMANDE, chevalDto.getMontantDemande() );

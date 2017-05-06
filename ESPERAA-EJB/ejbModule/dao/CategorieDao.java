@@ -130,10 +130,10 @@ public class CategorieDao {
         try {
             String sql = "SELECT TITRECATEGORIE FROM "
                     + "(SELECT TITRECATEGORIE,COUNT(TITRECATEGORIE) as nb FROM"
-                    + "(SELECT IDPROJET, CATEGORIE_IDCATEGORIE, TITRECATEGORIE FROM "
-                    + "PROJET p "
+                    + "(SELECT IDCHEVAL, CATEGORIE_IDCATEGORIE, TITRECATEGORIE FROM "
+                    + "CHEVAL p "
                     + "JOIN CATEGORIE c ON p.CATEGORIE_IDCATEGORIE = c.IDCATEGORIE "
-                    + "GROUP BY p.IDPROJET ) "
+                    + "GROUP BY p.IDCHEVAL ) "
                     + "GROUP BY TITRECATEGORIE "
                     + "ORDER BY nb DESC) "
                     + "LIMIT ?1";

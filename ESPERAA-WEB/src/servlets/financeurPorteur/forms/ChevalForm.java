@@ -67,7 +67,7 @@ public class ChevalForm {
 
     }
 
-    public void verificationModifierCheval( HttpServletRequest request, int idProjet ) {
+    public void verificationModifierCheval( HttpServletRequest request, int idCheval ) {
         resultatTranche = null;
         erreursCheval = new HashMap<String, String>();
         String titre = getValeurChamp( request, CHAMP_NOM );
@@ -84,7 +84,7 @@ public class ChevalForm {
         request.setAttribute( CHAMP_CATEGORIE, titreCategorie );
         request.setAttribute( CHAMP_TAG, tagString );
 
-        traiterNom( titre, idProjet );
+        traiterNom( titre, idCheval );
         traiterDescription( description );
         traiterButArgent( butArgent );
         traiterMontantDemande( montantDemande );
@@ -117,7 +117,7 @@ public class ChevalForm {
         }
     }
 
-    private void traiterNom( String titre, int idProjet ) {
+    private void traiterNom( String titre, int idCheval ) {
         if ( titre != null && !titre.isEmpty() ) {
         } else {
             setErreurCheval( CHAMP_NOM, "Le champ nom est obligatoire" );

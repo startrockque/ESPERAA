@@ -3,7 +3,7 @@
 	<legend>Rechercher un cheval</legend>  
 	<form action="Rechercher" method="post" role="form">
 	        <div class="checkbox">
-		        <input id="sNom" type="checkbox" name="recherche" value="Nom" onclick="toggle('titreForm');" /><label for="sNom">Par nom</label> <br />
+		        <input id="sNom" type="checkbox" name="recherche" value="Nom" onclick="toggle('nomForm');" /><label for="sNom">Par nom</label> <br />
 		        <input id="sCategorie" type="checkbox" name="recherche" value="Categorie" onclick="toggle('categorieForm');"/><label for="sCategorie">Par catégorie</label> <br />
 	        </div>
 	        

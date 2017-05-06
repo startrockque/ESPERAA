@@ -62,12 +62,12 @@ public class ChevalDTO implements Serializable {
         this.idCheval = idCheval;
     }
 
-    public String getTitreCheval() {
+    public String getNomCheval() {
         return nomCheval;
     }
 
-    public void setTitreCheval( String titreCheval ) {
-        this.nomCheval = titreCheval;
+    public void setNomCheval( String nomCheval ) {
+        this.nomCheval = nomCheval;
     }
 
     public String getDescription() {

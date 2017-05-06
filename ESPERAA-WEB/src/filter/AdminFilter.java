@@ -27,7 +27,7 @@ public class AdminFilter implements Filter {
     private static final String ATT_LIST_CATEGORIE     = "listeCategories";
     private static final String ATT_COMPLETION_PORTEUR = "listePorteurs";
     private static final String ATT_COMPLETION_TAG     = "listeTag";
-    private static final String ATT_COMPLETION_PROJET  = "autoCompletionProjet";
+    private static final String ATT_COMPLETION_CHEVAL  = "autoCompletionCheval";
 
     @EJB
     private IFacadeCommune      facadeCommune;
@@ -65,7 +65,7 @@ public class AdminFilter implements Filter {
             res.sendRedirect( REDIRECT_CONNEXION );
         } else {
             /* Affichage de la page restreinte */
-            request.setAttribute( ATT_COMPLETION_PROJET, facadeCommune.recupererTousLesNomsDesChevaux() );
+            request.setAttribute( ATT_COMPLETION_CHEVAL, facadeCommune.recupererTousLesNomsDesChevaux() );
             request.setAttribute( ATT_COMPLETION_TAG, facadeCommune.recupererTousLesTagName() );
             request.setAttribute( ATT_LIST_CATEGORIE, facadeCommune.getAllCategoriesNames() );
             request.setAttribute( ATT_COMPLETION_PORTEUR, facadeCommune.recupererTousLesNomsDeDonateurs() );

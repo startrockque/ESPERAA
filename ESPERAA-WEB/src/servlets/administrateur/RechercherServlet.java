@@ -45,7 +45,7 @@ public class RechercherServlet extends HttpServlet {
 
     private static final String     ACTION_RECHERCHE_SIMPLE_TAG       = "simpleTag";
     private static final String     ACTION_RECHERCHE_SIMPLE_CATEGORIE = "simpleCat";
-    private static final String     ACTION_RECHERCHE_SIMPLE_CHEVAL    = "simpleTitre";
+    private static final String     ACTION_RECHERCHE_SIMPLE_CHEVAL    = "simpleNom";
     private static final String     ACTION_CHEVAL_PLUS_FINANCES       = "chevauxPlusFinances";
     private static final String     ACTION_CHEVAL_PRESQUE_FINANCES    = "chevauxPresqueFinances";
 

@@ -32,18 +32,18 @@
 	    	</div>
 	    	<div id="menu2" class="tab-pane fade">
 				<c:url value="/Admin/Rechercher" var="rechercherPlusFinances"> 
-					<c:param name="action" value="projetsPlusFinances"/>
+					<c:param name="action" value="chevauxPlusFinances"/>
 				</c:url>
 				<a href="<c:out value="${rechercherPlusFinances}" />"> Chevaux les plus aidés</a><br /> 
     		
 	      		<c:url value="/Admin/Rechercher" var="rechercherPresqueFinances"> 
-					<c:param name="action" value="projetsPresqueFinances"/>
+					<c:param name="action" value="chevauxPresqueFinances"/>
 				</c:url>
 
 				<a href="<c:out value="${rechercherPresqueFinances}" />"> Chevaux presque financés </a><br /> 
 
 	      		<c:url value="/Admin/Rechercher" var="rechercherRecents"> 
-					<c:param name="action" value="projetsRecents"/>
+					<c:param name="action" value="chevauxRecents"/>
 				</c:url>
 				<a href="<c:out value="${rechercherRecents}" />"> Les plus récents </a><br />
 			</div>

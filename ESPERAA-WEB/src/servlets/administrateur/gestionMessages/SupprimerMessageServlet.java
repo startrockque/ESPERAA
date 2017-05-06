@@ -18,7 +18,7 @@ import facade.IFacadeCommune;
 public class SupprimerMessageServlet extends HttpServlet {
     private static final long   serialVersionUID     = 1L;
 
-    private static final String PAGE_AFFICHER_CHEVAL = "/WEB-INF/financeurPorteur/pageAfficherCheval.jsp";
+    private static final String PAGE_AFFICHER_CHEVAL = "/WEB-INF/Admin/pageAfficherCheval.jsp";
 
     private static final String ATT_ID_CHEVAL        = "idCheval";
     private static final String ATT_ID_CONVERSATION  = "idConversation";

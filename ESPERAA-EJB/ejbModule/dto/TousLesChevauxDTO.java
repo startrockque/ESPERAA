@@ -10,8 +10,8 @@ import entities.Tag;
 public class TousLesChevauxDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private int               idProjet;
-    private String            titreProjet;
+    private int               idCheval;
+    private String            nomCheval;
     private float             montantDemande;
     private String            butArgent;
     private float             montantInvesti;
@@ -20,12 +20,12 @@ public class TousLesChevauxDTO implements Serializable {
     private List<String>      tagList;
     private String            image;
 
-    public TousLesChevauxDTO( int idProjet, String titreProjet,
+    public TousLesChevauxDTO( int idCheval, String nomCheval,
             float montantDemande, String butArgent, float montantInvesti, boolean enAvant,
             String categorie, List<String> tagList ) {
         super();
-        this.idProjet = idProjet;
-        this.titreProjet = titreProjet;
+        this.idCheval = idCheval;
+        this.nomCheval = nomCheval;
         this.montantDemande = montantDemande;
         this.butArgent = butArgent;
         this.montantInvesti = montantInvesti;
@@ -36,8 +36,8 @@ public class TousLesChevauxDTO implements Serializable {
     }
 
     public TousLesChevauxDTO( Cheval cheval ) {
-        this.idProjet = cheval.getIdCheval();
-        this.titreProjet = cheval.getNomCheval();
+        this.idCheval = cheval.getIdCheval();
+        this.nomCheval = cheval.getNomCheval();
         this.montantDemande = cheval.getMontantDemande();
         this.butArgent = cheval.getButArgent();
         this.montantInvesti = cheval.getMontantInvesti();
@@ -51,20 +51,20 @@ public class TousLesChevauxDTO implements Serializable {
         this.tagList = tagNameList;
     }
 
-    public int getIdProjet() {
-        return idProjet;
+    public int getIdCheval() {
+        return idCheval;
     }
 
-    public void setIdProjet( int idProjet ) {
-        this.idProjet = idProjet;
+    public void setIdCheval( int idCheval ) {
+        this.idCheval = idCheval;
     }
 
-    public String getTitreProjet() {
-        return titreProjet;
+    public String getNomCheval() {
+        return nomCheval;
     }
 
-    public void setTitreProjet( String titreProjet ) {
-        this.titreProjet = titreProjet;
+    public void setNomCheval( String nomCheval ) {
+        this.nomCheval = nomCheval;
     }
 
     public float getMontantDemande() {

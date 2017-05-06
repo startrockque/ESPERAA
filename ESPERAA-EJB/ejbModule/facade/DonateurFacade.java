@@ -24,7 +24,6 @@ import entities.Notification;
 @Stateless
 public class DonateurFacade implements IDonateurFacade {
 
-    // private static final String NOTIFICATION_PROJET_FINANCE     = " a investi dans le projet la somme de ";
     private static final String NOTIFICATION_CHEVAL_FINANCE_100 = "Le cheval a été entierement financé : ";
 
     @EJB
@@ -138,10 +137,10 @@ public class DonateurFacade implements IDonateurFacade {
 
             // si le projet n'était pas financé à 100% avant l'investissement et qu'il l'est maintenant
             if ( !finance && cheval.getMontantDemande() <= cheval.getMontantInvesti() ) {
-                String notificationProjetFinance = NOTIFICATION_CHEVAL_FINANCE_100
+                String notificationChevalFinance = NOTIFICATION_CHEVAL_FINANCE_100
                         + cheval.getNomCheval();
                 for ( Donateur investisseur : cheval.getDonateurList() ) {
-                    investisseur.addNotification( notificationProjetFinance );
+                    investisseur.addNotification( notificationChevalFinance );
                 }
                 //TODO prévenir l'admin
                 //cheval.getPorteur().addNotification( notificationProjetFinance );

@@ -26,17 +26,17 @@
 				<ul class="dropdown-menu widther">
 					<li>
 						<form class="navbar-form col-md-3 widther" role="search"
-							action="Rechercher" method="post" role="form">
+							action="Rechercher" method="post">
 							<div class="input-group">
 								<input list="noms" name="nomCheval" class="form-control"
 									placeholder="Nom du cheval">
 								<datalist id="noms">
-									<c:forEach items="${autoCompletionChevaux}" var="che">
+									<c:forEach items="${autoCompletionCheval}" var="che">
 										<option value="${che}"></option>
 									</c:forEach>
 								</datalist>
 								<div class="input-group-btn">
-									<button value="simpleTitre" name="action"
+									<button value="simpleNom" name="action"
 										class="higher btn btn-primary btn-primary" type="submit">
 										<i class="glyphicon glyphicon-search"></i>
 									</button>
@@ -44,6 +44,7 @@
 							</div>
 						</form>
 					</li>
+					
 					<li>
 						<form class="navbar-form col-md-3 widther" role="search"
 							action="Rechercher" method="post" role="form">
@@ -63,6 +64,7 @@
 							</div>
 						</form>
 					</li>
+					
 					<li>
 						<form class="navbar-form col-md-3 widther" role="search"
 							action="Rechercher" method="post">

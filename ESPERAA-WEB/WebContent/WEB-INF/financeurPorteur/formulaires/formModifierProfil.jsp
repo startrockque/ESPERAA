@@ -3,11 +3,11 @@
 <div class="col-md-offset-4 col-md-4">
 	<h1 class="text-center">Modifier mon profil</h1>
 	<form class="form-signin" action="ModifierProfil" method="post" enctype="multipart/form-data">
-		<input type="email" name="email" placeholder="ex@ple.fr" value="${financeur.email}" class="form-control" required/> <br />
+		<input type="email" name="email" placeholder="ex@ple.fr" value="${donateur.email}" class="form-control" required/> <br />
 		<input type="password" name="ancienPassword" placeholder="Ancien mot de passe" class="form-control" required/> <br />
 		<input type="password" name="password" placeholder="Nouveau mot de passe" class="form-control"/> <br />
 		<input type="password" name="confirmation_password" placeholder="Confirmer nouveau mot de passe" class="form-control"/> <br />
-		<input type="text" name="nom" placeholder="Nom" value="${financeur.nom}" class="form-control" required/> <br />
+		<input type="text" name="nom" placeholder="Nom" value="${donateur.nom}" class="form-control" required/> <br />
 		<div class="input-group">
         	<span class="input-group-btn">
             	<span class="btn btn-primary btn-file">
